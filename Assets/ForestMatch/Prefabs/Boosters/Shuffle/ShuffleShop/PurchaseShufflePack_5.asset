@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: afb05abcaa64931448583ff6131f9e30, type: 3}
+  m_Name: PurchaseShufflePack_5
+  m_EditorClassIdentifier: 
+  booster: {fileID: 11400000, guid: ec803ba517d5c9d4993b15bf61e61d34, type: 2}
+  count: 5
+  price: 5
+  CompleteEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 11400000, guid: 424ed1a259f6a7341a48a44cd67fed33, type: 2}
+        m_TargetAssemblyTypeName: Mkey.ShowSelfClosingMessage, Assembly-CSharp
+        m_MethodName: ShowSelfClosingMesssage
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  FailedEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 11400000, guid: 01a4de580ee7fff42aa7ae577d1eb116, type: 2}
+        m_TargetAssemblyTypeName: Mkey.ShowSelfClosingMessage, Assembly-CSharp
+        m_MethodName: ShowSelfClosingMesssage
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2

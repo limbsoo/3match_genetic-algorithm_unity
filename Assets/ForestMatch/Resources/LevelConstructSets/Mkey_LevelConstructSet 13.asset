@@ -1,0 +1,247 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f428baab0ef3964690a94bac11de0cf, type: 3}
+  m_Name: Mkey_LevelConstructSet 13
+  m_EditorClassIdentifier: 
+  levelStartStoryPage: {fileID: 0}
+  levelWinStoryPage: {fileID: 0}
+  vertSize: 9
+  horSize: 8
+  distX: 0
+  distY: 0
+  scale: 0.9
+  backGroundNumber: 3
+  spawnCells: []
+  spawnOffsets: []
+  cells:
+  - row: 0
+    column: 0
+    gridObjects:
+    - id: 1
+      hits: 0
+  - row: 0
+    column: 1
+    gridObjects:
+    - id: 1
+      hits: 0
+  - row: 0
+    column: 2
+    gridObjects:
+    - id: 1
+      hits: 0
+  - row: 0
+    column: 5
+    gridObjects:
+    - id: 1
+      hits: 0
+  - row: 0
+    column: 6
+    gridObjects:
+    - id: 1
+      hits: 0
+  - row: 0
+    column: 7
+    gridObjects:
+    - id: 1
+      hits: 0
+  - row: 1
+    column: 0
+    gridObjects:
+    - id: 1
+      hits: 0
+  - row: 1
+    column: 1
+    gridObjects:
+    - id: 1
+      hits: 0
+  - row: 1
+    column: 6
+    gridObjects:
+    - id: 1
+      hits: 0
+  - row: 1
+    column: 7
+    gridObjects:
+    - id: 1
+      hits: 0
+  - row: 2
+    column: 0
+    gridObjects:
+    - id: 1
+      hits: 0
+  - row: 2
+    column: 1
+    gridObjects:
+    - id: 1
+      hits: 0
+  - row: 2
+    column: 6
+    gridObjects:
+    - id: 1
+      hits: 0
+  - row: 2
+    column: 7
+    gridObjects:
+    - id: 1
+      hits: 0
+  - row: 3
+    column: 0
+    gridObjects:
+    - id: 1
+      hits: 0
+  - row: 3
+    column: 7
+    gridObjects:
+    - id: 1
+      hits: 0
+  - row: 4
+    column: 2
+    gridObjects:
+    - id: 100001
+      hits: 0
+    - id: 100002
+      hits: 0
+  - row: 5
+    column: 2
+    gridObjects:
+    - id: 100001
+      hits: 0
+    - id: 100002
+      hits: 0
+  - row: 6
+    column: 2
+    gridObjects:
+    - id: 100001
+      hits: 0
+    - id: 100002
+      hits: 0
+  - row: 6
+    column: 1
+    gridObjects:
+    - id: 100001
+      hits: 0
+    - id: 100002
+      hits: 0
+  - row: 5
+    column: 1
+    gridObjects:
+    - id: 100001
+      hits: 0
+    - id: 100002
+      hits: 0
+  - row: 4
+    column: 1
+    gridObjects:
+    - id: 100001
+      hits: 0
+    - id: 100002
+      hits: 0
+  - row: 6
+    column: 5
+    gridObjects:
+    - id: 100001
+      hits: 0
+    - id: 100002
+      hits: 0
+  - row: 5
+    column: 5
+    gridObjects:
+    - id: 100001
+      hits: 0
+    - id: 100002
+      hits: 0
+  - row: 4
+    column: 5
+    gridObjects:
+    - id: 100001
+      hits: 0
+    - id: 100002
+      hits: 0
+  - row: 4
+    column: 6
+    gridObjects:
+    - id: 100001
+      hits: 0
+    - id: 100002
+      hits: 0
+  - row: 5
+    column: 6
+    gridObjects:
+    - id: 100001
+      hits: 0
+    - id: 100002
+      hits: 0
+  - row: 6
+    column: 6
+    gridObjects:
+    - id: 100001
+      hits: 0
+    - id: 100002
+      hits: 0
+  - row: 1
+    column: 3
+    gridObjects:
+    - id: 100002
+      hits: 0
+  - row: 1
+    column: 4
+    gridObjects:
+    - id: 100002
+      hits: 0
+  - row: 2
+    column: 3
+    gridObjects:
+    - id: 100002
+      hits: 0
+  - row: 2
+    column: 4
+    gridObjects:
+    - id: 100002
+      hits: 0
+  - row: 3
+    column: 2
+    gridObjects:
+    - id: 100002
+      hits: 0
+  - row: 3
+    column: 3
+    gridObjects:
+    - id: 100002
+      hits: 0
+  - row: 3
+    column: 4
+    gridObjects:
+    - id: 100002
+      hits: 0
+  - row: 3
+    column: 5
+    gridObjects:
+    - id: 100002
+      hits: 0
+  levelMission:
+    description: Mission
+    timeConstrain: 0
+    movesConstrain: 25
+    scoreTarget: 1000
+    targets:
+      list:
+      - id: 100001
+        count: 0
+      - id: 100002
+        count: 18
+  boardJS: 
+  usedMatchObjects:
+  - {fileID: 1189668015041816824, guid: f6d14d3cdf90c494596e8b9bbf2fa0c2, type: 3}
+  - {fileID: 1189668015041816824, guid: 999d4083fa50546448d284f7684d332c, type: 3}
+  - {fileID: 1189668015041816824, guid: 713751d5edadd43439e62b610a5ea637, type: 3}
+  - {fileID: 1189668015041816824, guid: d8ca68da4d40b224fb870ade2dc2f1bc, type: 3}
+  - {fileID: 1189668015041816824, guid: 4dc527365c3b0474798786d76e6d724f, type: 3}

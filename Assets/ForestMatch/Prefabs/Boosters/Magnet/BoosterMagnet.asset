@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b09f7f5d37a30c41ade72e1fd83dd8d, type: 3}
+  m_Name: BoosterMagnet
+  m_EditorClassIdentifier: 
+  funcPrefab: {fileID: 3541532285302716550, guid: 4d420c482eb83ee4a9076b8a02c42e9e,
+    type: 3}
+  activateHelperBrefab: {fileID: 114301382435503824, guid: 58ff94be261da6f4e922f618597d1a6d,
+    type: 3}
+  guiHelpers:
+  - {fileID: 114301382435503824, guid: 767e99a0b841ee64d8a16d94d32e4ed3, type: 3}
+  - {fileID: 114301382435503824, guid: 74701d9f5d043c44084f08e38bfdc98c, type: 3}
+  boosterShop: {fileID: 5144931544358960569, guid: fccb7529774b18045866a2d0c14ff397,
+    type: 3}
+  id: 300004

@@ -1,0 +1,81 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 384ae313a5d743c4aa42d5ebbd3a14f9, type: 3}
+  m_Name: GameObjectSet_1
+  m_EditorClassIdentifier: 
+  backGrounds:
+  - {fileID: 21300000, guid: 522f04a471d02ad40bca2ba2eb81e7e7, type: 3}
+  - {fileID: 21300000, guid: 8ba7376bd613f8243a17d04150e30d22, type: 3}
+  - {fileID: 21300000, guid: 8a9d08fd4968cf34c87e8b9e3c7ed498, type: 3}
+  - {fileID: 21300000, guid: 95d6058e2e58416478172662b2ff6779, type: 3}
+  - {fileID: 21300000, guid: ff78d5f322cdee34e9a61d8a01a2dc48, type: 3}
+  - {fileID: 21300000, guid: eb7cd8757d363ab419348cd24ad3bbeb, type: 3}
+  - {fileID: 21300000, guid: a0b367eeccec1504b8f35e8d2b66f302, type: 3}
+  - {fileID: 21300000, guid: 968caa7134e899147958e179cc3e172e, type: 3}
+  gridCellOdd: {fileID: 1620328770448470, guid: 6e8d9dcd890e3f141963f71872da3551,
+    type: 3}
+  gridCellEven: {fileID: 1620328770448470, guid: a04ebef43cc867f468859a8fc50011c9,
+    type: 3}
+  disabledObject: {fileID: 3673614062378437717, guid: 56048d36c326b114696466670688734a,
+    type: 3}
+  blockedObjects:
+  - {fileID: 4302452134904552185, guid: b2b7d2ddf34952245a4ccb1b9bc4efc0, type: 3}
+  - {fileID: 4302452134904552185, guid: f1d1b74dc8052c44799fca8d91ad2856, type: 3}
+  matchObjects:
+  - {fileID: 1189668015041816824, guid: f6d14d3cdf90c494596e8b9bbf2fa0c2, type: 3}
+  - {fileID: 1189668015041816824, guid: 999d4083fa50546448d284f7684d332c, type: 3}
+  - {fileID: 1189668015041816824, guid: 713751d5edadd43439e62b610a5ea637, type: 3}
+  - {fileID: 1189668015041816824, guid: b237e8aa6eb5905468bb409ce71d4e78, type: 3}
+  - {fileID: 1189668015041816824, guid: 2f120c0a5b43d2844b00fae152146052, type: 3}
+  - {fileID: 1189668015041816824, guid: 4dc527365c3b0474798786d76e6d724f, type: 3}
+  - {fileID: 1189668015041816824, guid: d8ca68da4d40b224fb870ade2dc2f1bc, type: 3}
+  overlayObjects:
+  - {fileID: 5623435986698399764, guid: 23fdcfc407bef8f4ca5876b7a31fc3c4, type: 3}
+  - {fileID: 5623435986698399764, guid: 70ddf8f3bcc44de46a0656386752d0f8, type: 3}
+  - {fileID: 5623435986698399764, guid: 0ad88476ee0a74d468633e0504272136, type: 3}
+  - {fileID: 5623435986698399764, guid: 0eb5e15b806e8ca4f8092f40a0e96d4c, type: 3}
+  - {fileID: 5623435986698399764, guid: 0d40543d8571d3246a9389f678cff2fe, type: 3}
+  - {fileID: 5623435986698399764, guid: 78027d4b8ffb8814da16d82221abe6f6, type: 3}
+  underlayObjects:
+  - {fileID: 4801992064559212486, guid: 9a13a837742bb5a4d828a7a6744cfca8, type: 3}
+  - {fileID: 8244073367444300759, guid: c2b83a9fa95006341ba544c154ae595c, type: 3}
+  dynamicClickBombObjectVertical: {fileID: 5482199133485035081, guid: fad81613c71ef2244b6afa9dc14a208b,
+    type: 3}
+  dynamicClickBombObjectHorizontal: {fileID: 4296949312292318210, guid: 3023ac05a94b6284a89a3a88d5ffa829,
+    type: 3}
+  dynamicClickBombObjectRadial: {fileID: 7965174339716363240, guid: 24d965c8db01e5f49970a0b3e3056982,
+    type: 3}
+  staticMatchBombObjectVertical: {fileID: 7270204396072836400, guid: 4bfae6a8ff8997941b2b0d4e60705942,
+    type: 3}
+  staticMatchBombObjectHorizontal: {fileID: 3983266161846453327, guid: 293987a17b252cf409fbf73c603ada41,
+    type: 3}
+  staticMatchBombObjectRadial: {fileID: 9003452487758937956, guid: 2e6d855d70cf4004f8cfbbc3fd62941f,
+    type: 3}
+  staticMatchBombObjectColor: {fileID: 0}
+  boosterObjects:
+  - {fileID: 11400000, guid: 75686d3cb6c99e44ea3cf67fff153fa6, type: 2}
+  - {fileID: 11400000, guid: 75adab6f81536504e8da19646aa9f057, type: 2}
+  - {fileID: 11400000, guid: d20634135c4527246acba598720b79ed, type: 2}
+  - {fileID: 11400000, guid: 4c10c78603fb3554c852d367237cb268, type: 2}
+  - {fileID: 11400000, guid: 1b21ba2c8e358964c88aa0d275a2ba13, type: 2}
+  - {fileID: 11400000, guid: 36aeefdd19de9c44593a7131467bbd66, type: 2}
+  - {fileID: 11400000, guid: ec803ba517d5c9d4993b15bf61e61d34, type: 2}
+  - {fileID: 11400000, guid: 87e808b8d0b91064393615303314bcb1, type: 2}
+  - {fileID: 11400000, guid: 26f82c2af43b7764496fedaebb06ac46, type: 2}
+  dynamicBlockerObjects: []
+  hiddenObjects:
+  - {fileID: 6182950341904175625, guid: 49354204d10cfbc4c8b76977050913fb, type: 3}
+  fallingObjects:
+  - {fileID: 5304736701528430281, guid: 7973d68d3e329744cad5fd015290842b, type: 3}
+  - {fileID: 5304736701528430281, guid: f0ba6118a5afc3945b45e88da49348d8, type: 3}
+  treasureObjects:
+  - {fileID: 4072227023304867029, guid: b7855e5001687544a97add218c216075, type: 3}
