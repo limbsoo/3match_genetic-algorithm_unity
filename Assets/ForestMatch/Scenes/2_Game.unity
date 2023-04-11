@@ -1973,7 +1973,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a115ce82750218348afe481a062a030e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bombType: 2
+  bombType: 1
   showBombExplode: 1
   autoWin: 1
   showAlmostMessage: 1
