@@ -42,6 +42,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 9f48257e4360bab478662462e3a503eb, type: 2}
   - {fileID: 11400000, guid: 444c1453d5e75684fb659f8b71fa2872, type: 2}
   levelSetsAdd: []
-  testMode: 1
-  testLevel: 1
-  unLimited: 1
+  testMode: 0
+  testLevel: 3
+  unLimited: 0

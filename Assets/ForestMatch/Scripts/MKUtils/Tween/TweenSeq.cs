@@ -213,6 +213,21 @@ namespace Mkey
                 completeAction?.Invoke();
             }
         }
+
+        public void Start1()
+        {
+            if (seqL.Count > 0)
+            {
+                for (int i = 0; i < seqL.Count; i++)
+                {
+                    seqL[i](() => { ended++; if (ended == count) { /*completeAction?.Invoke(); */} });
+                }
+            }
+            else
+            {
+                //completeAction?.Invoke();
+            }
+        }
     }
 
 

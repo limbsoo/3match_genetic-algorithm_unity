@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
+using System.Security.Cryptography;
 
 /*
     02.12.2019 - first
@@ -348,6 +350,83 @@ namespace Mkey
             }
             return (res.Count >= 5) ? res : new List<MatchObject>(goSet.MatchObjects);
         }
+
+        /// ////////////////////////////////////////////////////////////////////
+        internal List<MatchObject> GetAllObjects(GameObjectsSet goSet)
+        {
+            List<MatchObject> res = new List<MatchObject>();
+            if (usedMatchObjects == null || usedMatchObjects.Count < 5)
+            {
+                res.AddRange(goSet.MatchObjects);
+
+                //List<BlockedObject> merge = new List<BlockedObject>();
+
+
+
+                //res.AddRange(goSet.HiddenObjects);
+                //merge.AddRange(goSet.BlockedObjects);
+                //merge.AddRange(goSet.FallingObjects);
+                //merge.AddRange(goSet.OverlayObjects);
+                //merge.AddRange(goSet.UnderlayObjects);
+
+
+                //res.AddRange(merge);
+
+                return new List<MatchObject>(goSet.MatchObjects);
+            }
+
+            foreach (var item in usedMatchObjects)
+            {
+                if (item && !res.Contains(item) && goSet.MatchObjects.Contains(item)) res.Add(item);
+            }
+            return (res.Count >= 5) ? res : new List<MatchObject>(goSet.MatchObjects);
+        }
+
+
+
+
+
+
+        internal List<BlockedObject> GetBlockedObjects(GameObjectsSet goSet)
+        {
+            List<BlockedObject> res = new List<BlockedObject>();
+            res.AddRange(goSet.BlockedObjects);
+
+            return (res.Count >= 5) ? res : new List<BlockedObject>(goSet.BlockedObjects);
+        }
+
+        internal List<OverlayObject> GetOverlayObjects(GameObjectsSet goSet)
+        {
+            List<OverlayObject> res = new List<OverlayObject>();
+            res.AddRange(goSet.OverlayObjects);
+
+            return (res.Count >= 5) ? res : new List<OverlayObject>(goSet.OverlayObjects);
+        }
+
+        internal List<UnderlayObject> GetUnderlayObjects(GameObjectsSet goSet)
+        {
+            List<UnderlayObject> res = new List<UnderlayObject>();
+            res.AddRange(goSet.UnderlayObjects);
+
+            return (res.Count >= 5) ? res : new List<UnderlayObject>(goSet.UnderlayObjects);
+        }
+
+        internal List<FallingObject> GetFallingObjects(GameObjectsSet goSet)
+        {
+            List<FallingObject> res = new List<FallingObject>();
+            res.AddRange(goSet.FallingObjects);
+
+            return (res.Count >= 5) ? res : new List<FallingObject>(goSet.FallingObjects);
+        }
+
+        internal List<HiddenObject> GetHiddenObjects(GameObjectsSet goSet)
+        {
+            List<HiddenObject> res = new List<HiddenObject>();
+            res.AddRange(goSet.HiddenObjects);
+
+            return (res.Count >= 5) ? res : new List<HiddenObject>(goSet.HiddenObjects);
+        }
+
     }
 
     [Serializable]

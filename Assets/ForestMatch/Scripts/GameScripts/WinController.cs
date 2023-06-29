@@ -77,14 +77,19 @@ namespace Mkey
         /// <param name="completeCallBack"></param>
         public void CheckResult()
         {
-             // Debug.Log("ObjectTargetsIsCollected() " + ObjectTargetsIsCollected());
-            //  Debug.Log(" mBoard.HaveAdditGrids " + mBoard.HaveNextGrid);
-            if (ObjectTargetsIsCollected() && mBoard.HaveNextGrid)
-            {
-                mBoard.ShowNextGrid(0.7f);
-            }
-            bool targetAchieved = ObjectTargetsIsCollected() && ScoreTarget <= ScoreHolder.Count; // current grid target achieved
-           //   Debug.Log("targetAchieved : " + targetAchieved);
+
+
+            //// target autoplay 키고 끄기
+
+            // // Debug.Log("ObjectTargetsIsCollected() " + ObjectTargetsIsCollected());
+            ////  Debug.Log(" mBoard.HaveAdditGrids " + mBoard.HaveNextGrid);
+            //if (ObjectTargetsIsCollected() && mBoard.HaveNextGrid)
+            //{
+            //    mBoard.ShowNextGrid(0.7f);
+            //}
+            //bool targetAchieved = ObjectTargetsIsCollected() && ScoreTarget <= ScoreHolder.Count; // current grid target achieved
+            //                                                                                      //   Debug.Log("targetAchieved : " + targetAchieved);
+            bool targetAchieved = true;
 
             if (!targetAchieved)
             {
@@ -134,10 +139,12 @@ namespace Mkey
             //{
             //    Debug.Log(item.Key + "->" + item.Value.CurrCount + " : " + item.Value.NeedCount);
             //}
+
+
+            //target 존재시 autoplay 끄는 코드
             foreach (var item in mBoard.CurTargets)
             {
-                if (!item.Value.Achieved)
-                    return false;
+                if (!item.Value.Achieved) return false;
             }
             return true;
         }
@@ -188,5 +195,12 @@ namespace Mkey
             if (changed) ChangeMovesEvent?.Invoke(MovesRest);
             if (MovesRest == 5) MovesLeft5Event?.Invoke();
         }
+
+
+
+
     }
+
 }
+
+

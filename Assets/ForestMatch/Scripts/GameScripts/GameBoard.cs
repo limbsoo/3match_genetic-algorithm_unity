@@ -4,8 +4,14 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEditor.Progress;
+using Unity.VisualScripting;
+using System.Linq.Expressions;
+
+using Random = UnityEngine.Random;
+
 #if UNITY_EDITOR
-    using UnityEditor;
+using UnityEditor;
 #endif
 
 namespace Mkey
@@ -87,6 +93,10 @@ namespace Mkey
         public bool HaveAdditGrids { get { return AdditGridsCount > 0; } }
         public bool HaveNextGrid { get { return (MainGrid == CurrentGrid && HaveAdditGrids) || (HaveAdditGrids && AddGridIndex < AdditGridsCount - 1); } }
         public MatchGrid NextGrid { get { return (HaveNextGrid) ? (new List<MatchGrid>(AdditionalGrids.Values))[AddGridIndex + 1] : null; } }
+
+
+
+
         #endregion grids
 
         #region curves
@@ -127,6 +137,11 @@ namespace Mkey
         public Dictionary<int, TargetData> Targets { get; private set; }
 
         public Dictionary<int, TargetData> CurTargets { get; private set; } // summary targets for current grid
+
+        // ////// //////// //////////////////////
+        public Dictionary<int, TargetData> CurGridCells { get; private set; }
+        // ////// //////// //////////////////////
+
 
         public GuiController MGui => GuiController.Instance; 
 
@@ -188,6 +203,9 @@ namespace Mkey
             ScoreHolder.Instance.SetCount(0);
         }
 
+
+
+
         private void Start()
         {
             #region game sets 
@@ -226,6 +244,9 @@ namespace Mkey
             #endregion targets
 
             DestroyGrid();
+
+
+
             CreateGameBoard();
             GameLevelHolder.StartLevel();
 
@@ -328,38 +349,51 @@ namespace Mkey
                     }
                 }
 
-                Action missionAction = () => {
-                    if (showMission && missionPrefab)
-                    {
-                        MGui.ShowPopUp(missionPrefab, () =>
-                        {
-                            if (WinContr.IsTimeLevel) WinContr.Timer.Start();
-                            MbState = MatchBoardState.Fill;
-                            canPlay = true;
-                        });
-                    }
-                    else
-                    {
-                        if (WinContr.IsTimeLevel) WinContr.Timer.Start();
-                        MbState = MatchBoardState.Fill;
-                        canPlay = true;
-                    }
-                };
+                //Action missionAction = () => {
+                //    if (showMission && missionPrefab)
+                //    {
+                //        MGui.ShowPopUp(missionPrefab, () =>
+                //        {
+                //            if (WinContr.IsTimeLevel) WinContr.Timer.Start();
+                //            MbState = MatchBoardState.Fill;
+                //            canPlay = true;
+                //        });
+                //    }
+                //    else
+                //    {
+                //        if (WinContr.IsTimeLevel) WinContr.Timer.Start();
+                //        MbState = MatchBoardState.Fill;
+                //        canPlay = true;
+                //    }
+                //};
 
-                if (MainLCSet.LevelStartStoryPage)
-                {
-                    MGui.ShowPopUp(MainLCSet.LevelStartStoryPage, missionAction);
-                }
-                else
-                {
-                    missionAction?.Invoke();
-                }
+                //if (MainLCSet.LevelStartStoryPage)
+                //{
+                //    MGui.ShowPopUp(MainLCSet.LevelStartStoryPage, missionAction);
+                //}
+                //else
+                //{
+                //    missionAction?.Invoke();
+                //}
+
+                //showMission = true;
+
+
+                //startPopUP_delete
+                if (WinContr.IsTimeLevel) WinContr.Timer.Start();
+                MbState = MatchBoardState.Fill;
+                canPlay = true;
+
                 showMission = true;
             }
 
             ShowGrid(MainGrid, 0, null);
             CurrentGrid.CalcObjects();
+
         }
+
+
+
 
         private void Update()
         {
@@ -391,6 +425,40 @@ namespace Mkey
         }
         #endregion regular
 
+
+
+
+
+
+
+
+
+
+        public Dictionary<int, TargetData> Copy_target(Dictionary<int, TargetData> copy)
+        {
+            copy = CurTargets;
+            return copy;
+        }
+
+        public void test(MatchGrid g, Spawner spawnerPrefab,SpawnerStyle spawnerStyle, Transform GridContainer, Transform trans)
+        {
+
+            g.Columns.ForEach((c) =>
+            {
+                c.CreateTopSpawner(spawnerPrefab, spawnerStyle, GridContainer.lossyScale, trans);
+            });
+
+            // create pathes to spawners
+            CreateFillPath(g);
+
+            g.Cells.ForEach((c) =>
+            {
+                c.CreateBorder();
+            });
+        }
+
+
+
         #region grid construct
         public void CreateGameBoard()
         {
@@ -401,8 +469,10 @@ namespace Mkey
 
             BackGround = GOSet.GetBackGround(MainLCSet.BackGround);
 
+
             if (GMode == GameMode.Play)
             {
+
                 Func<LevelConstructSet, Transform, MatchGrid> create = (lC, cont) =>
                 {
                     MatchGrid g = new MatchGrid(lC, GOSet, cont, SortingOrder.Base, GMode);
@@ -414,7 +484,25 @@ namespace Mkey
                         g.Cells[i].GCDoubleClickEvent = MatchDoubleClickHandler;
                     }
                     MaxDragDistance = Vector3.Distance(g.Cells[0].transform.position, g.Cells[1].transform.position);
-                    g.FillGrid(true);
+
+
+
+
+                    /////////////////////////////////////////////////////////////////////////
+
+                    foreach (var item in GOSet.TargetObjects)
+                    {
+                        if (g.LcSet.levelMission.Targets.ContainObjectID(item.ID) && (g.LcSet.levelMission.Targets.CountByID(item.ID) > 0))
+                            CurTargets[item.ID] = new TargetData(item.ID, g.LcSet.levelMission.GetTargetCount(item.ID));
+                    }
+
+                    g.haveFillPath = lC.HaveFillPath(g);
+                    List<CellData> cells = new List<CellData>();
+                    cells = lC.spawnCells;
+
+                    
+                    g.FillGrid(true, g, CurTargets, spawnerPrefab, spawnerStyle, GridContainer, transform);
+
 
                     // create spawners
                     g.haveFillPath = lC.HaveFillPath(g);
@@ -451,8 +539,10 @@ namespace Mkey
                     WinContr.MakeMove();
                     MbState = MatchBoardState.Fill;
                 };
+
                 MainGrid = create(MainLCSet, GridContainer);
                 AdditionalGrids = new Dictionary<LevelConstructSet, MatchGrid>();
+
                 if (LcSetAdds != null)
                     foreach (var item in LcSetAdds)
                     {
@@ -963,6 +1053,7 @@ namespace Mkey
             }
         }
 
+        int cnt = 0;
         private void ShowEstimateState()
         {
             if (!CurrentGrid.NoPhys()) return;
@@ -973,6 +1064,9 @@ namespace Mkey
 
             if (EstimateGroups.Length == 0)
             {
+                cnt++;
+                Debug.Log("how many mix ?~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" + cnt + "~~~~~~~~~");
+
                 MixGrid(null);
                 return;
             }
@@ -1252,6 +1346,12 @@ namespace Mkey
         }
         #endregion match group handlers score counter
 
+
+
+
+        public GeneticAlgorithm<char> ga2 { get; private set; }
+
+
         private void MakeStep()
         {
             GridCell bomb = CurrentGrid.GetBomb();
@@ -1268,12 +1368,42 @@ namespace Mkey
                 return;
             }
 
+
             if (autoWin== AutoWin.Slow)
             {
                 if (EstimateGroups.Length > 0)
                 {
-                    EstimateGroups.SwapEstimate();
+                    //EstimateGroups.SwapEstimate();
+
+                    List<List<int>> targetsInCell = new List<List<int>>();
+
+                    foreach (var currentCellsID in CurrentGrid.Cells)
+                    {
+                        List<int> res = currentCellsID.GetGridObjectsIDs();
+
+                        foreach (var item in CurTargets)
+                        {
+                            if (!item.Value.Achieved)
+                            {
+                                if (item.Value.ID >= 1000 && item.Value.ID <= 1006)
+                                {
+                                    if (item.Value.ID == res[0])
+                                    {
+                                        targetsInCell.Add(new List<int> { currentCellsID.Row, currentCellsID.Column });
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+
+                    EstimateGroups.FOA_TargetSwap(targetsInCell);
+
+
+
                 }
+
+
             }
             else if(autoWin== AutoWin.Fast)
             {
@@ -1509,7 +1639,10 @@ namespace Mkey
 
             pT.Start(() => { wave = false; completeCallBack?.Invoke(); });
         }
+
     }
+
+
 
     public class MatchGroupsHelper
     {
@@ -1773,12 +1906,98 @@ namespace Mkey
         {
             mgList[0].SwapEstimate();
         }
-    }
 
+
+
+        public void FOA_TargetSwap(List<List<int>> targetsInCell)
+        {
+            //mgList[0].SwapEstimate();
+
+            List<int> collectMatch = new List<int>();
+
+            for(int i = 0;i < mgList.Count;i++)
+            {
+                bool isInsert = false;
+
+                for (int j = 0; j < targetsInCell.Count;j++)
+                {
+                    if (mgList[i].Cells[0].Row == targetsInCell[j][0] && mgList[i].Cells[0].Column == targetsInCell[j][1])
+                    {
+                        isInsert = true;
+                        break;
+                    }
+
+                    if (mgList[i].Cells[1].Row == targetsInCell[j][0] && mgList[i].Cells[1].Column == targetsInCell[j][1])
+                    {
+                        isInsert = true;
+                        break;
+                    }
+
+                }
+
+                if (isInsert)
+                {
+                    collectMatch.Add(i);
+                }
+            }
+
+
+            if(collectMatch.Count <= 0)
+            {
+                mgList[0].SwapEstimate();
+            }
+
+            else
+            {
+                //Shuffle
+                int number = Random.Range(0, collectMatch.Count - 1);
+                mgList[collectMatch[number]].SwapEstimate();
+            }
+
+            //foreach (var swapable in mgList)
+            //{
+            //    foreach (var cell in targetsInCell)
+            //    {
+            //        if (mgList[0].Cells[0].Row == targetsInCell[0][0] && mgList[0].Cells[0].Column == targetsInCell[0][1])
+            //        {
+
+            //        }
+
+            //        //if(swapable.)
+            //    }
+            //}
+
+
+
+        }
+
+
+    }
     public class MatchGroup : CellsGroup
     {
         private GridCell est1;
         private GridCell est2;
+
+
+        ////////////////////////////////////////////////////////////////////////////////////
+        public List<int> GetEst()
+        {
+            List<int> list = new List<int>();
+
+
+            list.Add(est1.Column);
+            list.Add(est1.Row);
+            list.Add(est2.Column);
+            list.Add(est2.Row);
+
+            return list;
+        }
+
+
+
+
+
+
 
         public bool IsIntersectWithGroup(MatchGroup mGroup)
         {
@@ -2089,6 +2308,8 @@ namespace Mkey
             }
             return MatchGroupType.Simple;
         }
+
+
     }
 
     public class CellsGroup
@@ -2569,7 +2790,8 @@ namespace Mkey
                 for (int i = 2; i < cells.Length; i++)
                 {
                     mg.Add(cells[i - 2]);
-                    if (cells[i].IsMatchable && cells[i].IsMatchObjectEquals(mg.Cells[0]) && !cells[i - 1].IsMatchObjectEquals(mg.Cells[0])  && mg.Cells[0].IsMatchable && cells[i - 1].IsDraggable())
+                    if (cells[i].IsMatchable && cells[i].IsMatchObjectEquals(mg.Cells[0]) && !cells[i - 1].IsMatchObjectEquals(mg.Cells[0])  
+                        && mg.Cells[0].IsMatchable && cells[i - 1].IsDraggable())
                     {
                         mg.Add(cells[i]);
                         mgList.Add(mg);
@@ -2748,5 +2970,8 @@ namespace Mkey
             //#endregion test
         }
     }
+
 #endif
+
+
 }

@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Mkey
 {
@@ -38,10 +41,95 @@ namespace Mkey
 
         public MatchObject GetMainRandomObjectPrefab(LevelConstructSet lCSet, GameObjectsSet gOSet)
         {
+
             List<MatchObject> gridObjects = lCSet.GetMatchObjects(gOSet);
             gridObjects.Shuffle();
             return gridObjects.Count > 0 ? gridObjects[0] : null;
         }
+
+        //get picked object block
+        public MatchObject GetPickedObjectBlock(LevelConstructSet lCSet, GameObjectsSet gOSet)
+        {
+            List<MatchObject> gridObjects = lCSet.GetMatchObjects(gOSet);
+            //gridObjects.Shuffle();
+            return gridObjects.Count > 0 ? gridObjects[0] : null;
+        }
+
+        ////////////////////////////////////////////////////////////////////////
+
+        public MatchObject GetPickMatchObject(LevelConstructSet lCSet, GameObjectsSet gOSet,int ID)
+        {
+            List<MatchObject> gridObjects = lCSet.GetMatchObjects(gOSet);
+            //gridObjects.Shuffle();
+            return gridObjects.Count > 0 ? gridObjects[0] : null;
+        }
+
+
+
+
+        public MatchObject GetRandomObjectPrefab(LevelConstructSet lCSet, GameObjectsSet gOSet)
+        {
+            List<MatchObject> gridObjects = lCSet.GetMatchObjects(gOSet);
+
+            //List<MatchObject> gridObjects = lCSet.GetAllObjects(gOSet);
+
+
+            gridObjects.Shuffle();
+            return gridObjects.Count > 0 ? gridObjects[0] : null;
+        }
+
+
+        public BlockedObject GetRandomBlockedObjectPrefab(LevelConstructSet lCSet, GameObjectsSet gOSet)
+        {
+            //List<MatchObject> gridObjects = lCSet.GetMatchObjects(gOSet);
+
+            List<BlockedObject> gridObjects = lCSet.GetBlockedObjects(gOSet);
+
+            //gridObjects.Shuffle();
+            return gridObjects.Count > 0 ? gridObjects[0] : null;
+        }
+
+        public OverlayObject GetRandomOverlayObjectPrefab(LevelConstructSet lCSet, GameObjectsSet gOSet)
+        {
+            //List<MatchObject> gridObjects = lCSet.GetMatchObjects(gOSet);
+
+            List<OverlayObject> gridObjects = lCSet.GetOverlayObjects(gOSet);
+
+            gridObjects.Shuffle();
+
+            return gridObjects.Count > 0 ? gridObjects[0] : null;
+        }
+
+        public UnderlayObject GetRandomUnderlayObjectPrefab(LevelConstructSet lCSet, GameObjectsSet gOSet)
+        {
+            //List<MatchObject> gridObjects = lCSet.GetMatchObjects(gOSet);
+
+            List<UnderlayObject> gridObjects = lCSet.GetUnderlayObjects(gOSet);
+
+            gridObjects.Shuffle();
+            return gridObjects.Count > 0 ? gridObjects[0] : null;
+        }
+
+        public FallingObject GetRandomUgetFallingObjectPrefab(LevelConstructSet lCSet, GameObjectsSet gOSet)
+        {
+            //List<MatchObject> gridObjects = lCSet.GetMatchObjects(gOSet);
+
+            List<FallingObject> gridObjects = lCSet.GetFallingObjects(gOSet);
+
+            gridObjects.Shuffle();
+            return gridObjects.Count > 0 ? gridObjects[0] : null;
+        }
+
+        public HiddenObject GetRandomHiddenObjectPrefab(LevelConstructSet lCSet, GameObjectsSet gOSet)
+        {
+            //List<MatchObject> gridObjects = lCSet.GetMatchObjects(gOSet);
+
+            List<HiddenObject> gridObjects = lCSet.GetHiddenObjects(gOSet);
+
+            gridObjects.Shuffle();
+            return gridObjects.Count > 0 ? gridObjects[0] : null;
+        }
+
 
         public MatchObject GetMainObjectPrefab(GameObjectsSet gOSet, int id)
         {
@@ -65,5 +153,20 @@ namespace Mkey
 
             return (gridObjects.Count > 0) ? gridObjects[0] : null;
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
 }

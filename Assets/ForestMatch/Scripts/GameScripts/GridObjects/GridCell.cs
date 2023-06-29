@@ -356,10 +356,30 @@ namespace Mkey
         internal GridObject SetObject(GridObject prefab)
         {
             if (!prefab) return null;
+
+            int a = prefab.ID;
+
             GridObject gO = prefab.Create(this, MBoard.TargetCollectEventHandler);
             if (gO && !GameObjectsSet.IsDisabledObject(prefab.ID)) sRenderer.enabled = true;
             return gO;
         }
+
+
+        //internal GridObject SetObject(GridObject prefab)
+        //{
+        //    if (!prefab) return null;
+
+        //    int a = prefab.ID;
+
+        //    GridObject g1 = prefab.Create(this, MBoard.TargetCollectEventHandler);
+        //    if (a < 0) return g1;
+
+        //    GridObject gO = prefab.Create(this, MBoard.TargetCollectEventHandler);
+        //    if (gO && !GameObjectsSet.IsDisabledObject(prefab.ID)) sRenderer.enabled = true;
+        //    return gO;
+        //}
+
+
 
         internal void MixJump(Vector3 pos, Action completeCallBack)
         {
@@ -369,6 +389,22 @@ namespace Mkey
                 PhysStep = false;
                 completeCallBack?.Invoke();
             }).SetEase(EaseAnim.EaseInSine);
+        }
+
+        internal void GrabDynamicObject1(GameObject dObject, bool fast, Action completeCallBack)
+        {
+            if (dObject)
+            {
+                dObject.transform.parent = transform;
+                if (!fast)
+                    MoveTween1(dObject, completeCallBack);
+                else
+                    FastMoveTween1(dObject, completeCallBack);
+            }
+            else
+            {
+                //completeCallBack?.Invoke();
+            }
         }
 
         internal void GrabDynamicObject(GameObject dObject, bool fast, Action completeCallBack)
@@ -408,7 +444,7 @@ namespace Mkey
             }
             if (mObject && gCell && (gCell.PhysStep)) return;
 
-            GrabDynamicObject(mObject, (MBoard.fillType == FillType.Fast), completeCallBack);
+            GrabDynamicObject1(mObject, (MBoard.fillType == FillType.Fast), completeCallBack);
         }
 
         /// <summary>
@@ -484,6 +520,28 @@ namespace Mkey
             tS.Start();
         }
 
+        private void FastMoveTween1(GameObject mObject, Action completeCallBack)
+        {
+            PhysStep = true;
+            tS = new TweenSeq();
+            Vector3 scale = transform.localScale;
+            float tweenTime = 0.07f;
+            float distK = Vector3.Distance(mObject.transform.position, transform.position) / GameBoard.MaxDragDistance;
+
+            //move
+            tS.Add((callBack) =>
+            {
+                SimpleTween.Move(mObject, mObject.transform.position, transform.position, tweenTime * distK).AddCompleteCallBack(() =>
+                {
+                    mObject.transform.position = transform.position;
+                    PhysStep = false;
+                    //completeCallBack?.Invoke();
+                    callBack();
+                });
+            });
+            tS.Start();
+        }
+
         private void MoveTween(GameObject mObject, Action completeCallBack)
         {
             PhysStep = true;
@@ -518,6 +576,47 @@ namespace Mkey
                 {
                     PhysStep = false;
                     completeCallBack?.Invoke();
+                    callBack();
+                });
+            });
+
+            tS.Start();
+        }
+
+        private void MoveTween1(GameObject mObject, Action completeCallBack)
+        {
+            PhysStep = true;
+            tS = new TweenSeq();
+            Vector3 scale = transform.localScale;
+            float tweenTime = 0.07f;
+            float distK = Vector3.Distance(mObject.transform.position, transform.position) / GameBoard.MaxDragDistance;
+            AnimationCurve scaleCurve = GameBoard.Instance.arcCurve;
+
+            Vector2 dPos = mObject.transform.position - transform.position;
+            bool isVert = (Mathf.Abs(dPos.y) > Mathf.Abs(dPos.x));
+
+            //move
+            tS.Add((callBack) =>
+            {
+                SimpleTween.Move(mObject.gameObject, mObject.gameObject.transform.position, transform.position, tweenTime * distK).AddCompleteCallBack(() =>
+                {
+                    mObject.transform.position = transform.position;
+                    callBack();
+                }).SetEase(EaseAnim.EaseInSine);
+            });
+
+            //curve deform
+            tS.Add((callBack) =>
+            {
+                SimpleTween.Value(mObject, 0.0f, 1f, 0.1f).SetEase(EaseAnim.EaseInSine).SetOnUpdate((float val) =>
+                {
+                    float t_scale = 1.0f + scaleCurve.Evaluate(val) * 0.1f;
+                    mObject.transform.localScale = (isVert) ? new Vector3(t_scale, 2.0f - t_scale, 1) : new Vector3(2.0f - t_scale, t_scale, 1); //  mObject.SetLocalScaleX(t_scale); //  mObject.SetLocalScaleY(2.0f - t_scale);
+
+                }).AddCompleteCallBack(() =>
+                {
+                    PhysStep = false;
+                    //completeCallBack?.Invoke();
                     callBack();
                 });
             });
@@ -952,7 +1051,7 @@ namespace Mkey
         }
 
         public void CreateSpawner(Spawner prefab, Vector2 offset)
-        {
+        {  
             Vector3 pos = transform.position;
             spawner = Instantiate(prefab, transform.position, Quaternion.identity);
             spawner.transform.localScale = Vector3.one;

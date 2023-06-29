@@ -29,6 +29,7 @@ namespace Mkey
 
         private IEnumerator Start()
         {
+            Debug.Log("colutine");
             while (MBoard == null) yield return new WaitForEndOfFrame();
             yield return new WaitForEndOfFrame();
 
