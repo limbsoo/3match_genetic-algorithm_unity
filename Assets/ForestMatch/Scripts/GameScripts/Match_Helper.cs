@@ -12,23 +12,19 @@ using Random = UnityEngine.Random;
 using static UnityEditor.Progress;
 using Unity.VisualScripting;
 using System.Linq.Expressions;
+using Transform = UnityEngine.Transform;
 
 namespace Mkey
 {
-    public class FitnessHelper
+    public class Match_Helper
     {
-        //public List<CellInfo> fixGrid;
-        public List<MatchGroup> l_mgList;
-        public List<GridCell> freeCellContainer;
+        public GameBoard board;
+        public MatchGrid grid;
+        public Dictionary<int, TargetData> curTargets;
 
-
-        public FitnessHelper()
-        {
-            freeCellContainer = new List<GridCell>();
-        }
-
-
-
+        //public Match_Helper()
+        //{
+        //}
 
         //public FitnessHelper(List<GridCell> cells, List<int> collectID)
         //{
@@ -60,6 +56,7 @@ namespace Mkey
         public void CreateMatchGroups(int minMatches, bool estimate, MatchGrid grid)
         {
             //l_mgList = new List<MatchGroup>();
+            grid.mgList = new List<MatchGroup>();
             if (!estimate)
             {
                 grid.Rows.ForEach((br) =>
@@ -67,7 +64,7 @@ namespace Mkey
                     List<MatchGroup> mgList_t = br.GetMatches(minMatches, false);
                     if (mgList_t != null && mgList_t.Count > 0)
                     {
-                        AddRange(mgList_t);
+                        AddRange(mgList_t, grid);
                     }
                 });
 
@@ -76,7 +73,7 @@ namespace Mkey
                     List<MatchGroup> mgList_t = bc.GetMatches(minMatches, false);
                     if (mgList_t != null && mgList_t.Count > 0)
                     {
-                        AddRange(mgList_t);
+                        AddRange(mgList_t, grid);
                     }
                 });
             }
@@ -87,14 +84,14 @@ namespace Mkey
                 {
                     mgList_t.AddRange(gr.GetMatches(minMatches, true));
                 });
-                mgList_t.ForEach((mg) => { if (mg.IsEstimateMatch(mg.Length, true, grid)) { AddEstimate(mg); } });
+                mgList_t.ForEach((mg) => { if (mg.IsEstimateMatch(mg.Length, true, grid)) { AddEstimate(mg, grid); } });
 
                 mgList_t = new List<MatchGroup>();
                 grid.Columns.ForEach((gc) =>
                 {
                     mgList_t.AddRange(gc.GetMatches(minMatches, true));
                 });
-                mgList_t.ForEach((mg) => { if (mg.IsEstimateMatch(mg.Length, false, grid)) { AddEstimate(mg); } });
+                mgList_t.ForEach((mg) => { if (mg.IsEstimateMatch(mg.Length, false, grid)) { AddEstimate(mg, grid); } });
             }
         }
 
@@ -106,95 +103,59 @@ namespace Mkey
             return mG;
         }
 
-        public void Add(MatchGroup mG)
+        public void Add(MatchGroup mG, MatchGrid grid)
         {
             List<MatchGroup> intersections = new List<MatchGroup>();
 
-            for (int i = 0; i < l_mgList.Count; i++)
+            for (int i = 0; i < grid.mgList.Count; i++)
             {
-                if (l_mgList[i].IsIntersectWithGroup(mG))
+                if (grid.mgList[i].IsIntersectWithGroup(mG))
                 {
-                    intersections.Add(l_mgList[i]);
+                    intersections.Add(grid.mgList[i]);
                 }
             }
             // merge intersections
             if (intersections.Count > 0)
             {
-                intersections.ForEach((ints) => { l_mgList.Remove(ints); });
+                intersections.ForEach((ints) => { grid.mgList.Remove(ints); });
                 intersections.Add(mG);
-                l_mgList.Add(Merge(intersections));
+                grid.mgList.Add(Merge(intersections));
             }
             else
             {
-                l_mgList.Add(mG);
+                grid.mgList.Add(mG);
             }
         }
-        public void AddRange(List<MatchGroup> mGs)
+        public void AddRange(List<MatchGroup> mGs, MatchGrid grid)
         {
             for (int i = 0; i < mGs.Count; i++)
             {
-                Add(mGs[i]);
+                Add(mGs[i], grid);
             }
         }
-        public void AddEstimate(MatchGroup mGe)
+        public void AddEstimate(MatchGroup mGe, MatchGrid grid)
         {
-            for (int i = 0; i < l_mgList.Count; i++)
+            for (int i = 0; i < grid.mgList.Count; i++)
             {
-                if (l_mgList[i].IsEqual(mGe))
+                if (grid.mgList[i].IsEqual(mGe))
                 {
                     return;
                 }
             }
-            l_mgList.Add(mGe);
+            grid.mgList.Add(mGe);
         }
 
-        public void CancelTweens()
+        public void CancelTweens(MatchGrid g)
         {
-            l_mgList.ForEach((mg) => { mg.CancelTween(); });
+            g.mgList.ForEach((mg) => { CancelTween1(g); });
         }
 
-
-
-
-
-
-
-        public void TargetSwap(List<List<int>> targetsInCell)
+        public void CancelTween1(MatchGrid g)
         {
-            List<int> collectMatch = new List<int>();
-
-            for (int i = 0; i < l_mgList.Count; i++)
-            {
-                bool isInsert = false;
-
-                for (int j = 0; j < targetsInCell.Count; j++)
-                {
-                    if (l_mgList[i].Cells[0].Row == targetsInCell[j][0] && l_mgList[i].Cells[0].Column == targetsInCell[j][1])
-                    {
-                        isInsert = true;
-                        break;
-                    }
-
-                    if (l_mgList[i].Cells[1].Row == targetsInCell[j][0] && l_mgList[i].Cells[1].Column == targetsInCell[j][1])
-                    {
-                        isInsert = true;
-                        break;
-                    }
-                }
-
-                if (isInsert) collectMatch.Add(i);
-            }
-
-
-            if (collectMatch.Count <= 0) l_mgList[0].SwapEstimate();
-
-            else
-            {
-                int number = Random.Range(0, collectMatch.Count - 1);
-                l_mgList[collectMatch[number]].SwapEstimate();
-            }
-
+            g.Cells.ForEach((c) => { c.CancelTween(); });
         }
+
+
 
         public void CreateFillPath(MatchGrid g)
         {
@@ -335,10 +296,10 @@ namespace Mkey
             {
                 tp.Add((callback) =>
                 {
-                    gc.FillGrab(callback);
+                    gc.FillGrab1(callback);
                 });
             }
-            tp.Start(() =>
+            tp.Start1(() =>
             {
                 //completeCallBack?.Invoke();
             });
@@ -376,7 +337,33 @@ namespace Mkey
             return res;
         }
 
-        public void MixGrid(MatchGrid grid)
+        public void CollectMatchGroups(MatchGrid grid)
+        {
+            ParallelTween pt = new ParallelTween();
+
+            if (grid.mgList.Count == 0) return;
+
+
+            for (int i = 0; i < grid.mgList.Count; i++)
+            {
+                if (grid.mgList[i] != null)
+                {
+                    MatchGroup m = grid.mgList[i];
+                    pt.Add((callBack) =>
+                    {
+                        //Collect(m, callBack);
+                    });
+                }
+            }
+            pt.Start1(() =>
+            {
+                
+            });
+        }
+
+        
+
+        public void MixGrid(Action completeCallBack, MatchGrid grid, Transform trans)
         {
             ParallelTween pT0 = new ParallelTween();
             ParallelTween pT1 = new ParallelTween();
@@ -386,35 +373,37 @@ namespace Mkey
             List<GameObject> goList = new List<GameObject>();
             //CollectGroups.CancelTweens();
             //EstimateGroups.CancelTweens();
-            CancelTweens();
+
+            
+            CancelTweens(grid);
 
 
             grid.Cells.ForEach((c) => { if (c.IsMixable) { cellList.Add(c); goList.Add(c.DynamicObject); } });
-            //cellList.ForEach((c) => { pT0.Add((callBack) => { c.MixJump(grid.transform.position, callBack); }); });
+            //cellList.ForEach((c) => { pT0.Add((callBack) => { c.MixJump1(trans.position, callBack); }); });
 
             cellList.ForEach((c) =>
             {
                 int random = UnityEngine.Random.Range(0, goList.Count);
                 GameObject m = goList[random];
-                pT1.Add((callBack) => { c.GrabDynamicObject(m.gameObject, false, callBack); });
+                pT1.Add((callBack) => { c.GrabDynamicObject1(m.gameObject, false, callBack); });
                 goList.RemoveAt(random);
             });
 
-            //tweenSeq.Add((callBack) =>
-            //{
-            //    pT0.Start(callBack);
-            //});
+            tweenSeq.Add((callBack) =>
+            {
+                pT0.Start(callBack);
+            });
 
-            //tweenSeq.Add((callBack) =>
-            //{
-            //    pT1.Start(() =>
-            //    {
-            //        MbState = MatchBoardState.Fill;
-            //        completeCallBack?.Invoke();
-            //        callBack();
-            //    });
-            //});
-            //tweenSeq.Start();
+            tweenSeq.Add((callBack) =>
+            {
+                pT1.Start(() =>
+                {
+                    //MbState = MatchBoardState.Fill;
+                    //completeCallBack?.Invoke();
+                    callBack();
+                });
+            });
+            tweenSeq.Start();
         }
 
 

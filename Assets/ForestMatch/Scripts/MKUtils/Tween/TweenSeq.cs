@@ -97,6 +97,22 @@ namespace Mkey
             callBackL[callBackL.Count - 1]?.Invoke();
         }
 
+        public void Start1()
+        {
+            breakSeq = false;
+            IsComplete = false;
+            fullComplete = new Action(() => { IsComplete = true; });
+            if (seqL.Count == 0)
+            {
+                //fullComplete?.Invoke();
+                //complCallBack?.Invoke();
+                return;
+            }
+            CreateCB1();
+            if (breakSeq) return;
+            //callBackL[callBackL.Count - 1]?.Invoke();
+        }
+
         public void StartCycle()
         {
             CreateCB();
@@ -160,6 +176,34 @@ namespace Mkey
             }
         }
 
+        void CreateCB1()
+        {
+            if (breakSeq) return;
+            callBackL.Add(() =>
+            {
+                if (!breakSeq)
+                    seqL[seqL.Count - 1](() =>
+                    {
+                        //if (!breakSeq) fullComplete?.Invoke();
+                        //if (!breakSeq) complCallBack?.Invoke();
+                    });
+            });
+            for (int i = 1; i < seqL.Count; i++)
+            {
+                if (breakSeq) return;
+                Action cb = callBackL[i - 1];
+                int counter = seqL.Count - 1 - i;
+                callBackL.Add(() =>
+                {
+                    if (!breakSeq)
+                        seqL[counter](() =>
+                        {
+                            //if (!breakSeq) cb?.Invoke();
+                        });
+                });
+            }
+        }
+
 
         /// <summary>
         /// Set bevore start
@@ -211,6 +255,21 @@ namespace Mkey
             else
             {
                 completeAction?.Invoke();
+            }
+        }
+
+        public void Start1(Action completeAction)
+        {
+            if (seqL.Count > 0)
+            {
+                for (int i = 0; i < seqL.Count; i++)
+                {
+                    seqL[i](() => { ended++; if (ended == count) { /*completeAction?.Invoke(); */} });
+                }
+            }
+            else
+            {
+                //completeAction?.Invoke();
             }
         }
 

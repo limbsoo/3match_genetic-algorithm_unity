@@ -31,6 +31,14 @@ namespace Mkey
             SetCurrCount(CurrCount + 1);
         }
 
+
+        /// /////////////////////////////////
+        public void InitCurCount()
+        {
+            SetCurrCount(0);
+        }
+
+
         public void IncCurrCount(int inccount)
         {
             SetCurrCount(CurrCount + inccount);

@@ -3,130 +3,122 @@ using System.Collections.Generic;
 
 public class GeneticAlgorithm<T>
 {
-	public List<DNA<T>> Population { get; private set; }
-	public int Generation { get; private set; }
-	public float BestFitness { get; private set; }
-	public T[] BestGenes { get; private set; }
+    public int populationSize = 10;
+    public int generation = 0;
+    public int elitism = 2;
+    public float mutationRate = 0.01f;
 
-	public int Elitism;
-	public float MutationRate;
-	
-	private List<DNA<T>> newPopulation;
-	private Random random;
-	private float fitnessSum;
-	private int dnaSize;
-	private Func<T> getRandomGene;
-	private Func<int, float> fitnessFunction;
+    public int generation_limit = 20;
+    public int repetition_limit = 5;
+    public int move_limit = 100;
 
-	public GeneticAlgorithm(int populationSize, int dnaSize, Random random, Func<T> getRandomGene, Func<int, float> fitnessFunction,
-		int elitism, float mutationRate = 0.01f)
+
+    public int target_move = 15;
+    public double target_std = 0.5;
+    public double target_fitness = 0.9;
+
+    public List<DNA<T>> population;
+	public List<DNA<T>> feasible_population;
+	public List<DNA<T>> infeasible_population;
+
+    private Random random;
+    private int dnaSize;
+    public double bestFitness;
+    public double feasibleFitnessSum;
+    public double infeasibleFitnessSum;
+
+    public GeneticAlgorithm(int dnaSize, Random random, Func<T> getRandomGene)
 	{
-		Generation = 1;
-		Elitism = elitism;
-		MutationRate = mutationRate;
-		Population = new List<DNA<T>>(populationSize);
-		newPopulation = new List<DNA<T>>(populationSize);
+        population = new List<DNA<T>>(populationSize);
+        feasible_population = new List<DNA<T>>();
+        infeasible_population = new List<DNA<T>>();
+
 		this.random = random;
 		this.dnaSize = dnaSize;
-		this.getRandomGene = getRandomGene;
-		this.fitnessFunction = fitnessFunction;
 
-		BestGenes = new T[dnaSize];
+        for (int i = 0; i < populationSize; i++)
+        {
+            population.Add(new DNA<T>(dnaSize, random, getRandomGene, shouldInitGenes: true));
+        }
+    }
 
-		for (int i = 0; i < populationSize; i++)
-		{
-			Population.Add(new DNA<T>(dnaSize, random, getRandomGene, fitnessFunction, shouldInitGenes: true));
-		}
-	}
-
-	public void NewGeneration(int numNewDNA = 0, bool crossoverNewDNA = false)
+	public void NewGeneration()
 	{
-		int finalCount = Population.Count + numNewDNA;
+        population.Clear();
 
-		if (finalCount <= 0) {
-			return;
-		}
-
-		if (Population.Count > 0) {
-			CalculateFitness();
-			Population.Sort(CompareDNA);
-		}
-		newPopulation.Clear();
-
-		for (int i = 0; i < Population.Count; i++)
+		if (feasible_population.Count != 0)
 		{
-			if (i < Elitism && i < Population.Count)
-			{
-				newPopulation.Add(Population[i]);
-			}
-			else if (i < Population.Count || crossoverNewDNA)
-			{
-				DNA<T> parent1 = ChooseParent();
-				DNA<T> parent2 = ChooseParent();
+            feasible_population.Sort(CompareDNA);
 
-				DNA<T> child = parent1.Crossover(parent2);
+            for (int i = 0; i < feasible_population.Count; i++)
+            {
+                if (i < elitism) population.Add(feasible_population[i]);
 
-				child.Mutate(MutationRate);
+                else
+                {
+                    DNA<T> parent1 = ChooseParent_in_feasible();
+                    DNA<T> parent2 = ChooseParent_in_feasible();
+                    DNA<T> child = parent1.Crossover(parent2);
+                    child.Mutate(mutationRate);
+                    population.Add(child);
+                }
+            }
+            feasibleFitnessSum = 0;
+            feasible_population.Clear();
+        }
 
-				newPopulation.Add(child);
-			}
-			else
-			{
-				newPopulation.Add(new DNA<T>(dnaSize, random, getRandomGene, fitnessFunction, shouldInitGenes: true));
-			}
-		}
+        if (infeasible_population.Count != 0)
+        {
+            infeasible_population.Sort(CompareDNA);
 
-		List<DNA<T>> tmpList = Population;
-		Population = newPopulation;
-		newPopulation = tmpList;
+            for (int i = 0; i < infeasible_population.Count; i++)
+            {
+                if (i < elitism) population.Add(infeasible_population[i]);
 
-		Generation++;
-	}
-	
-	private int CompareDNA(DNA<T> a, DNA<T> b)
+                else
+                {
+                    DNA<T> parent1 = ChooseParent_in_infeasible();
+                    DNA<T> parent2 = ChooseParent_in_infeasible();
+                    DNA<T> child = parent1.Crossover(parent2);
+                    child.Mutate(mutationRate);
+                    population.Add(child);
+                }
+            }
+            infeasibleFitnessSum = 0;
+            infeasible_population.Clear();
+        }
+        generation++;
+    }
+
+
+    private int CompareDNA(DNA<T> a, DNA<T> b)
 	{
-		if (a.Fitness > b.Fitness) {
-			return -1;
-		} else if (a.Fitness < b.Fitness) {
-			return 1;
-		} else {
-			return 0;
-		}
+		if (a.fitness > b.fitness) return -1;
+		else if (a.fitness < b.fitness) return 1;
+		else return 0;
 	}
 
-	private void CalculateFitness()
-	{
-		fitnessSum = 0;
-		DNA<T> best = Population[0];
+    private DNA<T> ChooseParent_in_feasible()
+    {
+        double randomNumber = random.NextDouble() * feasibleFitnessSum;
 
-		for (int i = 0; i < Population.Count; i++)
-		{
-			fitnessSum += Population[i].CalculateFitness(i);
+        for (int i = 0; i < feasible_population.Count; i++)
+        {
+            if (randomNumber < feasible_population[i].fitness) return feasible_population[i];
+            randomNumber -= feasible_population[i].fitness;
+        }
+        return null;
+    }
 
-			if (Population[i].Fitness > best.Fitness)
-			{
-				best = Population[i];
-			}
-		}
+    private DNA<T> ChooseParent_in_infeasible()
+    {
+        double randomNumber = random.NextDouble() * infeasibleFitnessSum;
 
-		BestFitness = best.Fitness;
-		best.Genes.CopyTo(BestGenes, 0);
-	}
-
-	private DNA<T> ChooseParent()
-	{
-		double randomNumber = random.NextDouble() * fitnessSum;
-
-		for (int i = 0; i < Population.Count; i++)
-		{
-			if (randomNumber < Population[i].Fitness)
-			{
-				return Population[i];
-			}
-
-			randomNumber -= Population[i].Fitness;
-		}
-
-		return null;
-	}
+        for (int i = 0; i < infeasible_population.Count; i++)
+        {
+            if (randomNumber < infeasible_population[i].fitness) return infeasible_population[i];
+            randomNumber -= infeasible_population[i].fitness;
+        }
+        return null;
+    }
 }

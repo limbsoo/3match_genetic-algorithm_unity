@@ -364,6 +364,17 @@ namespace Mkey
             return gO;
         }
 
+        internal GridObject SetObjectNull()
+        {
+            return null;
+        }
+
+        //internal void initBlocked()
+        //{
+        //    Blocked = null;
+        //}
+
+
 
         //internal GridObject SetObject(GridObject prefab)
         //{
@@ -379,7 +390,15 @@ namespace Mkey
         //    return gO;
         //}
 
-
+        internal void MixJump1(Vector3 pos, Action completeCallBack)
+        {
+            PhysStep = true;
+            SimpleTween.Move(DynamicObject, transform.position, pos, 0.5f).AddCompleteCallBack(() =>
+            {
+                PhysStep = false;
+                //completeCallBack?.Invoke();
+            }).SetEase(EaseAnim.EaseInSine);
+        }
 
         internal void MixJump(Vector3 pos, Action completeCallBack)
         {
@@ -427,7 +446,7 @@ namespace Mkey
         /// Try to grab match object from fill path
         /// </summary>
         /// <param name="completeCallBack"></param>
-        internal void FillGrab(Action completeCallBack)
+        internal void FillGrab1(Action completeCallBack)
         {
             GameObject mObject = null;
             GridCell gCell = null;
@@ -441,6 +460,26 @@ namespace Mkey
             {
                 gCell = (fillPathToSpawner!=null && fillPathToSpawner.Count>0) ? fillPathToSpawner[0] : GravityMather;
                 mObject = gCell.DynamicObject; 
+            }
+            //if (mObject && gCell && (gCell.PhysStep)) return;
+
+            GrabDynamicObject1(mObject, (MBoard.fillType == FillType.Fast), completeCallBack);
+        }
+
+        internal void FillGrab(Action completeCallBack)
+        {
+            GameObject mObject = null;
+            GridCell gCell = null;
+
+            if (spawner)
+            {
+                GridObject mo = spawner.Get();
+                mObject = (mo) ? mo.gameObject : null;
+            }
+            else
+            {
+                gCell = (fillPathToSpawner != null && fillPathToSpawner.Count > 0) ? fillPathToSpawner[0] : GravityMather;
+                mObject = gCell.DynamicObject;
             }
             if (mObject && gCell && (gCell.PhysStep)) return;
 
@@ -658,6 +697,24 @@ namespace Mkey
             else
             {
                 Match.Collect(this, delay, showPrefab, fly, hitProtection, sideHitProtection, showScore, score, completeCallBack);
+            }
+        }
+
+        internal void CollectMatch1(float delay, bool showPrefab, bool fly, bool hitProtection, bool sideHitProtection, bool showBombExplode, bool showScore, int score, Action completeCallBack)
+        {
+            if (!Match)
+            {
+                //completeCallBack?.Invoke();
+                return;
+            }
+
+            if (HasBomb)
+            {
+                ExplodeBomb(delay, showBombExplode, true, false, completeCallBack);
+            }
+            else
+            {
+                Match.Collect1(this, delay, showPrefab, fly, hitProtection, sideHitProtection, showScore, score, completeCallBack);
             }
         }
 

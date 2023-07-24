@@ -31,7 +31,9 @@ namespace Mkey
         /// <returns></returns>
         public GridObject Get()
         {
-            return SController.Get(gridCell, MBoard.CurrentGrid.LcSet,  GOSet, MBoard, transform.position);
+            //return SController.Get(gridCell, MBoard.CurrentGrid.LcSet,  GOSet, MBoard, transform.position);
+
+            return SController.Get(gridCell, GetGet(), GOSet, MBoard, transform.position);
         }
 
         public void Show(bool show)
@@ -39,5 +41,19 @@ namespace Mkey
             SpriteRenderer sR = GetComponent<SpriteRenderer>();
             if (sR) sR.enabled = show;
         }
+
+
+        public LevelConstructSet GetGet()
+        {
+            LevelConstructSet lcs = new LevelConstructSet();
+            GameBoard gmBoard = new GameBoard();
+
+            lcs = gmBoard.copyLCset();
+
+            return lcs;
+        }
+
+
+
     }
 }

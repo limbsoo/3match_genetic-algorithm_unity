@@ -183,6 +183,79 @@ namespace Mkey
             collectSequence.Start();
         }
 
+        internal void Collect1(GridCell gCell, float delay, bool showPrefab, bool fly, bool hitProtection, bool sideHitProtection, bool showScore, int score, Action completeCallBack)
+        {
+            this.gCell = gCell;
+            transform.parent = null;
+
+            collectSequence = new TweenSeq();
+
+            collectSequence.Add((callBack) =>
+            {
+                delayAction(gameObject, delay, callBack);
+            });
+
+            if (showScore && score > 0) InstantiateScoreFlyer(scoreFlyerPrefab, MBoard.MatchScore);
+
+            // sprite seq animation
+            //if (showPrefab)
+            //    collectSequence.Add((callBack) =>
+            //    {
+            //        if (this && !fly) GetComponent<SpriteRenderer>().enabled = false;
+            //        Creator.InstantiateAnimPrefab(collectAnimPrefab, transform, transform.position, SortingOrder.MainExplode);
+            //        delayAction(gameObject, 0.30f, () =>
+            //        {
+            //            if (this && fly) SetToFront(true);
+            //            callBack();
+            //        });
+            //    });
+
+            // hit protection
+            collectSequence.Add((callBack) =>
+            {
+                if (hitProtection)
+                {
+                    gCell.DirectHit(null);
+                }
+                if (sideHitProtection)
+                {
+                    gCell.Neighbors.Cells.ForEach((GridCell c) => { c.SideHit(null); });
+                }
+                callBack();
+            });
+
+            ////fly
+            //if (fly)
+            //{
+            //    collectSequence.Add((callBack) =>
+            //    {
+            //        SimpleTween.Move(gameObject, transform.position, GameBoard.Instance.FlyTarget, 0.4f).AddCompleteCallBack(() =>
+            //        {
+            //            //  callBack();
+            //        });
+            //        callBack(); // not wait
+            //    });
+
+            //    collectSequence.Add((callBack) =>
+            //    {
+            //        delayAction(gameObject, 0.15f, callBack);
+            //    });
+            //}
+
+            // finish
+            collectSequence.Add((callBack) =>
+            {
+                //ScoreCollectEvent?.Invoke();
+                //TargetCollectEvent?.Invoke(ID);
+                //completeCallBack?.Invoke();
+                //Destroy(gameObject, (fly) ? 0.4f : 0);
+            });
+
+            collectSequence.Start();
+        }
+
+
+
         internal void SideHitCells(GridCell gCell, Action completeCallBack)
         {
             this.gCell = gCell;
