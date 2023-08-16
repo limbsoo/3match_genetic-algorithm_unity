@@ -1,19 +1,25 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Dynamic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using Unity.Mathematics;
 using Unity.VisualScripting;
+using UnityEditor;
 using UnityEditor.VersionControl;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.UI;
+using UnityEngine.UIElements;
 using static Mkey.Match_Helper;
 using static UnityEditor.PlayerSettings;
 using static UnityEngine.GraphicsBuffer;
 using Random = UnityEngine.Random;
+
 
 namespace Mkey
 {
@@ -374,6 +380,8 @@ namespace Mkey
             return nCells;
         }
 
+
+
         /// <summary>
         /// Return not blocked, not disabled cells without dynamic object
         /// </summary>
@@ -654,56 +662,70 @@ namespace Mkey
         }
         #endregion  get data from grid
 
-        bool Estimate_maxedOut(DNA<char> p, ref int cnt, int max)
+        bool estimateMaxedOut(DNA<char> p, ref int cnt, int max)
         {
             if(max <= cnt) p.maxedOut = true;
             return p.maxedOut;
         }
 
-
-
-        public void FillState(DNA<char> p, SpawnController sC)
+        public void fillState(DNA<char> p, SpawnController sC)
         {
             List<GridCell> gFreeCells = GetFreeCells(mh.grid, true);
-            if (gFreeCells.Count > 0) mh.CreateFillPath(mh.grid);
+            if (gFreeCells.Count > 0) mh.createFillPath(mh.grid);
 
             int fill_cnt = 0;
 
             while (gFreeCells.Count > 0)
             {
-                mh.FillGridByStep(gFreeCells, () => { });
+                mh.fillGridByStep(gFreeCells, () => { });
                 gFreeCells = GetFreeCells(mh.grid, true);
 
-                if (Estimate_maxedOut(p,ref fill_cnt, 100)) break;
+                if (estimateMaxedOut(p,ref fill_cnt, 100)) break;
             }
 
-            p.cur_state = 2;
+
+            foreach (var item in mh.curTargets)
+            {
+                if (item.Value.Achieved) p.targetClear = true;
+                else
+                {
+                    p.targetClear = false;
+                    break;
+                }
+            }
+            if (p.targetClear) return;
+
+            p.curState = 2;
 
             //NoPhys1(g);
             //while (!NoPhys1(g));
             //if (noMatches) RemoveMatches();
         }
 
-        public void ShowState(DNA<char> p, SpawnController sC, Transform trans)
+        public void showState(DNA<char> p, SpawnController sC, Transform trans)
         {
+
             foreach (var item in mh.curTargets)
             {
                 if (item.Value.Achieved) p.targetClear = true;
-                else p.targetClear = false;
+                else
+                {
+                    p.targetClear = false;
+                    break;
+                }
             }
-
             if (p.targetClear) return;
 
             int mix_cnt = 0;
 
-            while (!Estimate_maxedOut(p, ref mix_cnt, 100))
+            while (!estimateMaxedOut(p, ref mix_cnt, 100))
             {
-                mh.CancelTweens(mh.grid);
-                mh.CreateMatchGroups(2, true, mh.grid);
+                //mh.cancelTweens(mh.grid);
+                mh.createMatchGroups1(2, true, mh.grid, p);
 
                 if (mh.grid.mgList.Count == 0)
                 {
-                    mh.MixGrid(null, mh.grid, trans);
+                    mh.mixGrid(null, mh.grid, trans);
                     mix_cnt++;
                 }
                 else break;
@@ -713,7 +735,7 @@ namespace Mkey
 
             else
             {
-                List<MatchGroup> target_match = new List<MatchGroup>();
+                List<MatchGroup> matchedTarget = new List<MatchGroup>();
 
                 foreach (var mc in mh.grid.mgList)
                 {
@@ -723,13 +745,13 @@ namespace Mkey
 
                         if (mg_cell[0] == item.Key)
                         {
-                            target_match.Add(mc);
+                            matchedTarget.Add(mc);
                             break;
                         }
                     }
                 }
 
-                if (target_match.Count == 0) mh.grid.mgList[0].SwapEstimate();
+                if (matchedTarget.Count == 0) mh.grid.mgList[0].SwapEstimate();
 
                 else
                 {
@@ -737,17 +759,26 @@ namespace Mkey
                     //mh.grid.mgList[target_num].SwapEstimate();
                     //mgList에서 랜덤하게 해서 변종확률?
 
-                    int number = Random.Range(0, target_match.Count - 1);
+                    int number = Random.Range(0, matchedTarget.Count - 1);
 
-                    foreach (var mc in mh.grid.mgList)
+                    for(int i = 0; i < mh.grid.mgList.Count; i++) 
                     {
-                        if(target_match[number] == mc) mc.SwapEstimate();
-                        break;
-                    }  
+                        if (matchedTarget[number].Cells[0].DynamicObject == mh.grid.mgList[i].Cells[0].DynamicObject)
+                        {
+                            mh.grid.mgList[i].SwapEstimate();
+                            break;
+                        }
+                    }
+
+                    //foreach (var mc in mh.grid.mgList)
+                    //{
+                    //    if (target_match[number] == mc) mc.SwapEstimate();
+                    //    break;
+                    //}
                 }
 
-                p.num_move--;
-                p.cur_state = 2;
+                p.numMove--;
+                p.curState = 2;
 
 
 
@@ -811,16 +842,14 @@ namespace Mkey
                 //    target_num = collectMatch[number];
                 //}
 
-                //p.num_move--;
-                //p.cur_state = 2;
+                p.numMove--;
+                p.curState = 2;
             }
         }
 
         int collect_cnt = 0;
-        public void CollectState(DNA<char> p)
+        public void collectState(DNA<char> p)
         {
-            //Estimate_maxedOut(p, ref mix_cnt, 100))
-
             if (collect_cnt >= 100)
             {
                 p.maxedOut = true;
@@ -829,18 +858,18 @@ namespace Mkey
 
             if (mh.grid.GetFreeCells(true).Count > 0)
             {
-                p.cur_state = 0;
+                p.curState = 0;
                 return;
             }
 
-            mh.CollectFalling(mh.grid);
-            mh.CancelTweens(mh.grid);
-            mh.CreateMatchGroups(3, false, mh.grid);
+            //mh.collectFalling(mh.grid);
+            //mh.cancelTweens(mh.grid);
+            mh.createMatchGroups(3, false, mh.grid);
 
-            if(mh.grid.mgList.Count == 0)
+            if (mh.grid.mgList.Count == 0)
             {
                 collect_cnt = 0;
-                p.cur_state = 1;
+                p.curState = 1;
             }
 
             else
@@ -851,23 +880,28 @@ namespace Mkey
                     foreach (var item in mh.curTargets) if (item.Value.ID == res[0]) item.Value.IncCurrCount(mh.grid.mgList[i].Cells.Count);
                 }
 
-                MatchGroupsHelper helper = new MatchGroupsHelper(mh.grid);
-                helper.CollectMatchGroups1(mh.grid);
+                ////////
 
-                p.cur_state = 0;
+                for (int i = 0; i < mh.grid.mgList.Count; i++)
+                {
+                    if (mh.grid.mgList[i] != null)
+                    {
+                        foreach (GridCell c in mh.grid.mgList[i].Cells)
+                        {
+                            c.DestroyGridObjects();
+                        }
+                    }
+                 }
+
+
+                //MatchGroupsHelper helper = new MatchGroupsHelper(mh.grid);
+                //helper.CollectMatchGroups1(mh.grid);
+
+                p.curState = 0;
             }
 
-            foreach (var item in mh.curTargets)
-            {
-                if (item.Value.Achieved) p.targetClear = true;
-                else p.targetClear = false;
-            }
-
-            if (p.targetClear) return;
             collect_cnt++;
         }
-
-
 
         public char GetRandomGene()
         {
@@ -875,166 +909,449 @@ namespace Mkey
             return (char)(number + '0');
         }
 
-        public void Initalize_grid(DNA<char> p, SpawnController sC)
+        public void initalizeGrid1(SpawnController sC)
         {
             for (int i = 0; i < mh.grid.Cells.Count; i++)
             {
                 mh.grid.Cells[i].DestroyGridObjects();
 
                 MatchObject m = sC.GetRandomObjectPrefab(LcSet, goSet);
-                mh.grid.Cells[i].SetObject(m);
+                mh.grid.Cells[i].SetObject1(m);
 
-                if (p.genes[i] == '1')
-                {
-                    BlockedObject b = sC.GetRandomBlockedObjectPrefab(LcSet, goSet);
-                    mh.grid.Cells[i].SetObject(b);
-                }
             }
         }
 
-        public void Estimate_feasible(DNA<char> p)
+
+        public void initalizeGrid(DNA<char> p, SpawnController sC)
         {
-            mh.CreateFillPath(mh.grid);
-
-            for (int i = mh.grid.Columns.Count(); i < mh.grid.Cells.Count; i++)
+            for (int i = 0; i < mh.grid.Cells.Count; i++)
             {
-                if (mh.grid.Cells[i].Blocked == null && mh.grid.Cells[i].fillPathToSpawner == null)
-                {
-                    if(mh.grid.Cells[i].Neighbors.Top.Blocked != null) p.infeasible_cell_cnt++;
-                }
-            }
+                mh.grid.Cells[i].DestroyGridObjects();
 
-            if (p.infeasible_cell_cnt == 0) p.isFeasible = true;
-            else p.isFeasible = false;
+                MatchObject m = sC.GetRandomObjectPrefab(LcSet, goSet);
+                mh.grid.Cells[i].SetObject1(m);
+
+                //if (i == 11 || i == 14 || i == 16 || i == 19 || i == 21 || i == 24 || i == 26 || i == 29)
+                ////if ( i == 9 || i == 13 || i == 14)
+                //{
+                //    BlockedObject b = sC.GetRandomBlockedObjectPrefab(LcSet, goSet);
+                //    mh.grid.Cells[i].SetObject1(b);
+                //}
+
+                //if (
+
+                //    i == 11 || i == 14 || 
+                //    i == 16 || i == 19 ||
+                //    i == 21 || i == 24 ||
+                //    i == 26 || i== 29)
+                ////if ( i == 9 || i == 13 || i == 14)
+                //{
+                //    BlockedObject b = sC.GetRandomBlockedObjectPrefab(LcSet, goSet);
+                //    mh.grid.Cells[i].SetObject1(b);
+                //}
+
+                //if (p.genes[i] == '1')
+                //{
+                //    BlockedObject b = sC.GetRandomBlockedObjectPrefab(LcSet, goSet);
+                //    mh.grid.Cells[i].SetObject1(b);
+                //}
+            }
         }
 
-        public void CalculateFitness(DNA<char> p, SpawnController sC, Transform trans)
+        public void initalizeMatchBlock(DNA<char> p, SpawnController sC)
+        {
+            for (int i = 0; i < mh.grid.Cells.Count; i++)
+            {
+                if (p.genes[i] != '1')
+                {
+                    mh.grid.Cells[i].DestroyGridObjects();
+                    MatchObject m = sC.GetRandomObjectPrefab(LcSet, goSet);
+                    mh.grid.Cells[i].SetObject1(m);
+                }
+            }
+        }
+
+        public bool EstimateFeasible(MatchGrid grid, DNA<char> p)
+        {
+            int cnt = 0;
+            bool isFeasible = mh.haveInfeasibleCell(grid, cnt);
+            return false;
+        }
+
+        public void estimateFeasible(DNA<char> p)
+        {
+
+            p.isFeasible = true;
+
+
+            //mh.createFillPath(mh.grid);
+            //p.infeasibleCellCnt = 0;
+
+            //for (int i = mh.grid.Columns.Count(); i < mh.grid.Cells.Count; i++)
+            //{
+            //    if (mh.grid.Cells[i].Blocked == null && mh.grid.Cells[i].fillPathToSpawner == null)
+            //    {
+            //        if (mh.grid.Cells[i].Neighbors.Top.Blocked != null) p.infeasibleCellCnt++;
+            //    }
+            //}
+
+            //if (p.infeasibleCellCnt == 0) p.isFeasible = true;
+            //else p.isFeasible = false;
+        }
+
+        public void calculateFitness(DNA<char> p, SpawnController sC, Transform trans)
         {
             if (p.isFeasible)
             {
-                Make_feasible_fitness(p, sC, trans);
-                ga.feasible_population.Add(p);
+                makeFeasibleFitness(p, sC, trans);
+                ga.feasiblePopulation.Add(p);
                 ga.feasibleFitnessSum += p.fitness;
+
             }
 
             else
             {
-                p.Calculate_infeasible_fitness();
-                ga.infeasible_population.Add(p);
+                p.calculateInfeasibleFitness();
+                ga.infeasiblePopulation.Add(p);
                 ga.infeasibleFitnessSum += p.fitness;
             }
         }
 
-        public void Make_feasible_fitness(DNA<char> p, SpawnController sC, Transform trans)
+        public bool estimateFloationgPoint(double a, double b)
         {
-            List<int> num_move_container = new List<int>();
-            
-            for (int repetition_idx = 0; repetition_idx < ga.repetition_limit; repetition_idx++)
-            {
-                Initalize_grid(p, sC);
+            //double epsilon = 1e-9;
 
-                int tryCnt = 0;
-                p.num_move = ga.target_move;
-                
+            if (areEqual(a, b) || a < b) return true;
+       
+            return false;
+
+        }
+
+        public bool areEqual(double a, double b, double tolerance = 1e-9)
+        {
+            return Math.Abs(a - b) <= tolerance;
+        }
+
+
+        public void makeFeasibleFitness(DNA<char> p, SpawnController sC, Transform trans)
+        {
+            List<int> moveContainer = new List<int>();
+            List<int> obstructionRateContainer = new List<int>();
+
+
+
+            for (int repeatIdx = 0; repeatIdx < ga.repeat; repeatIdx++)
+            {
+                initalizeGrid(p, sC);
+                //initalizeMatchBlock(p, sC);
+
+                //mh.createAvailableMatchGroup(mh.grid);
+
+                //MatchGroup matchGroup = new MatchGroup();
+                //for (int i = 0; i < mh.grid.Cells.Count; i++) mh.grid.Cells[i].possibleCnt = 0;
+                //for (int i = 0; i < mh.grid.Cells.Count; i++)
+                //{
+                //    matchGroup.countPossible(mh.grid, i);
+                //}
+
+                //int a = 0;
+
+                //for (int i = 0; i < mh.grid.Cells.Count; i++)
+                //{
+                //    a += mh.grid.Cells[i].possibleCnt;
+                //}
+
+
+
+                //int tryCnt = 0;
+                p.numMove = ga.moveLimit;
+                p.targetClear = false;
+                p.maxedOut = false;
+                p.curState = 0;
+                p.obstructionRate = 0;
+
                 foreach (var item in mh.curTargets) item.Value.InitCurCount();
 
-                while (p.num_move > 0 && p.targetClear == false && p.maxedOut == false)
+                while (p.numMove > 0 && p.targetClear == false && p.maxedOut == false)
                 {
-                    switch (p.cur_state)
+                    switch (p.curState)
                     {
                         case 0:
-                            FillState(p, sC);
+                            fillState(p, sC);
                             break;
                         case 1:
-                            ShowState(p, sC, trans);
+                            showState(p, sC, trans);
                             break;
                         case 2:
-                            CollectState(p);
+                            collectState(p);
                             break;
                     }
 
-                    if (tryCnt > 1000) break;
-                    tryCnt++;
+                    //if (tryCnt > 5000) break;
+                    //tryCnt++;
                 }
 
-                num_move_container.Add(Math.Abs(ga.target_move - p.num_move));
-                //if (p.targetClear == true) num_move_container.Add(Math.Abs(ga.target_move - p.num_move));
+                obstructionRateContainer.Add(p.obstructionRate);
+
+                if (p.maxedOut == true || p.targetClear == false)
+                {
+                    moveContainer.Add(ga.moveLimit);
+                    //continue;
+                } 
+
+                else moveContainer.Add(p.numMove);
+
+                //mh.CancelTweens(mh.grid);
                 //else num_move_container.Add(0);
             }
 
-            p.Calculate_feasible_fitness(num_move_container, ga.target_move, ga.target_std);
+            p.calculateFeasibleFitness(moveContainer, (double)ga.targetMove, ga.targetStd);
 
-            if (ga.bestFitness < p.fitness) ga.bestFitness = p.fitness;
+            //double alpha = 0.5;
+
+            ga.repeatMovements.Add(moveContainer);
+            ga.repeatMovementsCnt++;
+
+            ga.obstructionRates.Add(obstructionRateContainer);
+
+            if (ga.curGenerationBestFitness < p.fitness)
+            {
+                ga.curGenerationBestFitness = p.fitness;
+                ga.curGenerationBestMean = p.mean;
+                ga.curGenerationBestStd = p.stanardDeviation;
+                ga.curBestMoves = moveContainer;
+            }
+
+            if (ga.bestFitness < p.fitness)
+            {
+                ga.bestFitness = p.fitness;
+                ga.bestMeanMove = p.mean;
+                ga.bestStd = p.stanardDeviation;
+                ga.bestMoves = moveContainer;
+            }
+
+
+
+            //if(estimateFloationgPoint(ga.curGenerationBestFitness, p.fitness))
+            //{
+            //    ga.curGenerationBestFitness = p.fitness;
+            //    ga.curGenerationBestMean = p.mean;
+            //    ga.curGenerationBestStd = p.stanardDeviation;
+            //}
+
+            //if (estimateFloationgPoint(ga.bestFitness, p.fitness))
+            //{
+            //    ga.bestFitness = p.fitness;
+            //    ga.bestMeanMove = p.mean;
+            //    ga.bestStd = p.stanardDeviation;
+            //}
+
+
+
+
+
+            //if(alpha * (1.0 / (1.0 + Math.Abs(mean - target_move))) + (1 - alpha) * (1.0 / (1.0 + Math.Abs(standardDeviation - target_std));
+            //if (Math.Abs(ga.targetMove - ga.curBestMeanMove) > Math.Abs(ga.targetMove - p.mean))
+            //{
+            //    ga.curBestMeanMove = p.mean;
+            //}
+
+
+
         }
 
-        void GetMatch3Level(Transform trans)
+        void getMatch3Level(Transform trans)
         {
             SpawnController sC = SpawnController.Instance;
 
-            while (ga.bestFitness < ga.target_fitness && ga.generation <= ga.generation_limit)
+            CSVFileWriter cs = new CSVFileWriter();
+
+            ga.bestMeanMove = 0;
+            ga.bestStd = 0;
+            ga.bestFitness = 0;
+
+            ga.repeatMovements = new List<List<int>>();
+            ga.obstructionRates = new List<List<int>>();
+
+            //initalizeGrid1(sC);
+
+            //MatchGroup matchGroup = new MatchGroup();
+            ////for (int i = 0; i < mh.grid.Cells.Count; i++) mh.grid.Cells[i].possibleCnt = 0;
+            //for (int i = 0; i < mh.grid.Cells.Count; i++)
+            //{
+            //    matchGroup.countPossible(mh.grid, i);
+            //}
+
+            //int a = 0;
+
+            //for (int i = 0; i < mh.grid.Cells.Count; i++)
+            //{
+            //    a += mh.grid.Cells[i].possibleCnt;
+            //}
+
+            //List<int> pc = new List<int>();
+
+            //for (int i = 0; i < mh.grid.Cells.Count; i++)
+            //{
+            //    pc.Add(mh.grid.Cells[i].possibleCnt);
+            //}
+
+            while (ga.bestFitness < ga.targetFitness && ga.generation <= ga.generationLimit)
             {
-                foreach(DNA<char> p in ga.population)
+                ga.curGenerationBestMean = 0;
+                ga.curGenerationBestStd = 0;
+                ga.curGenerationBestFitness = 0;
+                ga.repeatMovementsCnt = 0;
+
+                foreach (DNA<char> p in ga.population)
                 {
                     if (p.fitness != 0)
                     {
-                        if (p.isFeasible) ga.feasible_population.Add(p);
-                        else ga.infeasible_population.Add(p);
+                        if (p.isFeasible) ga.feasiblePopulation.Add(p);
+                        else ga.infeasiblePopulation.Add(p);
                     }
 
                     else
                     {
-                        Initalize_grid(p, sC);
-                        Estimate_feasible(p);
-                        CalculateFitness(p, sC, trans);
+                        initalizeGrid(p, sC);
+                        estimateFeasible(p);
+                        calculateFitness(p, sC, trans);
                     }
                 }
 
-                double bestAverageMove = 0;
-                double beststandardDeviation = 0;
+                //double bestAverageMove = 0;
+                //double beststandardDeviation = 0;
 
-                for (int i = 0; i < ga.feasible_population.Count; i++)
-                {
-                    if(bestAverageMove < ga.feasible_population[i].average_move) bestAverageMove = ga.feasible_population[i].average_move;
-                    if (beststandardDeviation < ga.feasible_population[i].sd) beststandardDeviation = ga.feasible_population[i].sd;
-                }
-
-
-                Debug.Log("generation: " + ga.generation + "  "
-                        + "infeasiblePopulation Count: " + ga.infeasible_population.Count() + "  "
-                        + "bestAverageMove: " + bestAverageMove + "  "
-                        + "beststandardDeviation: " + beststandardDeviation + "  "
-                        + "best fitness: " + ga.bestFitness + "  "
-                    );
+                ////for (int i = 0; i < ga.feasible_population.Count; i++)
+                ////{
+                ////    if(bestAverageMove < ga.feasible_population[i].average_move) bestAverageMove = ga.feasible_population[i].average_move;
+                ////    if (beststandardDeviation < ga.feasible_population[i].sd) beststandardDeviation = ga.feasible_population[i].sd;
+                ////}
 
 
+                cs.generation.Add(ga.generation);
+
+                if(ga.infeasiblePopulation == null) cs.infeasiblePopulationCnt.Add(0);
+                else cs.infeasiblePopulationCnt.Add(ga.infeasiblePopulation.Count());
+
+                if (ga.feasiblePopulation == null) cs.feasiblePopulationCnt.Add(0);
+                else cs.feasiblePopulationCnt.Add(ga.feasiblePopulation.Count());
+
+                //cs.infeasiblePopulationCnt.Add(ga.infeasiblePopulation.Count());
+                //cs.feasiblePopulationCnt.Add(ga.feasiblePopulation.Count());
+
+                cs.curGenerationBestMean.Add(ga.curGenerationBestMean);
+                cs.curGenerationBestStd.Add(ga.curGenerationBestStd);
+                cs.curGenerationBestFitness.Add(ga.curGenerationBestFitness);
+
+                cs.bestMeanMove.Add(ga.bestMeanMove);
+                cs.bestStd.Add(ga.bestStd);
+                cs.bestFitness.Add(ga.bestFitness);
+
+                cs.repeatMovementsCntContainer.Add(ga.repeatMovementsCnt);
+
+                if (ga.curBestMoves == null) cs.curBestMoves.Add(new List<int>() { -1 });
+                else cs.curBestMoves.Add(ga.curBestMoves);
+
+                if (ga.bestMoves == null) cs.bestMoves.Add(new List<int>() { -1 });
+                else cs.bestMoves.Add(ga.bestMoves);
 
 
-                if (ga.bestFitness >= ga.target_fitness) break;
+
+
+
+
+
+                if (ga.bestFitness >= ga.targetFitness) break;
                 ga.NewGeneration();
+
+
+                //if (ga.feasibleParent == null)
+                //{
+                //    cs.feasibleParent.Add(new List<double>() { -1, -1 });
+                //    cs.feasibleParentIdx.Add(new List<int>() { -1, -1 });
+                //}
+
+                //else
+                //{
+                //    cs.feasibleParent.Add(new List<double>(ga.feasibleParent));
+                //    cs.feasibleParentIdx.Add(new List<int>(ga.feasibleParentIdx));
+                //}
+
+
+                //if (ga.infeasibleParent == null)
+                //{
+                //    cs.infeasibleParent.Add(new List<double>() { -1, -1 });
+                //    cs.infeasibleParentIdx.Add(new List<int>() { -1, -1 });
+                //}
+
+                //else
+                //{
+                //    cs.infeasibleParent.Add(new List<double>(ga.infeasibleParent));
+                //    cs.infeasibleParentIdx.Add(new List<int>(ga.infeasibleParentIdx));
+                //}
+
             }
 
-            Initalize_grid(ga.population[0], sC);
+            cs.mixedList = new List<object>
+            {
+                cs.generation,
+                cs.infeasiblePopulationCnt,
+                cs.feasiblePopulationCnt,
+                cs.curGenerationBestMean,
+                cs.curGenerationBestStd,
+                cs.curGenerationBestFitness,
+                cs.bestMeanMove,
+                cs.bestStd,
+                cs.bestFitness,
+                cs.feasibleParent,
+                cs.feasibleParentIdx,
+                cs.infeasibleParent,
+                cs.infeasibleParentIdx,
+                cs.curBestMoves,
+                cs.bestMoves
+            };
+
+            cs.write(ga, Cells);
+            //cs.write1(ga);
+
+            initalizeGrid(ga.population[0], sC);
         }
 
         public List<MatchGroup> mgList;
         public Match_Helper mh;
-        System.Random random_ga;
+        System.Random randomGa;
         GeneticAlgorithm<char> ga;
 
-        internal void FillGrid(bool noMatches, MatchGrid g, Dictionary<int, TargetData> targets, Spawner spawnerPrefab, SpawnerStyle spawnerStyle, Transform GridContainer, Transform trans, LevelConstructSet IC)
+        internal void fillGrid(bool noMatches, MatchGrid g, Dictionary<int, TargetData> targets, Spawner spawnerPrefab, SpawnerStyle spawnerStyle, Transform GridContainer, Transform trans, LevelConstructSet IC)
         {
-            int populationSize = 10;
-            random_ga = new System.Random();
-            ga = new GeneticAlgorithm<char>(Cells.Count, random_ga, GetRandomGene); //유전알고리즘 호출
+            randomGa = new System.Random();
+            ga = new GeneticAlgorithm<char>(Cells.Count, randomGa, GetRandomGene); //유전알고리즘 호출
 
             mh = new Match_Helper();
             mh.board = new GameBoard();
-            mh.board.MakeBoard(g, spawnerPrefab, spawnerStyle, GridContainer, trans, IC);
+            mh.board.makeBoard(g, spawnerPrefab, spawnerStyle, GridContainer, trans, IC);
             g.mgList = new List<MatchGroup>();
             mh.grid = g;
             mh.curTargets = targets;
 
-            GetMatch3Level(trans);
+
+            //List<double> doubles = new List<double>();
+
+            //for (double i = 0; i < 10; i += 0.01)
+            //{
+            //    string result = string.Format("{0:0.########0}", Math.Exp(-Math.Abs(i)));
+
+            //    doubles.Add((Double.Parse(result)));
+            //}
+
+            //List<double> doubles = new List<double>();
+            //for (double i = 0; i < 100; i += 0.01)
+            //{
+            //    doubles.Add(1.0 / (1.0 + Math.Abs(i)));
+            //}
+
+            getMatch3Level(trans);
         }
 
 

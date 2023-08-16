@@ -1409,3 +1409,344 @@
 //            population.Add(new DNA<T>(dnaSize, random, getRandomGene, shouldInitGenes: true));
 //        }
 //    }
+
+
+//0728
+//public void Calculate_feasible_fitness(List<int> num_move_container, double target_move, double target_std)
+//{
+
+
+
+//    ////double standardDeviation = Math.Sqrt(varianceSum / (num_move_container.Count - 1));
+
+//    //double alpha = 0.5;
+
+//    //double aveageExp = Math.Exp(-Math.Abs(average));
+//    //double standardDeviationExp = Math.Exp(-Math.Abs(standardDeviation));
+
+//    //fitness = alpha * aveageExp + (1 - alpha) * standardDeviationExp;
+
+
+
+
+
+//    //double standardDeviation = Math.Sqrt(varianceSum / (num_move_container.Count));
+//    ////double standardDeviation = Math.Sqrt(varianceSum / (num_move_container.Count - 1));
+
+
+
+
+
+
+
+
+
+
+
+//    //if (double.TryParse()
+
+
+
+//    //int exponent = 100; // 지수 함수의 지수 값 (예: 100)
+//    //BigDecimal result = BigDecimal.Pow(BigDecimal.Exp(BigDecimal.One), exponent);
+
+
+
+
+
+//    //fitness = Math.Round(Math.Exp(-Math.Abs(average_move - target_move)), 14);
+
+//    //Math.Round(fitness, 5);
+
+
+//    //if (fitness < 0 || fitness > 1)
+//    //{
+//    //    fitness = double.MinValue;
+//    //}
+
+
+
+
+//    //double[] differenceData = new double[num_move_container.Count];
+
+//    //for (int i = 0; i < num_move_container.Count; i++)
+//    //{
+//    //    differenceData[i] = -Math.Abs(num_move_container[i] - target_move);
+//    //}
+
+//    //double min = double.MaxValue;
+//    //double max = double.MinValue;
+
+//    //for (int i = 0; i < differenceData.Length; i++)
+//    //{
+//    //    if (differenceData[i] < min) min = differenceData[i];
+
+//    //    if (differenceData[i] > max) max = differenceData[i];
+//    //}
+
+
+//    //double[] normalizedData = new double[differenceData.Length];
+
+//    //for (int i = 0; i < differenceData.Length; i++)
+//    //{
+//    //    normalizedData[i] = (differenceData[i] - min) / max - min;
+//    //}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//    //double[] differenceData = new double[num_move_container.Count];
+
+//    //for (int i = 0; i < num_move_container.Count; i++)
+//    //{
+//    //    differenceData[i] = -Math.Abs(num_move_container[i] - target_move);
+//    //}
+
+//    //double max = differenceData[0];
+
+//    //// 최대값 찾기
+//    //foreach (double value in differenceData)
+//    //{
+//    //    if (value > max) max = value;
+//    //}
+
+//    //// 지수함수를 사용하여 정규화된 데이터 계산
+//    //double[] normalizedData = new double[differenceData.Length];
+//    //for (int i = 0; i < differenceData.Length; i++)
+//    //{
+//    //    if(max == 0) normalizedData[i] = 0;
+
+//    //    else normalizedData[i] = Math.Exp(differenceData[i] / max);
+//    //}
+
+//    //double mean = 0.0;
+//    //double sumSquaredDifferences = 0.0;
+
+//    //// 평균 계산
+//    //foreach (double value in normalizedData)
+//    //{
+//    //    mean += value;
+//    //}
+//    //mean /= normalizedData.Length;
+
+//    //average_move = mean;
+
+//    //// 각 데이터 값과 평균의 차이 제곱의 합 계산
+//    //foreach (double value in normalizedData)
+//    //{
+//    //    double difference = value - mean;
+//    //    sumSquaredDifferences += difference * difference;
+//    //}
+
+//    //// 표준편차 계산
+//    //double standardDeviation = Math.Sqrt(sumSquaredDifferences / (normalizedData.Length - 1));
+//    //sd = standardDeviation;
+
+//    //double alpha = 0.5;
+//    ////fitness = alpha * Math.Abs(mean) + (1 - alpha) * Math.Abs(standardDeviation - target_std);
+
+//    //fitness = Math.Abs(mean);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//    //double mean = 0.0;
+//    //double sumSquaredDifferences = 0.0;
+
+//    //foreach (double value in num_move_container) mean += value;
+
+//    //mean /= num_move_container.Count;
+
+//    //foreach (double value in num_move_container)
+//    //{
+//    //    double difference = value - mean;
+//    //    sumSquaredDifferences += difference * difference;
+//    //}
+
+//    //double standardDeviation = Math.Sqrt(sumSquaredDifferences / (num_move_container.Count - 1));
+
+//    //double absMove = -Math.Abs(mean - target_move);
+//    //double absStandard = -Math.Abs(standardDeviation - target_std);
+
+//    //double meanExp = 0;
+
+//    //if (Math.Abs (absMove) > 9) meanExp = 0;
+//    //else meanExp = Math.Exp(absMove);
+
+//    //double example1 = Math.Exp(0);
+//    //double example2 = Math.Exp(1);
+//    //double example3 = Math.Exp(10);
+//    //double example4 = Math.Exp(-1);
+//    //double example5 = Math.Exp(-2);
+//    //double example6 = Math.Exp(-5);
+//    //double example7 = Math.Exp(-10);
+//    //double example8 = Math.Exp(-15);
+//    //double example9 = Math.Exp(-30);
+//    //double example10 = Math.Exp(-9);
+
+//    //double standardDeviationExp = Math.Exp(absStandard);
+
+//    ////double meanExp = Math.Exp(-Math.Abs(mean - target_move));
+//    ////double standardDeviationExp = Math.Exp(-Math.Abs(standardDeviation - target_std));
+
+//    //double alpha = 0.5;
+//    //fitness = alpha * meanExp + (1 - alpha) * standardDeviationExp;
+
+
+
+
+
+
+//    //double sum = 0;
+
+//    //foreach (var c in num_move_container) sum += c;
+
+//    //double average = sum / num_move_container.Count;
+
+//    //double variance = 0;
+//    //double varianceSum = 0;
+
+//    //foreach (var c in num_move_container)
+//    //{
+//    //    varianceSum += Math.Pow(c - average, 2);
+//    //}
+
+//    //double standardDeviation = Math.Sqrt(varianceSum / (num_move_container.Count));
+//    ////double standardDeviation = Math.Sqrt(varianceSum / (num_move_container.Count - 1));
+
+//    //double alpha = 0.5;
+
+//    //double aveageExp = Math.Exp(-Math.Abs(average));
+//    //double standardDeviationExp = Math.Exp(-Math.Abs(standardDeviation));
+
+//    //fitness = alpha * aveageExp + (1 - alpha) * standardDeviationExp;
+
+
+
+//    //foreach (var c in num_move_container)
+//    //{
+//    //    if (c != 0)
+//    //    {
+//    //        sum += c;
+//    //        squaMean += Math.Pow(c, 2);
+//    //        validCount++;
+//    //    }
+//    //}
+
+//    //double mean = 0;
+//    //double squaMean = 0;
+//    //double variance = 0;
+
+//    //if (sum != 0 || validCount != 0)
+//    //{
+//    //    mean = (double)sum / validCount;
+//    //    squaMean = (double)squaMean / validCount;
+//    //}
+
+//    //average_move = mean;
+
+//    //double standardDeviation = 0;
+
+//    //double variance = squaMean - (mean * mean);
+
+//    //standardDeviation = Math.Sqrt(variance);
+
+//    //double alpha = 0.5;
+//    //fitness = alpha * Math.Exp(-Math.Abs(mean - target_move))
+//    //        + (1 - alpha) * Math.Exp(-Math.Abs(standardDeviation - target_std));
+
+
+
+
+
+
+
+
+//    //int validCount = 0;
+//    //int sum = 0;
+
+//    ////- CalculateMean ------------------------/
+
+//    //foreach(var c in num_move_container)
+//    //{
+//    //    if(c != 0)
+//    //    {
+//    //        sum += c;
+//    //        validCount++;
+//    //    }
+//    //}
+
+//    //double mean = 0;
+
+//    //if (sum != 0 || validCount != 0) mean = (double)sum / validCount;
+
+//    //average_move = mean;
+
+//    ////- CalculateStandardDeviation ------------------------/
+
+//    //float standardDeviation = 0;
+
+//    //float squaMean = 
+
+
+//    //    // float2 standardDeviation = sqrt(squaMean - mean * mean);//제곱의 평균 -평균의 제곱 : 표준편차 제곱 =>분산
+
+
+
+
+//    ////double sumOfSquaredDifferences = 0;
+
+//    ////foreach (var c in num_move_container)
+//    ////{
+//    ////    if (c != 0) sumOfSquaredDifferences += Math.Pow(c - mean, 2);
+//    ////}
+
+//    ////double variance = 0;
+
+
+
+
+//    ////if (sumOfSquaredDifferences != 0 || validCount != 0) variance = sumOfSquaredDifferences / validCount;
+
+//    ////double standardDeviation = Math.Sqrt(variance);
+
+//    ////sd = standardDeviation;
+
+//    ////- CalculateFitness ------------------------/
+
+//    //double alpha = 0.5;
+//    //fitness = alpha * Math.Exp(-Math.Abs(mean - target_move))
+//    //    + (1 - alpha) * Math.Exp(-Math.Abs(standardDeviation - target_std));
+//}

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Dynamic;
 using UnityEngine;
 
 namespace Mkey
@@ -183,19 +184,91 @@ namespace Mkey
             collectSequence.Start();
         }
 
-        internal void Collect1(GridCell gCell, float delay, bool showPrefab, bool fly, bool hitProtection, bool sideHitProtection, bool showScore, int score, Action completeCallBack)
+        //internal void Collect1(GridCell gCell, float delay, bool showPrefab, bool fly, bool hitProtection, bool sideHitProtection, bool showScore, int score, Action completeCallBack)
+        //{
+        //    this.gCell = gCell;
+        //    transform.parent = null;
+
+        //    collectSequence = new TweenSeq();
+
+        //    collectSequence.Add((callBack) =>
+        //    {
+        //        delayAction(gameObject, delay, callBack);
+        //    });
+
+        //    if (showScore && score > 0) InstantiateScoreFlyer(scoreFlyerPrefab, MBoard.MatchScore);
+
+        //    // sprite seq animation
+        //    //if (showPrefab)
+        //    //    collectSequence.Add((callBack) =>
+        //    //    {
+        //    //        if (this && !fly) GetComponent<SpriteRenderer>().enabled = false;
+        //    //        Creator.InstantiateAnimPrefab(collectAnimPrefab, transform, transform.position, SortingOrder.MainExplode);
+        //    //        delayAction(gameObject, 0.30f, () =>
+        //    //        {
+        //    //            if (this && fly) SetToFront(true);
+        //    //            callBack();
+        //    //        });
+        //    //    });
+
+        //    // hit protection
+        //    collectSequence.Add((callBack) =>
+        //    {
+        //        if (hitProtection)
+        //        {
+        //            gCell.DirectHit(null);
+        //        }
+        //        if (sideHitProtection)
+        //        {
+        //            gCell.Neighbors.Cells.ForEach((GridCell c) => { c.SideHit(null); });
+        //        }
+        //        callBack();
+        //    });
+
+        //    ////fly
+        //    //if (fly)
+        //    //{
+        //    //    collectSequence.Add((callBack) =>
+        //    //    {
+        //    //        SimpleTween.Move(gameObject, transform.position, GameBoard.Instance.FlyTarget, 0.4f).AddCompleteCallBack(() =>
+        //    //        {
+        //    //            //  callBack();
+        //    //        });
+        //    //        callBack(); // not wait
+        //    //    });
+
+        //    //    collectSequence.Add((callBack) =>
+        //    //    {
+        //    //        delayAction(gameObject, 0.15f, callBack);
+        //    //    });
+        //    //}
+
+        //    // finish
+        //    collectSequence.Add((callBack) =>
+        //    {
+        //        //ScoreCollectEvent?.Invoke();
+        //        //TargetCollectEvent?.Invoke(ID);
+        //        //completeCallBack?.Invoke();
+        //        //Destroy(gameObject, (fly) ? 0.4f : 0);
+        //    });
+
+        //    collectSequence.Start();
+        //}
+
+
+        internal void Collect1(GridCell gCell, float delay, bool showPrefab, bool fly, bool hitProtection, bool sideHitProtection, bool showScore, int score)
         {
             this.gCell = gCell;
             transform.parent = null;
 
-            collectSequence = new TweenSeq();
+            //collectSequence = new TweenSeq();
 
-            collectSequence.Add((callBack) =>
-            {
-                delayAction(gameObject, delay, callBack);
-            });
+            //collectSequence.Add((callBack) =>
+            //{
+            //    delayAction(gameObject, delay, callBack);
+            //});
 
-            if (showScore && score > 0) InstantiateScoreFlyer(scoreFlyerPrefab, MBoard.MatchScore);
+            //if (showScore && score > 0) InstantiateScoreFlyer(scoreFlyerPrefab, MBoard.MatchScore);
 
             // sprite seq animation
             //if (showPrefab)
@@ -210,19 +283,19 @@ namespace Mkey
             //        });
             //    });
 
-            // hit protection
-            collectSequence.Add((callBack) =>
-            {
-                if (hitProtection)
-                {
-                    gCell.DirectHit(null);
-                }
-                if (sideHitProtection)
-                {
-                    gCell.Neighbors.Cells.ForEach((GridCell c) => { c.SideHit(null); });
-                }
-                callBack();
-            });
+            //// hit protection
+            //collectSequence.Add((callBack) =>
+            //{
+            //    if (hitProtection)
+            //    {
+            //        gCell.DirectHit(null);
+            //    }
+            //    if (sideHitProtection)
+            //    {
+            //        gCell.Neighbors.Cells.ForEach((GridCell c) => { c.SideHit(null); });
+            //    }
+            //    callBack();
+            //});
 
             ////fly
             //if (fly)
@@ -243,17 +316,16 @@ namespace Mkey
             //}
 
             // finish
-            collectSequence.Add((callBack) =>
-            {
-                //ScoreCollectEvent?.Invoke();
-                //TargetCollectEvent?.Invoke(ID);
-                //completeCallBack?.Invoke();
-                //Destroy(gameObject, (fly) ? 0.4f : 0);
-            });
+            //collectSequence.Add((callBack) =>
+            //{
+            //    //ScoreCollectEvent?.Invoke();
+            //    //TargetCollectEvent?.Invoke(ID);
+            //    //completeCallBack?.Invoke();
+            //    //Destroy(gameObject, (fly) ? 0.4f : 0);
+            //});
 
-            collectSequence.Start();
+            //collectSequence.Start1();
         }
-
 
 
         internal void SideHitCells(GridCell gCell, Action completeCallBack)
@@ -352,8 +424,35 @@ namespace Mkey
             gridObject.SetToFront(false);
             return gridObject;
         }
-        #endregion override
+
+        /// ////////////////////////////////////////////////////////////////////////////////////////
+
+        public override GridObject Create1(GridCell parent, Action<int> TargetCollectEvent)
+        {
+            if (!parent) return null;
+            if (parent.IsDisabled || parent.Blocked) { return null; }
+            if (parent.DynamicObject)
+            {
+                GameObject old = parent.DynamicObject;
+                DestroyImmediate(old);
+            }
+
+            MatchObject gridObject = Instantiate(this, parent.transform);
+            if (!gridObject) return null;
+            gridObject.transform.localScale = Vector3.one;
+            gridObject.transform.localPosition = Vector3.zero;
+            gridObject.SRenderer = gridObject.GetComponent<SpriteRenderer>();
+#if UNITY_EDITOR
+            gridObject.name = "match id: " + gridObject.ID + "(" + gridObject.SRenderer.sprite + ")";
+#endif
+            gridObject.TargetCollectEvent = TargetCollectEvent;
+            gridObject.ScoreCollectEvent = MBoard.MatchScoreCollectHandler;
+            gridObject.SetToFront(false);
+            return gridObject;
         }
+
+        #endregion override
+    }
 }
 
 

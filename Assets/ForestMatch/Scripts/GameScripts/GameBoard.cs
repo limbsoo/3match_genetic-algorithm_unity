@@ -441,7 +441,7 @@ namespace Mkey
         }
 
 
-        public void MakeBoard(MatchGrid g, Spawner spawnerPrefab,SpawnerStyle spawnerStyle, Transform GridContainer, Transform trans, LevelConstructSet IC)
+        public void makeBoard(MatchGrid g, Spawner spawnerPrefab,SpawnerStyle spawnerStyle, Transform GridContainer, Transform trans, LevelConstructSet IC)
         {
             g.haveFillPath = IC.HaveFillPath(g);
 
@@ -511,9 +511,13 @@ namespace Mkey
                     List<CellData> cells = new List<CellData>();
                     cells = lC.spawnCells;
 
-                    //g.FillGrid(true);
-                    g.FillGrid(true, g, CurTargets, spawnerPrefab, spawnerStyle, GridContainer, transform, lC);
 
+                    g.fillGrid(true, g, CurTargets, spawnerPrefab, spawnerStyle, GridContainer, transform, lC);
+
+
+                    ///////////////////////////////////////////////////
+
+                    //g.FillGrid(true);
 
                     //// create spawners
                     //g.haveFillPath = lC.HaveFillPath(g);
@@ -521,7 +525,7 @@ namespace Mkey
                     //{
                     //    foreach (var item in lC.spawnCells)
                     //    {
-                    //      if(g[item.Row, item.Column])  g[item.Row, item.Column].CreateSpawner(spawnerPrefab, Vector2.zero);
+                    //        if (g[item.Row, item.Column]) g[item.Row, item.Column].CreateSpawner(spawnerPrefab, Vector2.zero);
                     //    }
 
                     //}
@@ -546,7 +550,8 @@ namespace Mkey
 
                 SwapHelper.SwapEndEvent = MatchEndSwapHandler;
                 SwapHelper.SwapBeginEvent = MatchBeginSwapHandler;
-                BombCombiner.CombineCompleteEvent = () => {
+                BombCombiner.CombineCompleteEvent = () =>
+                {
                     SetControlActivity(true, true);
                     WinContr.MakeMove();
                     MbState = MatchBoardState.Fill;
@@ -860,7 +865,7 @@ namespace Mkey
                         break;
                 }
                 Transform cGParent = CurrentGrid.Parent;
-                SimpleTween.Value(cGParent.gameObject, cGParent.localPosition, endPos, time).SetOnUpdate((Vector3 lPos)=> { cGParent.localPosition = lPos; });
+                SimpleTween.Value(cGParent.gameObject, cGParent.localPosition, endPos, time).SetOnUpdate((Vector3 lPos) => { cGParent.localPosition = lPos; });
                 CurrentGrid = nGrid;
                 SimpleTween.Value(nGrid.Parent.gameObject, startPos, new Vector3(0, 0, 0), time).SetOnUpdate((Vector3 lPos) => { nGrid.Parent.localPosition = lPos; }).AddCompleteCallBack(completeCallBack);
             }
@@ -951,6 +956,8 @@ namespace Mkey
 
         private void CollectState()
         {
+            return;
+
             MbState = MatchBoardState.Waiting;
             collected = 0;
 
@@ -1015,6 +1022,9 @@ namespace Mkey
 
         private void FillState()
         {
+            return;
+
+
             if (fStarted) return;
             StartCoroutine(FillStateC());
             return;
@@ -1267,6 +1277,7 @@ namespace Mkey
         {
             return (Targets!=null && Targets.ContainsKey(ID));
         }
+
 
         public void MatchScoreCollectHandler()
         {
@@ -1667,29 +1678,41 @@ namespace Mkey
         //    collectTween.Start(completeCallBack);
         //}
 
-        public void CollectHandler1(MatchGroup m, Action completeCallBack)
+        public void CollectHandler1(MatchGroup m)
         {
             float delay = 0;
 
-            SetHidden(m.Cells);
+            //SetHidden(m.Cells);
 
-            if (m.Length > 3 && m.BombsCount == 0 && bombCreator) // create bomb
-            {
-                BombCreator bC = Instantiate(bombCreator);
-                bC.Create(bombType, m, showScore, scoreController.GetBombScore(m.Length), completeCallBack);
-                ScoreHolder.Add(scoreController.GetBombScore(m.Length));
-                return;
-            }
+            //if (m.Length > 3 && m.BombsCount == 0 && bombCreator) // create bomb
+            //{
+            //    BombCreator bC = Instantiate(bombCreator);
+            //    bC.Create(bombType, m, showScore, scoreController.GetBombScore(m.Length), completeCallBack);
+            //    ScoreHolder.Add(scoreController.GetBombScore(m.Length));
+            //    return;
+            //}
 
-            ParallelTween collectTween = new ParallelTween();
+            //ParallelTween collectTween = new ParallelTween();
+            //foreach (GridCell c in m.Cells)
+            //{
+            //    delay += collectDelay;
+            //    float d = delay;
+            //    collectTween.Add((callBack) => { c.CollectMatch1(d, true, flyCollected, true, true, showBombExplode, showScore, MatchScore, callBack); });
+            //}
+            ////ScoreHolder.Add(MatchScore * m.Length);
+            //collectTween.Start11(completeCallBack);
+
+            //ParallelTween collectTween = new ParallelTween();
             foreach (GridCell c in m.Cells)
             {
-                delay += collectDelay;
-                float d = delay;
-                collectTween.Add((callBack) => { c.CollectMatch1(d, true, flyCollected, true, true, showBombExplode, showScore, MatchScore, callBack); });
+                //delay += collectDelay;
+                //float d = delay;
+                //c.CollectMatch1(d, true, flyCollected, true, true, showBombExplode, showScore, MatchScore);
+
+                c.DestroyGridObjects();
             }
             //ScoreHolder.Add(MatchScore * m.Length);
-            collectTween.Start(completeCallBack);
+
         }
     }
 
@@ -1731,16 +1754,19 @@ namespace Mkey
                 if (g.mgList[i] != null)
                 {
                     MatchGroup m = g.mgList[i];
-                    pt.Add((callBack) =>
-                    {
-                        board.CollectHandler1(m, callBack);
-                        //Collect(m, callBack);
-                    });
+
+                    board.CollectHandler1(m);
+
+                    //pt.Add1((callBack) =>
+                    //{
+                    //    board.CollectHandler1(m, callBack);
+                    //    //Collect(m, callBack);
+                    //});
                 }
             }
-            pt.Start(() =>
-            {
-            });
+            //pt.Start1(() =>
+            //{
+            //});
         }
 
         public MatchGroupsHelper()
@@ -1992,6 +2018,10 @@ namespace Mkey
 
         public void CancelTweens()
         {
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            //mgList = new List<MatchGroup>();
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
             if (showSequence != null) { showSequence.Break(); showSequence = null; }
             if (showEstimateSequence != null) { showEstimateSequence.Break(); showEstimateSequence = null; }
             mgList.ForEach((mg) => { mg.CancelTween(); });
@@ -2058,7 +2088,7 @@ namespace Mkey
     {
         private GridCell est1;
         private GridCell est2;
-
+        public bool haveBlocked;
 
         ////////////////////////////////////////////////////////////////////////////////////
         public List<int> GetEst(List<MatchGroup>mg,int idx)
@@ -2107,6 +2137,436 @@ namespace Mkey
                 if (!mGroup.Contain(c)) return false;
             }
             return true;
+        }
+
+
+
+        public void countPossible(MatchGrid grid, int idx)
+        {
+            GridCell c0 = grid.Cells[idx];
+            int X0 = c0.Column;
+            int Y0 = c0.Row;
+
+            GridCell L = null;
+            GridCell T = null;
+
+            if (c0.DynamicObject != null)
+            {
+                //if (c0.Row < grid.Rows.Count && c0.Column + 1 < grid.Columns.Count) L = grid.Rows[c0.Row][c0.Column + 1];
+                //if (c0.Row < grid.Rows.Count && c0.Column + 2 < grid.Columns.Count) T = grid.Rows[c0.Row][c0.Column + 2];
+
+                //   1 X X
+                // 3 0 L T X
+                //   2 X X
+                L = grid[Y0, X0 + 1];
+                T = grid[Y0, X0 + 2];
+
+                if (L != null && L.IsDraggable() && T != null && T.IsDraggable())
+                {
+                    int X1 = X0; int Y1 = Y0 - 1;
+                    GridCell c1 = grid[Y1, X1];
+                    if ((c1 != null) && c1.IsDraggable()) grid[Y0, X0].possibleCnt++;
+
+                    int X2 = X0; int Y2 = Y0 + 1;
+                    GridCell c2 = grid[Y2, X2];
+                    if ((c2 != null) && c2.IsDraggable()) grid[Y0, X0].possibleCnt++;
+
+                    int X3 = X0 - 1; int Y3 = Y0;
+                    GridCell c3 = grid[Y3, X3];
+                    if ((c3 != null) && c3.IsDraggable()) grid[Y0, X0].possibleCnt++;
+                }
+
+                //    X X 4
+                //  X L T 0 6
+                //    X X 5
+                L = grid[Y0, X0 - 1];
+                T = grid[Y0, X0 - 2];
+
+                if (L != null && L.IsDraggable() && T != null && T.IsDraggable())
+                {
+                    int X4 = X0; int Y4 = Y0 - 1;
+                    GridCell c4 = grid[Y4, X4];
+                    if ((c4 != null) && c4.IsDraggable()) grid[Y0, X0].possibleCnt++;
+
+                    int X5 = X0; int Y5 = Y0 + 1;
+                    GridCell c5 = grid[Y5, X5];
+                    if ((c5 != null) && c5.IsDraggable()) grid[Y0, X0].possibleCnt++;
+
+                    int X6 = X0 + 1; int Y6 = Y0;
+                    GridCell c6 = grid[Y6, X6];
+                    if ((c6 != null) && c6.IsDraggable()) grid[Y0, X0].possibleCnt++;
+                }
+
+                //    X 7 X
+                //  X L 0 T X
+                //    X 8 X
+                L = grid[Y0, X0 - 1];
+                T = grid[Y0, X0 + 1];
+
+                if (L != null && L.IsDraggable() && T != null && T.IsDraggable())
+                {
+                    int X7 = L.Column + 1; int Y7 = L.Row - 1;
+                    GridCell c7 = grid[Y7, X7];
+                    if (c7 != null && c7.IsDraggable()) grid[Y0, X0].possibleCnt++;
+
+                    int X8 = L.Column + 1; int Y8 = L.Row + 1;
+                    GridCell c8 = grid[Y8, X8];
+                    if (c8 != null && c8.IsDraggable()) grid[Y0, X0].possibleCnt++;
+                }
+
+                //     X 
+                //   X T X 
+                //   X L X
+                //   1 0 2
+                //     3
+                L = grid[Y0 - 1, X0];
+                T = grid[Y0 - 2, X0];
+
+                if (L != null && L.IsDraggable() && T != null && T.IsDraggable())
+                {
+                    int X1 = X0 - 1; int Y1 = Y0;
+                    GridCell c1 = grid[Y1, X1];
+                    if ((c1 != null) && c1.IsDraggable()) grid[Y0, X0].possibleCnt++;
+
+                    int X2 = X0 + 1; int Y2 = Y0;
+                    GridCell c2 = grid[Y2, X2];
+                    if ((c2 != null) && c2.IsDraggable()) grid[Y0, X0].possibleCnt++;
+
+                    int X3 = X0; int Y3 = Y0 + 1;
+                    GridCell c3 = grid[Y3, X3];
+                    if ((c3 != null) && c3.IsDraggable()) grid[Y0, X0].possibleCnt++;
+                }
+
+                //     6
+                //   4 0 5
+                //   X T X 
+                //   X L X
+                //     X 
+                L = grid[Y0 + 2, X0];
+                T = grid[Y0 + 1, X0];
+
+                if (L != null && L.IsDraggable() && T != null && T.IsDraggable())
+                {
+                    int X4 = T.Column - 1; int Y4 = T.Row - 1;
+                    GridCell c4 = grid[Y4, X4];
+                    if ((c4 != null) && c4.IsDraggable()) grid[Y0, X0].possibleCnt++;
+
+                    int X5 = T.Column + 1; int Y5 = T.Row - 1;
+                    GridCell c5 = grid[Y5, X5];
+                    if ((c5 != null) && c5.IsDraggable()) grid[Y0, X0].possibleCnt++;
+
+                    int X6 = T.Column; int Y6 = T.Row - 2;
+                    GridCell c6 = grid[Y6, X6];
+                    if ((c6 != null) && c6.IsDraggable()) grid[Y0, X0].possibleCnt++;
+                }
+
+                //      X
+                //    X T X
+                //    7 0 8 
+                //    X L X
+                //      X
+                L = grid[Y0 + 1, X0];
+                T = grid[Y0 - 1, X0];
+
+                if (L != null && L.IsDraggable() && T != null && T.IsDraggable())
+                {
+                    int X7 = X0 - 1; int Y7 = Y0;
+                    GridCell c7 = grid[Y7, X7];
+                    if (c7 != null && c7.IsDraggable()) grid[Y0, X0].possibleCnt++;
+
+                    int X8 = X0 + 1; int Y8 = Y0;
+                    GridCell c8 = grid[Y8, X8];
+                    if (c8 != null && c8.IsDraggable()) grid[Y0, X0].possibleCnt++;
+                }
+            }
+        }
+
+
+
+
+
+
+        public bool IsEstimateMatch1(int matchCount, bool horizontal, MatchGrid grid, DNA<char> p)
+        {
+            if (Length != matchCount) return false;
+            if (horizontal)
+            {
+                GridCell L = GetLowermostX();
+                GridCell T = GetTopmostX();
+
+                // 3 estimate positions for l - cell (astrics)
+                //   1 X X
+                // 3 0 L T X
+                //   2 X X
+                int X0 = L.Column - 1; int Y0 = L.Row;
+                GridCell c0 = grid[Y0, X0];
+
+                if ((c0 != null) && c0.IsDraggable() && ((T.Column - L.Column) == 1))
+                {
+                    int X1 = X0; int Y1 = Y0 - 1;
+                    GridCell c1 = grid[Y1, X1];
+                    if ((c1 != null) && c1.IsMatchObjectEquals(L) && c1.IsDraggable())
+                    {
+                        Add(c1);
+                        est1 = c0;
+                        est2 = c1;
+                        return true;
+                    }
+
+                    if ((c1 != null) && c1.DynamicObject == null) p.obstructionRate++;
+
+
+                    int X2 = X0; int Y2 = Y0 + 1;
+                    GridCell c2 = grid[Y2, X2];
+                    if ((c2 != null) && c2.IsMatchObjectEquals(L) && c2.IsDraggable())
+                    {
+                        Add(c2);
+                        est1 = c0;
+                        est2 = c2;
+                        return true;
+                    }
+
+                    if ((c2 != null) && c2.DynamicObject == null) p.obstructionRate++;
+
+                    int X3 = X0 - 1; int Y3 = Y0;
+                    GridCell c3 = grid[Y3, X3];
+                    if ((c3 != null) && c3.IsMatchObjectEquals(L) && c3.IsDraggable())
+                    {
+                        Add(c3);
+                        est1 = c0;
+                        est2 = c3;
+                        return true;
+                    }
+
+                    if ((c3 != null) && c3.DynamicObject == null) p.obstructionRate++;
+                }
+
+                if ((c0 != null) && c0.DynamicObject == null) p.obstructionRate++;
+
+                // 3 estimate positions for T - cell (astrics)
+                //    X X 4
+                //  X L T 0 6
+                //    X X 5
+                X0 = T.Column + 1; Y0 = T.Row;
+                c0 = grid[Y0, X0];
+                if ((c0 != null) && c0.IsDraggable() && ((T.Column - L.Column) == 1))
+                {
+                    int X4 = X0; int Y4 = Y0 - 1;
+                    GridCell c4 = grid[Y4, X4];
+                    if ((c4 != null) && c4.IsMatchObjectEquals(T) && c4.IsDraggable())
+                    {
+                        Add(c4);
+                        est1 = c0;
+                        est2 = c4;
+                        return true;
+                    }
+
+                    if ((c4 != null) && c4.DynamicObject == null) p.obstructionRate++;
+
+                    int X5 = X0; int Y5 = Y0 + 1;
+                    GridCell c5 = grid[Y5, X5];
+                    if ((c5 != null) && c5.IsMatchObjectEquals(T) && c5.IsDraggable())
+                    {
+                        Add(c5);
+                        est1 = c0;
+                        est2 = c5;
+                        return true;
+                    }
+
+                    if ((c5 != null) && c5.DynamicObject == null) p.obstructionRate++;
+
+                    int X6 = X0 + 1; int Y6 = Y0;
+                    GridCell c6 = grid[Y6, X6];
+                    if ((c6 != null) && c6.IsMatchObjectEquals(T) && c6.IsDraggable())
+                    {
+                        Add(c6);
+                        est1 = c0;
+                        est2 = c6;
+                        return true;
+                    }
+
+                    if ((c6 != null) && c6.DynamicObject == null) p.obstructionRate++;
+                }
+
+                if ((c0 != null) && c0.DynamicObject == null) p.obstructionRate++;
+
+                // 2 estimate positions for L0T - horizontal
+                //    X 7 X
+                //  X L 0 T X
+                //    X 8 X
+                X0 = L.Column + 1; Y0 = L.Row;
+                c0 = grid[Y0, X0];
+                if ((c0 != null) && c0.IsDraggable() && ((T.Column - L.Column) == 2))
+                {
+                    int X7 = L.Column + 1; int Y7 = L.Row - 1;
+                    GridCell c7 = grid[Y7, X7];
+                    if (c7 != null && c7.IsMatchObjectEquals(L) && c7.IsDraggable())
+                    {
+                        Add(c7);
+                        est1 = c0;
+                        est2 = c7;
+                        return true;
+                    }
+
+                    if ((c7 != null) && c7.DynamicObject == null) p.obstructionRate++;
+
+                    int X8 = L.Column + 1; int Y8 = L.Row + 1;
+                    GridCell c8 = grid[Y8, X8];
+                    if (c8 != null && c8.IsMatchObjectEquals(L) && c8.IsDraggable())
+                    {
+                        Add(c8);
+                        est1 = c0;
+                        est2 = c8;
+                        return true;
+                    }
+
+                    if ((c8 != null) && c8.DynamicObject == null) p.obstructionRate++;
+                }
+
+                if ((c0 != null) && c0.DynamicObject == null) p.obstructionRate++;
+            }
+            else
+            {
+                GridCell L = GetLowermostY();
+                GridCell T = GetTopmostY();
+                // 3 estimate positions for L - cell 
+                //     
+                //     X 
+                //   X T X 
+                //   X L X
+                //   1 0 2
+                //     3
+                int X0 = L.Column; int Y0 = L.Row + 1;
+                GridCell c0 = grid[Y0, X0];
+                if ((c0 != null) && c0.IsDraggable() && ((T.Row - L.Row) == -1))
+                {
+                    int X1 = X0 - 1; int Y1 = Y0;
+                    GridCell c1 = grid[Y1, X1];
+                    if ((c1 != null) && c1.IsMatchObjectEquals(L) && c1.IsDraggable())
+                    {
+                        Add(c1);
+                        est1 = c0;
+                        est2 = c1;
+                        return true;
+                    }
+
+                    if ((c1 != null) && c1.DynamicObject == null) p.obstructionRate++;
+
+                    int X2 = X0 + 1; int Y2 = Y0;
+                    GridCell c2 = grid[Y2, X2];
+                    if ((c2 != null) && c2.IsMatchObjectEquals(L) && c2.IsDraggable())
+                    {
+                        Add(c2);
+                        est1 = c0;
+                        est2 = c2;
+                        return true;
+                    }
+
+                    if ((c2 != null) && c2.DynamicObject == null) p.obstructionRate++;
+
+                    int X3 = X0; int Y3 = Y0 + 1;
+                    GridCell c3 = grid[Y3, X3];
+                    if ((c3 != null) && c3.IsMatchObjectEquals(L) && c3.IsDraggable())
+                    {
+                        Add(c3);
+                        est1 = c0;
+                        est2 = c3;
+                        return true;
+                    }
+
+                    if ((c3 != null) && c3.DynamicObject == null) p.obstructionRate++;
+                }
+
+                if ((c0 != null) && c0.DynamicObject == null) p.obstructionRate++;
+
+                // 3 estimate positions for T - cell
+                //     6
+                //   4 0 5
+                //   X T X 
+                //   X L X
+                //     X 
+                X0 = L.Column; Y0 = T.Row - 1;
+                c0 = grid[Y0, X0];
+                //   Debug.Log("c0: " + c0 + " : " + c0.IsDraggable() +" : " + ((T.Row - L.Row)));
+                if ((c0 != null) && c0.IsDraggable() && ((T.Row - L.Row) == -1))
+                {
+                    int X4 = T.Column - 1; int Y4 = T.Row - 1;
+                    GridCell c4 = grid[Y4, X4];
+                    if ((c4 != null) && c4.IsMatchObjectEquals(L) && c4.IsDraggable())
+                    {
+                        Add(c4);
+                        est1 = c0;
+                        est2 = c4;
+                        return true;
+                    }
+
+                    if ((c4 != null) && c4.DynamicObject == null) p.obstructionRate++;
+
+                    int X5 = T.Column + 1; int Y5 = T.Row - 1;
+                    GridCell c5 = grid[Y5, X5];
+                    if ((c5 != null) && c5.IsMatchObjectEquals(L) && c5.IsDraggable())
+                    {
+                        Add(c5);
+                        est1 = c0;
+                        est2 = c5;
+                        return true;
+                    }
+
+                    if ((c5 != null) && c5.DynamicObject == null) p.obstructionRate++;
+
+                    int X6 = T.Column; int Y6 = T.Row - 2;
+                    GridCell c6 = grid[Y6, X6];
+                    if ((c6 != null) && c6.IsMatchObjectEquals(L) && c6.IsDraggable())
+                    {
+                        Add(c6);
+                        est1 = c0;
+                        est2 = c6;
+                        return true;
+                    }
+
+                    if ((c6 != null) && c6.DynamicObject == null) p.obstructionRate++;
+                }
+
+                if ((c0 != null) && c0.DynamicObject == null) p.obstructionRate++;
+
+                // 2 estimate positions for T0L - vertical
+                //      X
+                //    X T X
+                //    7 0 8 
+                //    X L X
+                //      X
+                X0 = L.Column; Y0 = L.Row - 1;
+                c0 = grid[Y0, X0];
+                if ((c0 != null) && c0.IsDraggable() && ((T.Row - L.Row) == -2))
+                {
+                    int X7 = X0 - 1; int Y7 = Y0;
+                    GridCell c7 = grid[Y7, X7];
+                    if ((c7 != null) && c7.IsMatchObjectEquals(L) && c7.IsDraggable())
+                    {
+                        Add(c7);
+                        est1 = c0;
+                        est2 = c7;
+                        return true;
+                    }
+
+                    if ((c7 != null) && c7.DynamicObject == null) p.obstructionRate++;
+
+                    int X8 = X0 + 1; int Y8 = Y0;
+                    GridCell c8 = grid[Y8, X8];
+                    if ((c8 != null) && c8.IsMatchObjectEquals(L) && c8.IsDraggable())
+                    {
+                        Add(c8);
+                        est1 = c0;
+                        est2 = c8;
+                        return true;
+                    }
+
+                    if ((c8 != null) && c8.DynamicObject == null) p.obstructionRate++;
+                }
+
+                if ((c0 != null) && c0.DynamicObject == null) p.obstructionRate++;
+            }
+            return false;
         }
 
         public bool IsEstimateMatch(int matchCount, bool horizontal, MatchGrid grid)
@@ -2840,6 +3300,254 @@ namespace Mkey
                 if (!mcs[0].IsMatchObjectEquals(mcs[i])) return false;
             }
             return true;
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+        //public List<MatchGroup> isContinuousRow()
+        //{
+        //    List<MatchGroup> mgList = new List<MatchGroup>();
+        //    MatchGroup mg = new MatchGroup();
+        //    int minMatches = 2;
+        //    mg.Add(cells[0]);
+
+        //    for (int i = 1; i < cells.Length; i++)
+        //    {
+        //        int prev = mg.Length - 1;
+
+        //        if (cells[i].IsMatchable && cells[prev].IsMatchable)
+        //        {
+        //            mg.Add(cells[i]);
+
+        //            if (mg.Length >= minMatches)
+        //            {
+        //                mgList.Add(mg);
+        //                mg = new MatchGroup();
+        //            }
+        //        }
+
+        //        //else
+        //        //{
+        //        //    if (mg.Length >= minMatches) mgList.Add(mg);
+        //        //    mg = new MatchGroup();
+        //        //    mg.Add(cells[i]);
+        //        //}
+        //    }
+
+        //    mg = new MatchGroup();
+
+        //    for (int i = 2; i < cells.Length; i++)
+        //    {
+        //        mg.Add(cells[i - 2]);
+
+        //        if (cells[i].DynamicObject != null && cells[0].DynamicObject != null && cells[i - 1].DynamicObject != null)
+        //        {
+        //            mg.Add(cells[i]);
+        //            mgList.Add(mg);
+        //        }
+
+        //        mg = new MatchGroup();
+        //    }
+        //    return mgList;
+        //}
+
+        //public List<MatchGroup> isContinuousColumn()
+        //{
+        //    List<MatchGroup> mgList = new List<MatchGroup>();
+        //    MatchGroup mg = new MatchGroup();
+        //    int minMatches = 2;
+        //    mg.Add(cells[0]);
+
+        //    for (int i = 1; i < cells.Length; i++)
+        //    {
+        //        int prev = mg.Length - 1;
+
+        //        if (cells[i].DynamicObject != null && cells[prev].DynamicObject != null)
+        //        {
+        //            mg.Add(cells[i]);
+
+        //            if (i == cells.Length - 1 && mg.Length >= minMatches)
+        //            {
+        //                mgList.Add(mg);
+        //                mg = new MatchGroup();
+        //            }
+        //        }
+
+        //        else
+        //        {
+        //            if (mg.Length >= minMatches) mgList.Add(mg);
+        //            mg = new MatchGroup();
+        //            mg.Add(cells[i]);
+        //        }
+        //    }
+
+        //    mg = new MatchGroup();
+
+        //    for (int i = 2; i < cells.Length; i++)
+        //    {
+        //        mg.Add(cells[i - 2]);
+
+        //        if (cells[i].DynamicObject != null && cells[0].DynamicObject != null && cells[i - 1].DynamicObject != null)
+        //        {
+        //            mg.Add(cells[i]);
+        //            mgList.Add(mg);
+        //        }
+
+        //        mg = new MatchGroup();
+        //    }
+        //    return mgList;
+        //}
+
+
+        public List<MatchGroup> GetMatches2(int minMatches, bool X0X)
+        {
+            List<MatchGroup> mgList = new List<MatchGroup>();
+            MatchGroup mg = new MatchGroup();
+            mg.Add(cells[0]);
+            for (int i = 1; i < cells.Length; i++)
+            {
+                int prev = mg.Length - 1;
+                if (cells[i].IsMatchable && cells[i].IsMatchObjectEquals(mg.Cells[prev]) && mg.Cells[prev].IsMatchable)
+                {
+                    mg.Add(cells[i]);
+                    if (i == cells.Length - 1 && mg.Length >= minMatches)
+                    {
+                        mgList.Add(mg);
+                        mg = new MatchGroup();
+                    }
+                }
+                else // start new match group
+                {
+                    if (mg.Length >= minMatches)
+                    {
+                        mgList.Add(mg);
+                    }
+                    mg = new MatchGroup();
+                    mg.Add(cells[i]);
+                }
+            }
+
+            if (X0X) // [i-2, i-1, i]
+            {
+                mg = new MatchGroup();
+
+                //for (int i = 2; i < cells.Length; i++)
+                //{
+                //    mg.Add(cells[i - 2]);
+                //    if (cells[i].IsMatchable && cells[i].IsMatchObjectEquals(mg.Cells[0]) && !cells[i - 1].IsMatchObjectEquals(mg.Cells[0])
+                //        && mg.Cells[0].IsMatchable && cells[i - 1].IsDraggable())
+                //    {
+                //        mg.Add(cells[i]);
+                //        mgList.Add(mg);
+                //    }
+                //    mg = new MatchGroup();
+                //}
+
+                for (int i = 2; i < cells.Length; i++)
+                {
+                    mg.Add(cells[i - 2]);
+                    if (cells[i].IsMatchable && cells[i].IsMatchObjectEquals(mg.Cells[0]) && !cells[i - 1].IsMatchObjectEquals(mg.Cells[0]) && mg.Cells[0].IsMatchable)
+                    {
+                        if (cells[i - 1].IsDraggable())
+                        {
+                            mg.haveBlocked = false;
+                            mg.Add(cells[i]);
+                            mgList.Add(mg);
+                        }
+
+                        else
+                        {
+                            mg.haveBlocked = true;
+                            mg.Add(cells[i]);
+                            mgList.Add(mg);
+                        }
+                    }
+                    mg = new MatchGroup();
+                }
+
+            } // end X0X
+            return mgList;
+        }
+
+
+        public List<MatchGroup> GetMatches1(int minMatches, bool X0X)
+        {
+            List<MatchGroup> mgList = new List<MatchGroup>();
+            MatchGroup mg = new MatchGroup();
+            mg.Add(cells[0]);
+            for (int i = 1; i < cells.Length; i++)
+            {
+                int prev = mg.Length - 1;
+                if (cells[i].IsMatchable && cells[i].IsMatchObjectEquals(mg.Cells[prev]) && mg.Cells[prev].IsMatchable)
+                {
+                    mg.Add(cells[i]);
+                    if (i == cells.Length - 1 && mg.Length >= minMatches)
+                    {
+                        mgList.Add(mg);
+                        mg = new MatchGroup();
+                    }
+                }
+                else // start new match group
+                {
+                    if (mg.Length >= minMatches)
+                    {
+                        mgList.Add(mg);
+                    }
+                    mg = new MatchGroup();
+                    mg.Add(cells[i]);
+                }
+            }
+
+            if (X0X) // [i-2, i-1, i]
+            {
+                mg = new MatchGroup();
+
+                //for (int i = 2; i < cells.Length; i++)
+                //{
+                //    mg.Add(cells[i - 2]);
+                //    if (cells[i].IsMatchable && cells[i].IsMatchObjectEquals(mg.Cells[0]) && !cells[i - 1].IsMatchObjectEquals(mg.Cells[0])
+                //        && mg.Cells[0].IsMatchable && cells[i - 1].IsDraggable())
+                //    {
+                //        mg.Add(cells[i]);
+                //        mgList.Add(mg);
+                //    }
+                //    mg = new MatchGroup();
+                //}
+
+                for (int i = 2; i < cells.Length; i++)
+                {
+                    mg.Add(cells[i - 2]);
+                    if (cells[i].IsMatchable && cells[i].IsMatchObjectEquals(mg.Cells[0]) && !cells[i - 1].IsMatchObjectEquals(mg.Cells[0]) && mg.Cells[0].IsMatchable)
+                    {
+                        if(cells[i - 1].IsDraggable())
+                        {
+                            mg.haveBlocked = false;
+                            mg.Add(cells[i]);
+                            mgList.Add(mg);
+                        }
+
+                        else
+                        {
+                            mg.haveBlocked = true;
+                            mg.Add(cells[i]);
+                            mgList.Add(mg);
+                        }
+                    }
+                    mg = new MatchGroup();
+                }
+
+            } // end X0X
+            return mgList;
         }
 
         public List<MatchGroup> GetMatches(int minMatches, bool X0X)

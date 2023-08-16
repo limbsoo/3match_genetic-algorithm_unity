@@ -108,7 +108,7 @@ namespace Mkey
                 //complCallBack?.Invoke();
                 return;
             }
-            CreateCB1();
+            //CreateCB1();
             if (breakSeq) return;
             //callBackL[callBackL.Count - 1]?.Invoke();
         }
@@ -243,6 +243,12 @@ namespace Mkey
             count++;
         }
 
+        public void Add1(Action<Action> tA)
+        {
+            seqL.Add(tA);
+            count++;
+        }
+
         public void Start(Action completeAction)
         {
             if (seqL.Count > 0)
@@ -264,12 +270,27 @@ namespace Mkey
             {
                 for (int i = 0; i < seqL.Count; i++)
                 {
-                    seqL[i](() => { ended++; if (ended == count) { /*completeAction?.Invoke(); */} });
+                    seqL[i](() => { ended++; if (ended == count) { completeAction?.Invoke(); } });
                 }
             }
             else
             {
-                //completeAction?.Invoke();
+                completeAction?.Invoke();
+            }
+        }
+
+        public void Start11(Action completeAction)
+        {
+            if (seqL.Count > 0)
+            {
+                for (int i = 0; i < seqL.Count; i++)
+                {
+                    seqL[i](() => { ended++; if (ended == count) { completeAction?.Invoke(); } });
+                }
+            }
+            else
+            {
+                completeAction?.Invoke();
             }
         }
 

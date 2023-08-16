@@ -59,6 +59,20 @@ namespace Mkey
         public List<Row<GridCell>> Rows { get; private set; }
         #endregion row column
 
+
+
+
+        public int possibleCnt;
+
+
+
+
+
+
+
+
+
+
         #region objects
         public GameObject DynamicObject
         {
@@ -364,6 +378,22 @@ namespace Mkey
             return gO;
         }
 
+        /// ////////////////////////////////////////////////////////////////////////////////////
+
+        internal GridObject SetObject1(GridObject prefab)
+        {
+            if (!prefab) return null;
+
+            int a = prefab.ID;
+
+            GridObject gO = prefab.Create(this, MBoard.TargetCollectEventHandler);
+            if (gO && !GameObjectsSet.IsDisabledObject(prefab.ID)) sRenderer.enabled = true;
+            return gO;
+        }
+
+
+
+
         internal GridObject SetObjectNull()
         {
             return null;
@@ -415,10 +445,10 @@ namespace Mkey
             if (dObject)
             {
                 dObject.transform.parent = transform;
-                if (!fast)
-                    MoveTween1(dObject, completeCallBack);
-                else
-                    FastMoveTween1(dObject, completeCallBack);
+                //if (!fast)
+                //    MoveTween1(dObject, completeCallBack);
+                //else
+                //    FastMoveTween1(dObject, completeCallBack);
             }
             else
             {
@@ -446,7 +476,7 @@ namespace Mkey
         /// Try to grab match object from fill path
         /// </summary>
         /// <param name="completeCallBack"></param>
-        internal void FillGrab1(Action completeCallBack)
+        internal void fillGrab1(Action completeCallBack)
         {
             GameObject mObject = null;
             GridCell gCell = null;
@@ -483,7 +513,7 @@ namespace Mkey
             }
             if (mObject && gCell && (gCell.PhysStep)) return;
 
-            GrabDynamicObject1(mObject, (MBoard.fillType == FillType.Fast), completeCallBack);
+            GrabDynamicObject(mObject, (MBoard.fillType == FillType.Fast), completeCallBack);
         }
 
         /// <summary>
@@ -700,7 +730,7 @@ namespace Mkey
             }
         }
 
-        internal void CollectMatch1(float delay, bool showPrefab, bool fly, bool hitProtection, bool sideHitProtection, bool showBombExplode, bool showScore, int score, Action completeCallBack)
+        internal void CollectMatch1(float delay, bool showPrefab, bool fly, bool hitProtection, bool sideHitProtection, bool showBombExplode, bool showScore, int score)
         {
             if (!Match)
             {
@@ -708,13 +738,13 @@ namespace Mkey
                 return;
             }
 
-            if (HasBomb)
-            {
-                ExplodeBomb(delay, showBombExplode, true, false, completeCallBack);
-            }
+            //if (HasBomb)
+            //{
+            //    ExplodeBomb(delay, showBombExplode, true, false, completeCallBack);
+            //}
             else
             {
-                Match.Collect1(this, delay, showPrefab, fly, hitProtection, sideHitProtection, showScore, score, completeCallBack);
+                Match.Collect1(this, delay, showPrefab, fly, hitProtection, sideHitProtection, showScore, score);
             }
         }
 

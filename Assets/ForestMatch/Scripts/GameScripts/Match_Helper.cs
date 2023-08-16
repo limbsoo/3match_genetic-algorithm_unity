@@ -13,6 +13,8 @@ using static UnityEditor.Progress;
 using Unity.VisualScripting;
 using System.Linq.Expressions;
 using Transform = UnityEngine.Transform;
+using System.Drawing;
+using UnityEngine.UIElements;
 
 namespace Mkey
 {
@@ -50,10 +52,7 @@ namespace Mkey
         //GetFreeCells
 
 
-
-
-
-        public void CreateMatchGroups(int minMatches, bool estimate, MatchGrid grid)
+        public void createMatchGroups1(int minMatches, bool estimate, MatchGrid grid, DNA<char> p)
         {
             //l_mgList = new List<MatchGroup>();
             grid.mgList = new List<MatchGroup>();
@@ -64,7 +63,7 @@ namespace Mkey
                     List<MatchGroup> mgList_t = br.GetMatches(minMatches, false);
                     if (mgList_t != null && mgList_t.Count > 0)
                     {
-                        AddRange(mgList_t, grid);
+                        addRange(mgList_t, grid);
                     }
                 });
 
@@ -73,7 +72,50 @@ namespace Mkey
                     List<MatchGroup> mgList_t = bc.GetMatches(minMatches, false);
                     if (mgList_t != null && mgList_t.Count > 0)
                     {
-                        AddRange(mgList_t, grid);
+                        addRange(mgList_t, grid);
+                    }
+                });
+            }
+            else
+            {
+                List<MatchGroup> mgList_t = new List<MatchGroup>();
+                grid.Rows.ForEach((gr) =>
+                {
+                    mgList_t.AddRange(gr.GetMatches1(minMatches, true));
+                });
+                mgList_t.ForEach((mg) => { if (mg.IsEstimateMatch1(mg.Length, true, grid, p)) { addEstimate(mg, grid); } });
+
+                mgList_t = new List<MatchGroup>();
+                grid.Columns.ForEach((gc) =>
+                {
+                    mgList_t.AddRange(gc.GetMatches1(minMatches, true));
+                });
+                mgList_t.ForEach((mg) => { if (mg.IsEstimateMatch1(mg.Length, false, grid, p)) { addEstimate(mg, grid); } });
+            }
+        }
+
+
+        public void createMatchGroups(int minMatches, bool estimate, MatchGrid grid)
+        {
+            //l_mgList = new List<MatchGroup>();
+            grid.mgList = new List<MatchGroup>();
+            if (!estimate)
+            {
+                grid.Rows.ForEach((br) =>
+                {
+                    List<MatchGroup> mgList_t = br.GetMatches(minMatches, false);
+                    if (mgList_t != null && mgList_t.Count > 0)
+                    {
+                        addRange(mgList_t, grid);
+                    }
+                });
+
+                grid.Columns.ForEach((bc) =>
+                {
+                    List<MatchGroup> mgList_t = bc.GetMatches(minMatches, false);
+                    if (mgList_t != null && mgList_t.Count > 0)
+                    {
+                        addRange(mgList_t, grid);
                     }
                 });
             }
@@ -84,18 +126,18 @@ namespace Mkey
                 {
                     mgList_t.AddRange(gr.GetMatches(minMatches, true));
                 });
-                mgList_t.ForEach((mg) => { if (mg.IsEstimateMatch(mg.Length, true, grid)) { AddEstimate(mg, grid); } });
+                mgList_t.ForEach((mg) => { if (mg.IsEstimateMatch(mg.Length, true, grid)) { addEstimate(mg, grid); } });
 
                 mgList_t = new List<MatchGroup>();
                 grid.Columns.ForEach((gc) =>
                 {
                     mgList_t.AddRange(gc.GetMatches(minMatches, true));
                 });
-                mgList_t.ForEach((mg) => { if (mg.IsEstimateMatch(mg.Length, false, grid)) { AddEstimate(mg, grid); } });
+                mgList_t.ForEach((mg) => { if (mg.IsEstimateMatch(mg.Length, false, grid)) { addEstimate(mg, grid); } });
             }
         }
 
-        private MatchGroup Merge(List<MatchGroup> intersections)
+        private MatchGroup merge(List<MatchGroup> intersections)
         {
 
             MatchGroup mG = new MatchGroup();
@@ -103,7 +145,7 @@ namespace Mkey
             return mG;
         }
 
-        public void Add(MatchGroup mG, MatchGrid grid)
+        public void add(MatchGroup mG, MatchGrid grid)
         {
             List<MatchGroup> intersections = new List<MatchGroup>();
 
@@ -119,21 +161,21 @@ namespace Mkey
             {
                 intersections.ForEach((ints) => { grid.mgList.Remove(ints); });
                 intersections.Add(mG);
-                grid.mgList.Add(Merge(intersections));
+                grid.mgList.Add(merge(intersections));
             }
             else
             {
                 grid.mgList.Add(mG);
             }
         }
-        public void AddRange(List<MatchGroup> mGs, MatchGrid grid)
+        public void addRange(List<MatchGroup> mGs, MatchGrid grid)
         {
             for (int i = 0; i < mGs.Count; i++)
             {
-                Add(mGs[i], grid);
+                add(mGs[i], grid);
             }
         }
-        public void AddEstimate(MatchGroup mGe, MatchGrid grid)
+        public void addEstimate(MatchGroup mGe, MatchGrid grid)
         {
             for (int i = 0; i < grid.mgList.Count; i++)
             {
@@ -145,19 +187,19 @@ namespace Mkey
             grid.mgList.Add(mGe);
         }
 
-        public void CancelTweens(MatchGrid g)
+        public void cancelTweens(MatchGrid g)
         {
-            g.mgList.ForEach((mg) => { CancelTween1(g); });
+            g.mgList.ForEach((mg) => { cancelTween1(g); });
         }
 
-        public void CancelTween1(MatchGrid g)
+        public void cancelTween1(MatchGrid g)
         {
             g.Cells.ForEach((c) => { c.CancelTween(); });
         }
 
 
 
-        public void CreateFillPath(MatchGrid g)
+        public void createFillPath(MatchGrid g)
         {
             if (!g.haveFillPath)
             {
@@ -283,7 +325,7 @@ namespace Mkey
             }
         }
 
-        public void FillGridByStep(List<GridCell> freeCells, Action completeCallBack)
+        public void fillGridByStep(List<GridCell> freeCells, Action completeCallBack)
         {
             if (freeCells.Count == 0)
             {
@@ -291,25 +333,31 @@ namespace Mkey
                 return;
             }
 
-            ParallelTween tp = new ParallelTween();
             foreach (GridCell gc in freeCells)
             {
-                tp.Add((callback) =>
-                {
-                    gc.FillGrab1(callback);
-                });
+                gc.fillGrab1(completeCallBack);
             }
-            tp.Start1(() =>
-            {
-                //completeCallBack?.Invoke();
-            });
+
+
+            //ParallelTween tp = new ParallelTween();
+            //foreach (GridCell gc in freeCells)
+            //{
+            //    tp.Add((callback) =>
+            //    {
+            //        gc.FillGrab1(callback);
+            //    });
+            //}
+            //tp.Start1(() =>
+            //{
+            //    //completeCallBack?.Invoke();
+            //});
         }
 
-        public void CollectFalling(MatchGrid grid)
+        public void collectFalling(MatchGrid grid)
         {
             //   Debug.Log("collect falling " + GetFalling().Count);
             ParallelTween pt = new ParallelTween();
-            foreach (var item in GetFalling(grid))
+            foreach (var item in getFalling(grid))
             {
                 pt.Add((callBack) =>
                 {
@@ -319,7 +367,7 @@ namespace Mkey
             pt.Start1();
         }
 
-        public List<FallingObject> GetFalling(MatchGrid grid)
+        public List<FallingObject> getFalling(MatchGrid grid)
         {
             List<GridCell> botCell = grid.GetBottomDynCells();
             List<FallingObject> res = new List<FallingObject>();
@@ -337,7 +385,7 @@ namespace Mkey
             return res;
         }
 
-        public void CollectMatchGroups(MatchGrid grid)
+        public void collectMatchGroups(MatchGrid grid)
         {
             ParallelTween pt = new ParallelTween();
 
@@ -363,7 +411,7 @@ namespace Mkey
 
         
 
-        public void MixGrid(Action completeCallBack, MatchGrid grid, Transform trans)
+        public void mixGrid(Action completeCallBack, MatchGrid grid, Transform trans)
         {
             ParallelTween pT0 = new ParallelTween();
             ParallelTween pT1 = new ParallelTween();
@@ -375,7 +423,7 @@ namespace Mkey
             //EstimateGroups.CancelTweens();
 
             
-            CancelTweens(grid);
+            cancelTweens(grid);
 
 
             grid.Cells.ForEach((c) => { if (c.IsMixable) { cellList.Add(c); goList.Add(c.DynamicObject); } });
@@ -406,9 +454,200 @@ namespace Mkey
             tweenSeq.Start();
         }
 
+        public bool[,] isVisited;
+
+        public bool haveInfeasibleCell(MatchGrid grid, int cnt)
+        {
+            GridCell[,] curCell = new GridCell[grid.Columns.Count, grid.Rows.Count];
+
+            for (int i = 0; i < grid.Columns.Count; i++)
+            {
+                for (int j = 0; j < grid.Rows.Count; j++)
+                {
+                    curCell[i, j] = grid.Cells[i * grid.Rows.Count + j];
+                }
+            }
+
+            isVisited = new bool[grid.Columns.Count, grid.Rows.Count];
+
+            for (int i = 0; i < grid.Columns.Count; i++)
+            {
+                for (int j = 0; j < grid.Rows.Count; j++)
+                {
+                    isVisited[i,j] = true;
+
+                    if (!isVisited[i, j] && curCell[i, j].DynamicObject)
+                    {
+                        bool isReachSpawn = false;
+                        visitConnectCell(curCell, i, j, isReachSpawn);
+                        if (!isReachSpawn) return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        void visitConnectCell(GridCell[,] curCell, int col, int row, bool isReachSpawn)
+        {
+            if (canVisit(curCell, col, row - 1)) // Top
+            {
+                if (row == 0) isReachSpawn = true;
+                isVisited[col,row - 1] = true;
+                visitConnectCell(curCell, col, row - 1, isReachSpawn);
+            }
+
+            //if (canVisit(curCell, col, row + 1)) // Bottom
+            //{
+            //    if (row == 0) isReachSpawn = true;
+            //    isVisited[col,row + 1] = true;
+            //    visitConnectCell(curCell, col, row + 1, isReachSpawn);
+            //}
+
+            if (canVisit(curCell, col - 1, row)) // Left
+            {
+                if (row == 0) isReachSpawn = true;
+                isVisited[col - 1,row] = true;
+                visitConnectCell(curCell, col - 1, row, isReachSpawn);
+            }
+
+            if (canVisit(curCell, col + 1, row)) // Right
+            {
+                if (row == 0) isReachSpawn = true;
+                isVisited[col + 1,row] = true;
+                visitConnectCell(curCell, col + 1, row, isReachSpawn);
+            }
+
+            if (canVisit(curCell, col - 1, row - 1)) // TopLeft
+            {
+                if (row == 0) isReachSpawn = true;
+                isVisited[col - 1,row - 1] = true;
+                visitConnectCell(curCell, col - 1, row - 1, isReachSpawn);
+            }
+
+            //if (canVisit(curCell, col - 1, row + 1)) // BottomLeft
+            //{
+            //    if (row == 0) isReachSpawn = true;
+            //    isVisited[col - 1, row + 1] = true;
+            //    visitConnectCell(curCell, col - 1, row + 1, isReachSpawn);
+            //}
+
+            if (canVisit(curCell, col + 1, row - 1)) // TopRight
+            {
+                if (row == 0) isReachSpawn = true;
+                isVisited[col + 1, row - 1] = true;
+                visitConnectCell(curCell, col + 1, row - 1, isReachSpawn);
+            }
+
+            //if (canVisit(curCell, col + 1, row + 1)) // BottomRight
+            //{
+            //    if (row == 0) isReachSpawn = true;
+            //    isVisited[col + 1, row + 1] = true;
+            //    visitConnectCell(curCell, col + 1, row + 1, isReachSpawn);
+            //}
+        }
+
+        bool canVisit(GridCell[,] curCell, int col, int row)
+        {
+            if (col >= 0 && col < curCell[col,row].GColumn.Length && row >= 0 && row < curCell[col, row].GRow.Length)
+            {
+                if (curCell[col, row].DynamicObject) return true;
+                else return false;
+            }
+
+            else return false;
+        }
+
+
+
+
+
+        public void createAvailableMatchGroup(MatchGrid grid)
+        {
+            for(int i= 0; i < grid.Cells.Count;i++) grid.Cells[i].possibleCnt = 0;
+
+            //grid.mgList = new List<MatchGroup>();
+
+            //List<MatchGroup> mgList_t = new List<MatchGroup>();
+            //grid.Rows.ForEach((gr) =>
+            //{
+            //    mgList_t.AddRange(gr.isContinuousRow());
+            //});
+            //mgList_t.ForEach((mg) => { mg.countPossible(mg.Length, true, grid);});
+
+            //mgList_t = new List<MatchGroup>();
+            //grid.Columns.ForEach((gc) =>
+            //{
+            //    mgList_t.AddRange(gc.isContinuousColumn());
+            //});
+
+            //mgList_t.ForEach((mg) => { mg.countPossible(mg.Length, false, grid); });
+
+            List<int> pc = new List<int>();
+
+            for (int i = 0; i < grid.Cells.Count; i++)
+            {
+                pc.Add(grid.Cells[i].possibleCnt);
+            }
+
+
+            int a = 0;
+
+        }
+
+
+
+
+
+        //public GridCell GetLowermostX(MatchGrid grid)
+        //{
+        //    if (grid.Cells.Count == 0) return null;
+        //    GridCell l = grid.Cells[0];
+        //    for (int i = 0; i < grid.Cells.Count; i++) if (grid.Cells[i].Column < l.Column) l = grid.Cells[i];
+        //    return l;
+        //}
+
+        //public GridCell GetTopmostX(MatchGrid grid)
+        //{
+        //    if (grid.Cells.Count == 0) return null;
+        //    GridCell t = grid.Cells[0];
+        //    for (int i = 0; i < grid.Cells.Count; i++) if (grid.Cells[i].Column > t.Column) t = grid.Cells[i];
+        //    return t;
+        //}
+
+        //public GridCell GetLowermostY(MatchGrid grid)
+        //{
+        //    if (grid.Cells.Count == 0) return null;
+        //    GridCell l = grid.Cells[0];
+        //    for (int i = 0; i < grid.Cells.Count; i++) if (grid.Cells[i].Row > l.Row) l = grid.Cells[i];
+        //    return l;
+        //}
+
+        //public GridCell GetTopmostY(MatchGrid grid)
+        //{
+        //    if (grid.Cells.Count == 0) return null;
+        //    GridCell t = grid.Cells[0];
+        //    for (int i = 0; i < grid.Cells.Count; i++) if (grid.Cells[i].Row < t.Row) t = grid.Cells[i];
+        //    return t;
+        //}
+
+
+
+
+
+
+
+
+
+
 
 
     }
+
+
+
+
+
+
 
 
 }

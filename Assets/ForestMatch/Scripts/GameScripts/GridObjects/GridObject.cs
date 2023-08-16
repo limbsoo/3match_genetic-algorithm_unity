@@ -149,6 +149,12 @@ namespace Mkey
 
         }
 
+        public virtual GridObject Create1(GridCell parent, Action<int> TargetCollectEvent)
+        {
+            return parent ? Instantiate(this, parent.transform) : Instantiate(this);
+        }
+
+
         public virtual GridObject Create(GridCell parent, Action<int> TargetCollectEvent)
         {
             return parent? Instantiate(this, parent.transform) : Instantiate(this);
