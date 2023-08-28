@@ -11,6 +11,7 @@ using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEditor.VersionControl;
+using UnityEditorInternal.VersionControl;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.UI;
@@ -759,6 +760,8 @@ namespace Mkey
                     //mh.grid.mgList[target_num].SwapEstimate();
                     //mgList에서 랜덤하게 해서 변종확률?
 
+                    p.shortCutCnt++;
+
                     int number = Random.Range(0, matchedTarget.Count - 1);
 
                     for(int i = 0; i < mh.grid.mgList.Count; i++) 
@@ -842,8 +845,6 @@ namespace Mkey
                 //    target_num = collectMatch[number];
                 //}
 
-                p.numMove--;
-                p.curState = 2;
             }
         }
 
@@ -893,7 +894,7 @@ namespace Mkey
                     }
                  }
 
-
+                p.allMove++;
                 //MatchGroupsHelper helper = new MatchGroupsHelper(mh.grid);
                 //helper.CollectMatchGroups1(mh.grid);
 
@@ -931,24 +932,120 @@ namespace Mkey
                 MatchObject m = sC.GetRandomObjectPrefab(LcSet, goSet);
                 mh.grid.Cells[i].SetObject1(m);
 
-                //if (i == 11 || i == 14 || i == 16 || i == 19 || i == 21 || i == 24 || i == 26 || i == 29)
-                ////if ( i == 9 || i == 13 || i == 14)
-                //{
-                //    BlockedObject b = sC.GetRandomBlockedObjectPrefab(LcSet, goSet);
-                //    mh.grid.Cells[i].SetObject1(b);
-                //}
+                //664
 
-                //if (
+                if (
+                   //289
+                   //i == 9 || i == 10 || i == 13 || i == 14 ||
+                   //i == 17 || i == 18 || i == 21 || i == 22 ||
+                   //i == 25 || i == 26 || i == 30 ||
+                   //i == 33 || i == 34 || i == 38
 
-                //    i == 11 || i == 14 || 
-                //    i == 16 || i == 19 ||
-                //    i == 21 || i == 24 ||
-                //    i == 26 || i== 29)
-                ////if ( i == 9 || i == 13 || i == 14)
-                //{
-                //    BlockedObject b = sC.GetRandomBlockedObjectPrefab(LcSet, goSet);
-                //    mh.grid.Cells[i].SetObject1(b);
-                //}
+                   //553
+                   i == 0 ||
+                   i == 11 || i == 12 ||
+                   i == 17 || i == 18 || i == 19 || i == 20 ||
+                   i == 25 || i == 26 || i == 27 || i == 28 ||
+                   i == 33 || i == 34 || i == 35 || i == 36
+
+                   //i == 9 || i == 10 || i == 13 || i == 14 ||
+                   //i == 17 || i == 18 ||
+                   //i == 25 || i == 26 || i == 29 || i == 30
+
+
+                   ////346
+                   //i == 9 || i == 10 || i == 13 || i == 14 ||
+                   //i == 17 || i == 18 || i == 21 || i == 22 ||
+                   //i == 25 || i == 26 || i == 29 || i == 30 
+
+                   ////256
+                   //i == 9 || i == 10 || i == 13 || i == 14 ||
+                   //i == 17 || i == 18 || i == 21 || i == 22 ||
+                   //i == 25 || i == 26 || i == 29 || i == 30 ||
+                   //i == 33 || i == 34 || i == 37 || i == 38
+
+
+                   ////624
+                   //i == 9
+
+                   ////548
+                   //i == 9 || i == 10 ||
+                   //i == 17 || i == 18
+
+                   ////440
+                   //i == 9 || i == 10 || i == 11 ||
+                   //i == 17 || i == 18 || i == 19 ||
+                   //i == 25 || i == 26 || i == 27
+
+                   ////300
+                   //i == 9 || i == 10 || i == 11 || i == 12 ||
+                   //i == 17 || i == 18 || i == 19 || i == 20 ||
+                   //i == 25 || i == 26 || i == 27 || i == 28 ||
+                   //i == 33 || i == 34 || i == 35 || i == 36
+
+                   ////488
+                   //i == 10 ||
+                   //i == 17 || i == 18 || i == 19 ||
+                   //i == 26
+
+                   ////306
+                   //i == 10 ||
+                   //i == 17 || i == 18 || i == 19 ||
+                   //i == 26 || i == 29 ||
+                   //i == 36 || i == 37 || i == 38 ||
+                   //i == 45
+
+                   ////200
+                   //i == 10 ||
+                   //i == 17 || i == 18 || i == 19 ||
+                   //i == 26 || i == 29 ||
+                   //i == 33 || i == 36 || i == 37 || i == 38 ||
+                   //i == 40 || i == 41 || i == 42 || i == 45 ||
+                   //i == 49
+
+                   ////168
+                   //i == 10 ||
+                   //i == 17 || i == 18 || i == 19 ||
+                   //i == 26 || i == 29 ||
+                   //i == 33 || i == 36 || i == 37 || i == 38 ||
+                   //i == 40 || i == 41 || i == 42 || i == 45 ||
+                   //i == 49 || i == 55 ||
+                   //i == 62 || i == 63
+
+                   ////110
+                   //i == 7 ||
+                   //i == 10 || i == 14 || i == 15 ||
+                   //i == 17 || i == 18 || i == 19 || i == 23 ||
+                   //i == 26 || i == 29 ||
+                   //i == 33 || i == 36 || i == 37 || i == 38 ||
+                   //i == 40 || i == 41 || i == 42 || i == 45 ||
+                   //i == 49 || i == 55 ||
+                   //i == 62 || i == 63
+
+                   ////92
+                   //i == 9 || i == 10 || i == 13 || i == 14 ||
+                   //i == 17 || i == 18 || i == 21 || i == 22 ||
+                   //i == 25 || i == 26 || i == 29 || i == 30 ||
+                   //i == 33 || i == 38 ||
+                   //i == 43 || i == 44 ||
+                   //i == 48 || i == 49 || i == 54 || i == 55 ||
+                   //i == 56 || i == 57 || i == 58 || i == 61 || i == 62 || i == 63 
+
+
+                   //i == 9 || i == 10 || i == 13 || i == 14 ||
+                   //i == 17 || i == 18 || i == 21 || i == 22 ||
+                   //i == 25 || i == 26 || i == 29 || i == 30 ||
+                   //i == 32 || i == 33 || i == 38 || i == 39 ||
+                   //i == 40 || i == 41 || i == 43 || i == 44 || i == 46 || i == 47 ||
+                   //i == 48 || i == 49 || i == 54 || i == 55 ||
+                   //i == 56 || i == 57 || i == 58 || i == 59 || i == 60 || i == 61 || i == 62 || i == 63 
+
+
+                   )
+                {
+                    BlockedObject b = sC.GetRandomBlockedObjectPrefab(LcSet, goSet);
+                    mh.grid.Cells[i].SetObject1(b);
+                }
 
                 //if (p.genes[i] == '1')
                 //{
@@ -956,6 +1053,94 @@ namespace Mkey
                 //    mh.grid.Cells[i].SetObject1(b);
                 //}
             }
+
+            //public List<GridCell> GetAllByID(int id)
+            //{
+            //    List<GridCell> res = new List<GridCell>();
+            //    foreach (var item in Cells)
+            //    {
+            //        if (item.HaveObjectWithID(id))
+            //        {
+            //            res.Add(item);
+            //        }
+            //    }
+            //    return res;
+
+
+
+            
+                //List<MatchGroup> matchedTarget = new List<MatchGroup>();
+
+                //foreach (var mc in mh.grid.mgList)
+                //{
+                //    foreach (var item in mh.curTargets)
+                //    {
+                //        List<int> mg_cell = mc.Cells[0].GetGridObjectsIDs();
+
+                //        if (mg_cell[0] == item.Key)
+                //        {
+                //            matchedTarget.Add(mc);
+                //            break;
+                //        }
+                //    }
+                //}
+
+
+
+            //List<int> list = new List<int>();
+            //List<int> s_list = new List<int>();
+
+            //foreach (var item in Cells)
+            //{
+            //    s_list = item.GetGridObjectsIDs();
+            //    list.Add(s_list[0]);
+            //}
+
+            mh.grid.RemoveMatches1();
+
+           // List<int> lis1t = new List<int>();
+           // List<int> s_list1 = new List<int>();
+
+
+           // foreach (var item in Cells)
+           // {
+           //     s_list1 = item.GetGridObjectsIDs();
+           //     lis1t.Add(s_list1[0]);
+           // }
+
+
+           //List<int> res = Cells[0].GetGridObjectsIDs();
+
+
+            //for (int i = 0; i < mh.grid.Cells.Count; i++)
+            //{
+            //    if(mh.grid.Cells[i].HaveObjectWithID(0))
+            //    {
+
+            //    }
+            //}
+
+
+
+            //for (int i = 0; i < 7; i++)
+            //{
+            //    MatchObject m = sC.GetPickMatchObject(LcSet, goSet, i);
+
+            //    int value = 0;
+
+            //    foreach (var item in mh.curTargets)
+            //    {
+            //        if (m.ID == item.Value.ID)
+            //        {
+            //            value = item.Value.NeedCount;
+            //            break;
+            //        }
+            //    }
+
+            //    ga.targetNeedCnt.Add(value);
+            //}
+
+
         }
 
         public void initalizeMatchBlock(DNA<char> p, SpawnController sC)
@@ -1036,39 +1221,46 @@ namespace Mkey
         public void makeFeasibleFitness(DNA<char> p, SpawnController sC, Transform trans)
         {
             List<int> moveContainer = new List<int>();
-            List<int> obstructionRateContainer = new List<int>();
 
+            List<int> nMoveContainer = new List<int>();
 
+            List<int> shortCutCntContainer = new List<int>();
+
+            List<int> list = new List<int>();
 
             for (int repeatIdx = 0; repeatIdx < ga.repeat; repeatIdx++)
             {
                 initalizeGrid(p, sC);
                 //initalizeMatchBlock(p, sC);
-
                 //mh.createAvailableMatchGroup(mh.grid);
 
-                //MatchGroup matchGroup = new MatchGroup();
-                //for (int i = 0; i < mh.grid.Cells.Count; i++) mh.grid.Cells[i].possibleCnt = 0;
-                //for (int i = 0; i < mh.grid.Cells.Count; i++)
-                //{
-                //    matchGroup.countPossible(mh.grid, i);
-                //}
 
-                //int a = 0;
+                //////////////////////////////////////////////////////////////
+                ///
+                if(ga.isPossible)
+                {
+                    MatchGroup matchGroup = new MatchGroup();
+                    for (int i = 0; i < mh.grid.Cells.Count; i++) mh.grid.Cells[i].possibleCnt = 0;
 
-                //for (int i = 0; i < mh.grid.Cells.Count; i++)
-                //{
-                //    a += mh.grid.Cells[i].possibleCnt;
-                //}
+                    for (int i = 0; i < mh.grid.Cells.Count; i++) matchGroup.countPossible(mh.grid, i);
+
+                    for (int i = 0; i < mh.grid.Cells.Count; i++)
+                    {
+                        ga.possibleCnt += mh.grid.Cells[i].possibleCnt;
+                        list.Add(mh.grid.Cells[i].possibleCnt);
+                    }
+                    ga.isPossible = false;
+                }
 
 
-
+                p.allMove = 0;
                 //int tryCnt = 0;
                 p.numMove = ga.moveLimit;
                 p.targetClear = false;
                 p.maxedOut = false;
                 p.curState = 0;
                 p.obstructionRate = 0;
+                p.shortCutCnt = 0;
 
                 foreach (var item in mh.curTargets) item.Value.InitCurCount();
 
@@ -1091,16 +1283,24 @@ namespace Mkey
                     //tryCnt++;
                 }
 
-                obstructionRateContainer.Add(p.obstructionRate);
+                shortCutCntContainer.Add(p.shortCutCnt);
+                //shortCutCntContainer.Add(p.obstructionRate);
 
                 if (p.maxedOut == true || p.targetClear == false)
                 {
                     moveContainer.Add(ga.moveLimit);
+                    nMoveContainer.Add(ga.moveLimit);
+
                     //continue;
-                } 
+                }
 
-                else moveContainer.Add(p.numMove);
-
+                //////// 교체함
+                else
+                {
+                    moveContainer.Add(ga.moveLimit - p.numMove);
+                    nMoveContainer.Add(p.allMove);
+                }
+                
                 //mh.CancelTweens(mh.grid);
                 //else num_move_container.Add(0);
             }
@@ -1112,7 +1312,11 @@ namespace Mkey
             ga.repeatMovements.Add(moveContainer);
             ga.repeatMovementsCnt++;
 
-            ga.obstructionRates.Add(obstructionRateContainer);
+            ga.allMovements.Add(nMoveContainer);
+
+
+
+            ga.shorCutRates.Add(shortCutCntContainer);
 
             if (ga.curGenerationBestFitness < p.fitness)
             {
@@ -1172,6 +1376,14 @@ namespace Mkey
 
             ga.repeatMovements = new List<List<int>>();
             ga.obstructionRates = new List<List<int>>();
+            ga.shorCutRates = new List<List<int>>();
+
+            ga.targetNeedCnt = new List<int>();
+            ga.possibleCnt = 0;
+            ga.isPossible = true;
+
+
+            ga.allMovements = new List<List<int>>();
 
             //initalizeGrid1(sC);
 
@@ -1257,13 +1469,17 @@ namespace Mkey
                 else cs.bestMoves.Add(ga.bestMoves);
 
 
-
-
-
-
-
                 if (ga.bestFitness >= ga.targetFitness) break;
                 ga.NewGeneration();
+
+
+                //List<int> mg_cell = GetGridObjectsIDs();
+
+
+                //foreach (var item in mh.curTargets) item.Value.InitCurCount();
+
+
+
 
 
                 //if (ga.feasibleParent == null)
@@ -1311,6 +1527,26 @@ namespace Mkey
                 cs.curBestMoves,
                 cs.bestMoves
             };
+
+
+            for (int i = 0; i < 7; i++)
+            {
+                MatchObject m = sC.GetPickMatchObject(LcSet, goSet, i);
+
+                int value = 0;
+
+                foreach (var item in mh.curTargets)
+                {
+                    if (m.ID == item.Value.ID)
+                    {
+                        value = item.Value.NeedCount;
+                        break;
+                    }
+                }
+
+                ga.targetNeedCnt.Add(value);
+            }
+
 
             cs.write(ga, Cells);
             //cs.write1(ga);
@@ -1451,6 +1687,91 @@ namespace Mkey
 #endif
         }
         #endregion fill grid
+
+
+        internal void RemoveMatches1()
+        {
+            SpawnController sC = SpawnController.Instance;
+            int minMatch = 3;
+            GridCell[] gc_row = new GridCell[minMatch];
+            GridCell[] gc_col = new GridCell[minMatch];
+            System.Func<GridCell[], bool> isEqual = (gcl) =>
+            {
+                if (gcl == null || gcl.Length == 0) return false;
+                foreach (var item in gcl)
+                    if (!item || !item.Match) return false;
+
+                int id = gcl[0].Match.ID;
+
+                foreach (var item in gcl)
+                    if (item.Match.ID != id) return false;
+                return true;
+            };
+            List<GridObject> mod_list;
+            for (int i = 0; i < vertSize; i++)
+            {
+                for (int j = 0; j < horSize; j++)
+                {
+                    if (Rows[i][j].Blocked || Rows[i][j].IsDisabled) continue;
+                    for (int m = 0; m < minMatch; m++)
+                    {
+                        gc_row[m] = this[i, j - m];
+                        gc_col[m] = this[i - m, j];
+                    }
+                    mod_list = new List<GridObject>();
+                    bool rowHasMatches = false;
+                    bool colHasMatches = false;
+
+                    if (isEqual(gc_row)) rowHasMatches = true;
+                    if (isEqual(gc_col)) colHasMatches = true;
+
+                    if (rowHasMatches || colHasMatches)
+                    {
+                        if (gc_col[1] && gc_col[1].Match) mod_list.Add(sC.GetMainObjectPrefab(goSet, gc_col[1].Match.ID));
+                        if (gc_row[1] && gc_row[1].Match) mod_list.Add(sC.GetMainObjectPrefab(goSet, gc_row[1].Match.ID));
+                    }
+                    if (mod_list.Count > 0)
+                    {
+                        Rows[i][j].GetComponent<GridCell>().SetObject((sC.GetMainRandomObjectPrefab(LcSet, goSet, mod_list)));
+                    }
+                    
+                }
+            }
+#if UNITY_EDITOR
+            // double test
+            for (int i = 0; i < vertSize; i++)
+            {
+                for (int j = 0; j < horSize; j++)
+                {
+                    if (Rows[i][j].Blocked || Rows[i][j].IsDisabled) continue;
+                    for (int m = 0; m < minMatch; m++)
+                    {
+                        gc_row[m] = this[i, j - m];
+                        gc_col[m] = this[i - m, j];
+                    }
+                    mod_list = new List<GridObject>();
+                    bool rowHasMatches = false;
+                    bool colHasMatches = false;
+
+                    if (isEqual(gc_row)) rowHasMatches = true;
+                    if (isEqual(gc_col)) colHasMatches = true;
+
+                    if (rowHasMatches || colHasMatches)
+                    {
+                        if (gc_col[1] && gc_col[1].Match) mod_list.Add(sC.GetMainObjectPrefab(goSet, gc_col[1].Match.ID));
+                        if (gc_row[1] && gc_row[1].Match) mod_list.Add(sC.GetMainObjectPrefab(goSet, gc_row[1].Match.ID));
+                        Debug.Log("----------------------------Found matches--------------------------------------");
+                    }
+                    if (mod_list.Count > 0)
+                    {
+                        Rows[i][j].GetComponent<GridCell>().SetObject((sC.GetMainRandomObjectPrefab(LcSet, goSet, mod_list)));
+                    }
+                        
+
+                }
+            }
+#endif
+        }
     }
 }
 

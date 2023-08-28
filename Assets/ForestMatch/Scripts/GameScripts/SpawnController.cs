@@ -60,11 +60,15 @@ namespace Mkey
 
         ////////////////////////////////////////////////////////////////////////
 
-        public MatchObject GetPickMatchObject(LevelConstructSet lCSet, GameObjectsSet gOSet,int ID)
+        public MatchObject GetPickMatchObject(LevelConstructSet lCSet, GameObjectsSet gOSet,int idx)
         {
             List<MatchObject> gridObjects = lCSet.GetMatchObjects(gOSet);
+
+
+            return gridObjects[idx];
+
             //gridObjects.Shuffle();
-            return gridObjects.Count > 0 ? gridObjects[0] : null;
+            //return gridObjects.Count > 0 ? gridObjects[0] : null;
         }
 
 

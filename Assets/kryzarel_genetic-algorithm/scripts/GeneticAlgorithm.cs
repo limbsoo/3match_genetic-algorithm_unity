@@ -8,9 +8,9 @@ public class GeneticAlgorithm<T>
     public int elitism = 2;
     public float mutationRate = 0.01f;
 
-    public int generationLimit = 399;
+    public int generationLimit = 100 - 1;
     public int repeat = 20;
-    public int moveLimit = 120;
+    public int moveLimit = 200;
 
     public int targetMove = 30;
     public double targetStd = 15;
@@ -47,8 +47,15 @@ public class GeneticAlgorithm<T>
     public List<List<int>> repeatMovements;
     public int repeatMovementsCnt;
 
-    public List<List<int>> obstructionRates;
 
+    public List<List<int>> allMovements;
+
+    public List<List<int>> obstructionRates;
+    public List<List<int>> shorCutRates;
+
+    public List<int> targetNeedCnt;
+    public int possibleCnt;
+    public bool isPossible;
 
     public GeneticAlgorithm(int dnaSize, Random random, Func<T> getRandomGene)
 	{

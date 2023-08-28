@@ -55,7 +55,7 @@ public class CSVFileWriter : MonoBehaviour
 
     public void write(GeneticAlgorithm<char> ga, List<GridCell> Cells)
     {
-        string[] tempData = new string[mixedList.Count + 1];
+        string[] tempData = new string[100];
 
         //tempData[0] = string.Empty;
         //tempData[1] = "generation";
@@ -75,7 +75,7 @@ public class CSVFileWriter : MonoBehaviour
         //tempData[15] = "bestMoves";
         //data.Add(tempData);
 
-        string[] gaDatas = new string[29];
+        string[] gaDatas = new string[34];
 
         gaDatas[0] = "Limit";
         gaDatas[1] = "populationSize";
@@ -101,157 +101,156 @@ public class CSVFileWriter : MonoBehaviour
         gaDatas[21] = ga.targetStd.ToString();
         gaDatas[22] = "targetFitness";
         gaDatas[23] = ga.targetFitness.ToString();
-        gaDatas[24] = "targetBlocks";
-        gaDatas[25] = "name";
-        gaDatas[26] = "Apple";
-        gaDatas[27] = "needCnt";
-        gaDatas[28] = 15.ToString();
 
-        int check = 0;
+
+        gaDatas[24] = "targetCnt";
+        gaDatas[25] = ga.targetNeedCnt[0].ToString();
+        gaDatas[26] = ga.targetNeedCnt[1].ToString();
+        gaDatas[27] = ga.targetNeedCnt[2].ToString();
+        gaDatas[28] = ga.targetNeedCnt[3].ToString();
+        gaDatas[29] = ga.targetNeedCnt[4].ToString();
+        gaDatas[30] = ga.targetNeedCnt[5].ToString();
+        gaDatas[31] = ga.targetNeedCnt[6].ToString();
+        gaDatas[32] = "possibleCnt";
+        gaDatas[33] = ga.possibleCnt.ToString();
+
+
+        int idx = 0;
+        //int excelLength = Math.Max(generation.Count, gaDatas.Length);
+
+
 
         for (int i = 0; i < generation.Count; i++)
         {
-            tempData = new string[mixedList.Count + 1];
+            //tempData = new string[mixedList.Count + 1];
+            tempData = new string[13];
 
-            if (i < gaDatas.Length)
+            if (i < gaDatas.Length) tempData[0] = gaDatas[i];
+
+            if (i < generation.Count)
             {
-                tempData[0] = gaDatas[i];
-                check++;
-            } 
-            else tempData[0] = string.Empty;
+                tempData[1] = generation[i].ToString();
+                tempData[2] = infeasiblePopulationCnt[i].ToString();
+                tempData[3] = feasiblePopulationCnt[i].ToString();
 
-            tempData[1] = generation[i].ToString();
-            tempData[2] = infeasiblePopulationCnt[i].ToString();
-            tempData[3] = feasiblePopulationCnt[i].ToString();
-            tempData[4] = curGenerationBestMean[i].ToString();
-            tempData[5] = bestMeanMove[i].ToString();
-            tempData[6] = curGenerationBestStd[i].ToString();
-            tempData[7] = bestStd[i].ToString();
-            tempData[8] = curGenerationBestFitness[i].ToString();
-            tempData[9] = bestFitness[i].ToString();
+                tempData[4] = curGenerationBestMean[i].ToString();
+                tempData[5] = curGenerationBestStd[i].ToString();
+                tempData[6] = curGenerationBestFitness[i].ToString();
 
-            tempData[10] = string.Empty;
-            tempData[11] = string.Empty;
-            tempData[12] = string.Empty;
-            tempData[13] = string.Empty;
+                tempData[7] = bestMeanMove[i].ToString();
+                tempData[8] = bestStd[i].ToString();
+                tempData[9] = bestFitness[i].ToString();
+
+                for (int j = 0; j < bestMoves[i].Count; j++)
+                {
+                    tempData[10] += bestMoves[i][j].ToString();
+                    tempData[10] += ",";
+                }
+
+                //if(ga.repeat < 20)
+                //{
+                //    int iidx = 0;
+                //    while(ga.repeat + iidx < 20)
+                //    {
+                //        tempData[10] += ",";
+                //        iidx++;
+                //    }
+                    
+                //}
+
+                for (int j = 0; j < ga.repeatMovements[idx].Count; j++)
+                {
+                    tempData[11] += ga.repeatMovements[idx][j].ToString();
+                    tempData[11] += ",";
+                    //tempData[12] += ga.shorCutRates[idx][j].ToString();
+                    //tempData[12] += ",";
+                    tempData[12] += ga.allMovements[idx][j].ToString();
+                    tempData[12] += ",";
 
 
-            //for (int j = 0; j < feasibleParent[i].Count; j += 2)
-            //{
-            //    tempData[10] += "(";
-            //    tempData[10] += feasibleParent[i][j].ToString();
-            //    tempData[10] += ". ";
-            //    tempData[10] += feasibleParent[i][j + 1].ToString();
-            //    tempData[10] += ")  ";
-            //}
+                }
 
-            //for (int j = 0; j < feasibleParentIdx[i].Count; j += 2)
-            //{
-            //    tempData[11] += "(";
-            //    tempData[11] += feasibleParentIdx[i][j].ToString();
-            //    tempData[11] += ". ";
-            //    tempData[11] += feasibleParentIdx[i][j + 1].ToString();
-            //    tempData[11] += ")  ";
-            //}
+                idx++;
 
-            //for (int j = 0; j < infeasibleParent[i].Count; j += 2)
-            //{
-            //    tempData[12] += "(";
-            //    tempData[12] += infeasibleParent[i][j].ToString();
-            //    tempData[12] += ". ";
-            //    tempData[12] += infeasibleParent[i][j + 1].ToString();
-            //    tempData[12] += ")  ";
-            //}
-
-            //for (int j = 0; j < infeasibleParentIdx[i].Count; j += 2)
-            //{
-            //    tempData[13] += "(";
-            //    tempData[13] += infeasibleParentIdx[i][j].ToString();
-            //    tempData[13] += ". ";
-            //    tempData[13] += infeasibleParentIdx[i][j + 1].ToString();
-            //    tempData[13] += ")  ";
-            //}
-
-            for (int j = 0; j < curBestMoves[i].Count; j++)
-            {
-                tempData[14] += curBestMoves[i][j].ToString();
-                tempData[14] += ",";
-            }
-            for (int j = 0; j < bestMoves[i].Count; j++)
-            {
-                tempData[15] += bestMoves[i][j].ToString();
-                tempData[15] += ",";
+                //tempData[12] += 1.ToString();
+                //tempData[12] += ",";
             }
 
             data.Add(tempData);
         }
 
+        tempData = new string[50];
+        //data.Add(tempData);
 
-        if(check < 29)
+        if(idx < ga.repeatMovements.Count)
         {
-            for (int i = check; i < 29; i++)
+            for (int j = 0; j < ga.repeatMovements[idx].Count; j++)
             {
-                tempData = new string[1];
-                tempData[0] = gaDatas[i];
-                data.Add(tempData);
+                tempData[10 + ga.repeat + 1] += ga.repeatMovements[idx][j].ToString();
+                tempData[10 + ga.repeat + 1] += ",";
             }
-            
+
+            for (int j = 0; j < ga.repeatMovements[idx].Count; j++)
+            {
+                //tempData[11 + ga.repeat + 1] += ga.shorCutRates[idx][j].ToString();
+                //tempData[11 + ga.repeat + 1] += ",";
+
+                tempData[11 + ga.repeat + 1] += ga.allMovements[idx][j].ToString();
+                tempData[11 + ga.repeat + 1] += ",";
+            }
+
+
+
+            idx++;
+
+            data.Add(tempData);
         }
 
-
-
-
-        string[] tempData1 = new string[1];
-        //tempData1[0] = string.Empty;
-        data.Add(tempData1);
-        data.Add(tempData1);
-
-        int idx = 0;
-        foreach (var rm in repeatMovementsCntContainer)
+        while (idx < ga.repeatMovements.Count)
         {
-            for (int j = 0; j < rm; j++)
+            if (idx < gaDatas.Length) tempData[0] = gaDatas[idx];
+
+            tempData = new string[50];
+
+            for (int j = 0; j < ga.repeatMovements[idx].Count; j++)
             {
-                tempData = new string[mixedList.Count +1];
+                tempData[10 + ga.repeat + 1] += ga.repeatMovements[idx][j].ToString();
+                tempData[10 + ga.repeat + 1] += ",";
 
-                for (int k = 0; k < ga.repeatMovements[idx].Count; k++)
-                {
-                    tempData[14] += ga.repeatMovements[idx][k].ToString();
-                    tempData[14] += ",";
-                }
+                //tempData[11 + ga.repeat + 1] += ga.shorCutRates[idx][j].ToString();
+                //tempData[11 + ga.repeat + 1] += ",";
 
-                tempData[14] += ",";
+                tempData[11 + ga.repeat + 1] += ga.allMovements[idx][j].ToString();
+                tempData[11 + ga.repeat + 1] += ",";
+            }
+            idx++;
 
-                for (int k = 0; k < ga.repeatMovements[idx].Count; k++)
-                {
-                    tempData[14] += ga.obstructionRates[idx][k].ToString();
-                    tempData[14] += ",";
-                }
+            data.Add(tempData);
+        }
 
+        if (data.Count < gaDatas.Length)
+        {
+            while(data.Count < gaDatas.Length)
+            {
+                tempData = new string[13];
+                tempData[0] = gaDatas[idx];
                 idx++;
-
                 data.Add(tempData);
             }
-            //data.Add(tempData1);
         }
-
+        
 
 
         string[][] output = new string[data.Count][];
 
-        for (int i = 0; i < output.Length; i++)
-        {
-            output[i] = data[i];
-        }
+        for (int i = 0; i < output.Length; i++) output[i] = data[i];
 
         int length = output.GetLength(0);
         string delimiter = ",";
 
         StringBuilder sb = new StringBuilder();
 
-        for (int index = 0; index < length; index++)
-        {
-            sb.AppendLine(string.Join(delimiter, output[index]));
-        }
+        for (int index = 0; index < length; index++) sb.AppendLine(string.Join(delimiter, output[index]));
 
         String filePath = Application.dataPath + "/CSV/geneticAlgorithm.csv";
         StreamWriter outStream = System.IO.File.CreateText(filePath);
@@ -259,6 +258,269 @@ public class CSVFileWriter : MonoBehaviour
         outStream.WriteLine(sb);
         outStream.Close();
     }
+
+    //public void write(GeneticAlgorithm<char> ga, List<GridCell> Cells)
+    //{
+    //    string[] tempData = new string[mixedList.Count + 1];
+
+    //    //tempData[0] = string.Empty;
+    //    //tempData[1] = "generation";
+    //    //tempData[2] = "infeasiblePopulationCnt";
+    //    //tempData[3] = "feasiblePopulationCnt";
+    //    //tempData[4] = "curGenerationBestMean";
+    //    //tempData[5] = "bestMeanMove";
+    //    //tempData[6] = "curGenerationBestStd";
+    //    //tempData[7] = "bestStd";
+    //    //tempData[8] = "curGenerationBestFitness";
+    //    //tempData[9] = "bestFitness";
+    //    //tempData[10]= "feasibleParent";
+    //    //tempData[11] = "feasibleParentIdx";
+    //    //tempData[12] = "infeasibleParent";
+    //    //tempData[13] = "infeasibleParentIdx";
+    //    //tempData[14] = "curBestMoves";
+    //    //tempData[15] = "bestMoves";
+    //    //data.Add(tempData);
+
+    //    string[] gaDatas = new string[29];
+
+    //    gaDatas[0] = "Limit";
+    //    gaDatas[1] = "populationSize";
+    //    gaDatas[2] = ga.populationSize.ToString();
+    //    gaDatas[3] = "elitism";
+    //    gaDatas[4] = ga.elitism.ToString();
+    //    gaDatas[5] = "mutationRate";
+    //    gaDatas[6] = ga.mutationRate.ToString();
+    //    gaDatas[7] = "generationLimit";
+    //    gaDatas[8] = ga.generationLimit.ToString();
+    //    gaDatas[9] = "moveLimit";
+    //    gaDatas[10] = ga.moveLimit.ToString();
+    //    gaDatas[11] = "repeat";
+    //    gaDatas[12] = ga.repeat.ToString();
+    //    gaDatas[13] = "INPUT";
+    //    gaDatas[14] = "gridRowSize";
+    //    gaDatas[15] = Cells[0].GRow.Length.ToString();
+    //    gaDatas[16] = "gridColSize";
+    //    gaDatas[17] = Cells[0].GColumn.Length.ToString();
+    //    gaDatas[18] = "targetMove";
+    //    gaDatas[19] = ga.targetMove.ToString();
+    //    gaDatas[20] = "targetStd";
+    //    gaDatas[21] = ga.targetStd.ToString();
+    //    gaDatas[22] = "targetFitness";
+    //    gaDatas[23] = ga.targetFitness.ToString();
+    //    gaDatas[24] = "targetBlocks";
+    //    gaDatas[25] = "name";
+    //    gaDatas[26] = "Apple";
+    //    gaDatas[27] = "needCnt";
+    //    gaDatas[28] = 15.ToString();
+
+    //    int check = 0;
+    //    int idx = 0;
+    //    int idx2 = 0;
+
+    //    for (int i = 0; i < generation.Count; i++)
+    //    {
+    //        tempData = new string[mixedList.Count + 1];
+
+    //        if (i < gaDatas.Length)
+    //        {
+    //            tempData[0] = gaDatas[i];
+    //            check++;
+    //        } 
+    //        else tempData[0] = string.Empty;
+
+    //        tempData[1] = generation[i].ToString();
+    //        tempData[2] = infeasiblePopulationCnt[i].ToString();
+    //        tempData[3] = feasiblePopulationCnt[i].ToString();
+
+    //        tempData[4] = curGenerationBestMean[i].ToString();
+    //        tempData[5] = curGenerationBestStd[i].ToString();
+    //        tempData[6] = curGenerationBestFitness[i].ToString();
+
+    //        tempData[7] = bestMeanMove[i].ToString();
+    //        tempData[8] = bestStd[i].ToString();
+    //        tempData[9] = bestFitness[i].ToString();
+
+    //        //tempData[4] = curGenerationBestMean[i].ToString();
+    //        //tempData[5] = bestMeanMove[i].ToString();
+    //        //tempData[6] = curGenerationBestStd[i].ToString();
+    //        //tempData[7] = bestStd[i].ToString();
+    //        //tempData[8] = curGenerationBestFitness[i].ToString();
+    //        //tempData[9] = bestFitness[i].ToString();
+
+    //        tempData[10] = string.Empty;
+    //        tempData[11] = string.Empty;
+    //        tempData[12] = string.Empty;
+    //        tempData[13] = string.Empty;
+
+
+    //        //for (int j = 0; j < feasibleParent[i].Count; j += 2)
+    //        //{
+    //        //    tempData[10] += "(";
+    //        //    tempData[10] += feasibleParent[i][j].ToString();
+    //        //    tempData[10] += ". ";
+    //        //    tempData[10] += feasibleParent[i][j + 1].ToString();
+    //        //    tempData[10] += ")  ";
+    //        //}
+
+    //        //for (int j = 0; j < feasibleParentIdx[i].Count; j += 2)
+    //        //{
+    //        //    tempData[11] += "(";
+    //        //    tempData[11] += feasibleParentIdx[i][j].ToString();
+    //        //    tempData[11] += ". ";
+    //        //    tempData[11] += feasibleParentIdx[i][j + 1].ToString();
+    //        //    tempData[11] += ")  ";
+    //        //}
+
+    //        //for (int j = 0; j < infeasibleParent[i].Count; j += 2)
+    //        //{
+    //        //    tempData[12] += "(";
+    //        //    tempData[12] += infeasibleParent[i][j].ToString();
+    //        //    tempData[12] += ". ";
+    //        //    tempData[12] += infeasibleParent[i][j + 1].ToString();
+    //        //    tempData[12] += ")  ";
+    //        //}
+
+    //        //for (int j = 0; j < infeasibleParentIdx[i].Count; j += 2)
+    //        //{
+    //        //    tempData[13] += "(";
+    //        //    tempData[13] += infeasibleParentIdx[i][j].ToString();
+    //        //    tempData[13] += ". ";
+    //        //    tempData[13] += infeasibleParentIdx[i][j + 1].ToString();
+    //        //    tempData[13] += ")  ";
+    //        //}
+
+    //        //for (int j = 0; j < curBestMoves[i].Count; j++)
+    //        //{
+    //        //    tempData[14] += curBestMoves[i][j].ToString();
+    //        //    tempData[14] += ",";
+    //        //}
+
+
+    //        //for (int j = 0; j < bestMoves[i].Count; j++)
+    //        //{
+    //        //    tempData[15] += bestMoves[i][j].ToString();
+    //        //    tempData[15] += ",";
+    //        //}
+
+    //        for (int j = 0; j < bestMoves[i].Count; j++)
+    //        {
+    //            tempData[14] += bestMoves[i][j].ToString();
+    //            tempData[14] += ",";
+    //        }
+
+    //        for (int j = 0; j < ga.repeatMovements[idx].Count; j++)
+    //        {
+    //            tempData[15] += ga.repeatMovements[idx][j].ToString();
+    //            tempData[15] += ",";
+    //        }
+    //        idx++;
+
+    //        data.Add(tempData);
+    //    }
+
+
+    //    foreach (var rm in repeatMovementsCntContainer)
+    //    {
+    //        for (int j = 0; j < rm; j++)
+    //        {
+    //            tempData = new string[mixedList.Count + 1];
+
+    //            for (int k = 0; k < ga.repeatMovements[idx].Count; k++)
+    //            {
+    //                tempData[14] += ga.repeatMovements[idx][k].ToString();
+    //                tempData[14] += ",";
+    //            }
+
+    //            tempData[14] += ",";
+
+    //            for (int k = 0; k < ga.repeatMovements[idx].Count; k++)
+    //            {
+    //                tempData[14] += ga.obstructionRates[idx][k].ToString();
+    //                tempData[14] += ",";
+    //            }
+
+    //            idx++;
+
+    //            data.Add(tempData);
+    //        }
+    //        //data.Add(tempData1);
+    //    }
+
+
+
+
+    //    if (check < 29)
+    //    {
+    //        for (int i = check; i < 29; i++)
+    //        {
+    //            tempData = new string[1];
+    //            tempData[0] = gaDatas[i];
+    //            data.Add(tempData);
+    //        }
+
+    //    }
+
+
+
+
+    //    //string[] tempData1 = new string[1];
+    //    ////tempData1[0] = string.Empty;
+    //    //data.Add(tempData1);
+    //    //data.Add(tempData1);
+
+    //    //int idx = 0;
+    //    //foreach (var rm in repeatMovementsCntContainer)
+    //    //{
+    //    //    for (int j = 0; j < rm; j++)
+    //    //    {
+    //    //        tempData = new string[mixedList.Count +1];
+
+    //    //        for (int k = 0; k < ga.repeatMovements[idx].Count; k++)
+    //    //        {
+    //    //            tempData[14] += ga.repeatMovements[idx][k].ToString();
+    //    //            tempData[14] += ",";
+    //    //        }
+
+    //    //        tempData[14] += ",";
+
+    //    //        for (int k = 0; k < ga.repeatMovements[idx].Count; k++)
+    //    //        {
+    //    //            tempData[14] += ga.obstructionRates[idx][k].ToString();
+    //    //            tempData[14] += ",";
+    //    //        }
+
+    //    //        idx++;
+
+    //    //        data.Add(tempData);
+    //    //    }
+    //    //    //data.Add(tempData1);
+    //    //}
+
+
+
+    //    string[][] output = new string[data.Count][];
+
+    //    for (int i = 0; i < output.Length; i++)
+    //    {
+    //        output[i] = data[i];
+    //    }
+
+    //    int length = output.GetLength(0);
+    //    string delimiter = ",";
+
+    //    StringBuilder sb = new StringBuilder();
+
+    //    for (int index = 0; index < length; index++)
+    //    {
+    //        sb.AppendLine(string.Join(delimiter, output[index]));
+    //    }
+
+    //    String filePath = Application.dataPath + "/CSV/geneticAlgorithm.csv";
+    //    StreamWriter outStream = System.IO.File.CreateText(filePath);
+
+    //    outStream.WriteLine(sb);
+    //    outStream.Close();
+    //}
 
 
     //public void write1(GeneticAlgorithm<char> ga)

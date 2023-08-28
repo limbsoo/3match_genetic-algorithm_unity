@@ -23,6 +23,9 @@ public class DNA<T>
     public bool maxedOut = false;
 
     public int obstructionRate = 0;
+    public int shortCutCnt = 0;
+
+    public int allMove = 0;
 
     public DNA(int size, Random random, Func<T> getRandomGene, bool shouldInitGenes = true)
 	{

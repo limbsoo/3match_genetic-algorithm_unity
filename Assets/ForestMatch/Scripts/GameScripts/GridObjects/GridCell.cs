@@ -1003,6 +1003,19 @@ namespace Mkey
             return false;
         }
 
+        //public int getObjectID(int idx)
+        //{
+        //    int id = 0;
+
+        //    GridObject[] gOs = GetComponentsInChildren<GridObject>();
+        //    foreach (var gO in gOs)
+        //    {
+        //        if (gO && gO.ID == id) return true;
+        //    }
+        //    return id;
+        //}
+
+
         public void CreateBorder()
         {
             if(Left && LeftBotCorner)
