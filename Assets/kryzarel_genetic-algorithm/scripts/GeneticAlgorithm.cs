@@ -3,12 +3,12 @@ using System.Collections.Generic;
 
 public class GeneticAlgorithm<T>
 {
-    public int generation = 0;
+    public int generation = 1;
     public int populationSize = 1;
     public int elitism = 2;
     public float mutationRate = 0.01f;
 
-    public int generationLimit = 100 - 1;
+    public int generationLimit = 100;
     public int repeat = 20;
     public int moveLimit = 200;
 

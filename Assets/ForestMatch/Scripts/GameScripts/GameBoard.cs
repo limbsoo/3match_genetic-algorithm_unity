@@ -443,6 +443,8 @@ namespace Mkey
 
         public void makeBoard(MatchGrid g, Spawner spawnerPrefab,SpawnerStyle spawnerStyle, Transform GridContainer, Transform trans, LevelConstructSet IC)
         {
+            int cnt = 0;
+
             g.haveFillPath = IC.HaveFillPath(g);
 
             if (g.haveFillPath)
@@ -452,11 +454,16 @@ namespace Mkey
                     if (g[item.Row, item.Column]) g[item.Row, item.Column].CreateSpawner(spawnerPrefab, Vector2.zero);
                 }
             }
+
             else
             {
                 g.Columns.ForEach((c) =>
                 {
-                    c.CreateTopSpawner(spawnerPrefab, spawnerStyle, GridContainer.lossyScale, trans);
+                    //if (cnt != 0) c.CreateTopSpawner(spawnerPrefab, spawnerStyle, GridContainer.lossyScale, trans);
+
+                    //cnt++;
+
+                     c.CreateTopSpawner(spawnerPrefab, spawnerStyle, GridContainer.lossyScale, trans);
                 });
             }
 
@@ -519,6 +526,8 @@ namespace Mkey
 
                     //g.FillGrid(true);
 
+                    //int cnt = 0;
+
                     //// create spawners
                     //g.haveFillPath = lC.HaveFillPath(g);
                     //if (g.haveFillPath)
@@ -533,7 +542,11 @@ namespace Mkey
                     //{
                     //    g.Columns.ForEach((c) =>
                     //    {
-                    //        c.CreateTopSpawner(spawnerPrefab, spawnerStyle, GridContainer.lossyScale, transform);
+                    //        if(cnt == 1 || cnt == 7) c.CreateTopSpawner(spawnerPrefab, spawnerStyle, GridContainer.lossyScale, transform);
+
+                    //        cnt++;
+
+                    //        //c.CreateTopSpawner(spawnerPrefab, spawnerStyle, GridContainer.lossyScale, transform);
                     //    });
                     //}
 
@@ -544,6 +557,8 @@ namespace Mkey
                     //{
                     //    c.CreateBorder();
                     //});
+
+                    ///////////////////////////////////////////////////
 
                     return g;
                 };
@@ -2019,7 +2034,7 @@ namespace Mkey
         public void CancelTweens()
         {
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            //mgList = new List<MatchGroup>();
+            mgList = new List<MatchGroup>();
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
             if (showSequence != null) { showSequence.Break(); showSequence = null; }
