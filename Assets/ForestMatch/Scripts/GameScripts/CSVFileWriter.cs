@@ -55,7 +55,7 @@ public class CSVFileWriter : MonoBehaviour
 
     public void write(GeneticAlgorithm<char> ga, List<GridCell> Cells)
     {
-        string[] tempData = new string[100];
+        string[] tempData = new string[200];
 
         //tempData[0] = string.Empty;
         //tempData[1] = "generation";
@@ -75,7 +75,7 @@ public class CSVFileWriter : MonoBehaviour
         //tempData[15] = "bestMoves";
         //data.Add(tempData);
 
-        string[] gaDatas = new string[34];
+        string[] gaDatas = new string[200];
 
         gaDatas[0] = "Limit";
         gaDatas[1] = "populationSize";
@@ -104,15 +104,45 @@ public class CSVFileWriter : MonoBehaviour
 
 
         gaDatas[24] = "targetCnt";
-        gaDatas[25] = ga.targetNeedCnt[0].ToString();
-        gaDatas[26] = ga.targetNeedCnt[1].ToString();
-        gaDatas[27] = ga.targetNeedCnt[2].ToString();
-        gaDatas[28] = ga.targetNeedCnt[3].ToString();
-        gaDatas[29] = ga.targetNeedCnt[4].ToString();
-        gaDatas[30] = ga.targetNeedCnt[5].ToString();
-        gaDatas[31] = ga.targetNeedCnt[6].ToString();
+
+        int index2 = 25;
+
+        for(int i= 0;i < 7;i++)
+        {
+            gaDatas[index2] = ga.targetNeedCnt[i].ToString();
+            index2++;
+        }
+        //gaDatas[25] = ga.targetNeedCnt[0].ToString();
+        //gaDatas[26] = ga.targetNeedCnt[1].ToString();
+        //gaDatas[27] = ga.targetNeedCnt[2].ToString();
+        //gaDatas[28] = ga.targetNeedCnt[3].ToString();
+        //gaDatas[29] = ga.targetNeedCnt[4].ToString();
+        //gaDatas[30] = ga.targetNeedCnt[5].ToString();
+        //gaDatas[31] = ga.targetNeedCnt[6].ToString();
+
+
         gaDatas[32] = "possibleCnt";
         gaDatas[33] = ga.possibleCnt.ToString();
+
+        gaDatas[34] = "possibleCounting";
+
+        //index2 = 35;
+
+        //for (int i = 0; i < 17; i++)
+        //{
+        //    gaDatas[index2] = ga.possibleCounting[i].ToString();
+        //    index2++;
+        //}
+
+        index2 = 35;
+
+        for (int i = 0; i < ga.possibleCountingList.Count; i++)
+        {
+            gaDatas[index2] = ga.possibleCountingList[i].ToString();
+            index2++;
+        }
+
+
 
 
         int idx = 0;
@@ -179,7 +209,7 @@ public class CSVFileWriter : MonoBehaviour
             data.Add(tempData);
         }
 
-        tempData = new string[50];
+        tempData = new string[60];
         //data.Add(tempData);
 
         if(idx < ga.repeatMovements.Count)
@@ -210,7 +240,7 @@ public class CSVFileWriter : MonoBehaviour
         {
             if (idx < gaDatas.Length) tempData[0] = gaDatas[idx];
 
-            tempData = new string[50];
+            tempData = new string[60];
 
             for (int j = 0; j < ga.repeatMovements[idx].Count; j++)
             {

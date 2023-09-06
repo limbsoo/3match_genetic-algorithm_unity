@@ -455,8 +455,10 @@ namespace Mkey
         }
 
         public bool[,] isVisited;
+        public int[,] connected;
+        public int[] possibleArea;
 
-        public bool haveInfeasibleCell(MatchGrid grid, int cnt)
+        public bool isConnected(MatchGrid grid, int cnt)
         {
             GridCell[,] curCell = new GridCell[grid.Columns.Count, grid.Rows.Count];
 
@@ -469,21 +471,94 @@ namespace Mkey
             }
 
             isVisited = new bool[grid.Columns.Count, grid.Rows.Count];
+            connected = new int[grid.Columns.Count, grid.Rows.Count];
+
+            //for (int i = 0; i < grid.Columns.Count; i++)
+            //{
+            //    for (int j = 0; j < grid.Rows.Count; j++)
+            //    {
+            //        isVisited[i,j] = true;
+
+            //        if(curCell[i, j].DynamicObject)
+            //        {
+            //            bool isReachSpawn = false;
+            //            visitConnectCell(curCell, i, j, isReachSpawn);
+            //            break;
+            //        }
+
+
+            //        //if (!isVisited[i, j] && curCell[i, j].DynamicObject)
+            //        //{
+            //        //    bool isReachSpawn = false;
+            //        //    visitConnectCell(curCell, i, j, isReachSpawn);
+            //        //    if (!isReachSpawn) return false;
+            //        //}
+            //    }
+
+            //    break;
+            //}
+
+            for (int row = 0; row < grid.Rows.Count; row++)
+            {
+                for (int col = 0; col < grid.Columns.Count; col++)
+                {
+                    if(!curCell[col, row].DynamicObject)
+                    {
+                        isVisited[col, row] = true;
+                        connected[col, row] = grid.Columns.Count + 1;
+                    }
+                }
+            }
+
+            int area = 1;
+
+            for (int row = 0; row < grid.Rows.Count; row++)
+            {
+                int col = 0;
+
+                if (!isVisited[col, row])
+                {
+                    isVisited[col, row] = true;
+                    bool isReachSpawn = false;
+                    visitConnectCell(curCell, col, row, isReachSpawn);
+
+                    for (int i = 0; i < grid.Columns.Count; i++)
+                    {
+                        for (int j = 0; j < grid.Rows.Count; j++)
+                        {
+                            if (isVisited[i,j] && connected[i, j] == 0) connected[i, j] = area;
+                        }
+                    }
+
+                    area++;
+                }
+            }
+
+            possibleArea = new int[grid.Columns.Count + 2];
 
             for (int i = 0; i < grid.Columns.Count; i++)
             {
                 for (int j = 0; j < grid.Rows.Count; j++)
                 {
-                    isVisited[i,j] = true;
-
-                    if (!isVisited[i, j] && curCell[i, j].DynamicObject)
-                    {
-                        bool isReachSpawn = false;
-                        visitConnectCell(curCell, i, j, isReachSpawn);
-                        if (!isReachSpawn) return false;
-                    }
+                    possibleArea[connected[i, j]] += grid.Cells[i * grid.Rows.Count + j].possibleCnt;
                 }
             }
+
+
+            //int[,] possibleCnts = new int[grid.Columns.Count, grid.Rows.Count];
+            //int[] cnts = new int[16];
+
+            //for (int i = 0; i < grid.Columns.Count; i++)
+            //{
+            //    for (int j = 0; j < grid.Rows.Count; j++)
+            //    {
+            //        possibleCnts[i, j] = grid.Cells[i * grid.Rows.Count + j].possibleCnt;
+            //        cnts[grid.Cells[i * grid.Rows.Count + j].possibleCnt]++;
+            //    }
+            //}
+
+
+
             return true;
         }
 
@@ -496,12 +571,12 @@ namespace Mkey
                 visitConnectCell(curCell, col, row - 1, isReachSpawn);
             }
 
-            //if (canVisit(curCell, col, row + 1)) // Bottom
-            //{
-            //    if (row == 0) isReachSpawn = true;
-            //    isVisited[col,row + 1] = true;
-            //    visitConnectCell(curCell, col, row + 1, isReachSpawn);
-            //}
+            if (canVisit(curCell, col, row + 1)) // Bottom
+            {
+                if (row == 0) isReachSpawn = true;
+                isVisited[col, row + 1] = true;
+                visitConnectCell(curCell, col, row + 1, isReachSpawn);
+            }
 
             if (canVisit(curCell, col - 1, row)) // Left
             {
@@ -517,12 +592,12 @@ namespace Mkey
                 visitConnectCell(curCell, col + 1, row, isReachSpawn);
             }
 
-            if (canVisit(curCell, col - 1, row - 1)) // TopLeft
-            {
-                if (row == 0) isReachSpawn = true;
-                isVisited[col - 1,row - 1] = true;
-                visitConnectCell(curCell, col - 1, row - 1, isReachSpawn);
-            }
+            //if (canVisit(curCell, col - 1, row - 1)) // TopLeft
+            //{
+            //    if (row == 0) isReachSpawn = true;
+            //    isVisited[col - 1,row - 1] = true;
+            //    visitConnectCell(curCell, col - 1, row - 1, isReachSpawn);
+            //}
 
             //if (canVisit(curCell, col - 1, row + 1)) // BottomLeft
             //{
@@ -531,12 +606,12 @@ namespace Mkey
             //    visitConnectCell(curCell, col - 1, row + 1, isReachSpawn);
             //}
 
-            if (canVisit(curCell, col + 1, row - 1)) // TopRight
-            {
-                if (row == 0) isReachSpawn = true;
-                isVisited[col + 1, row - 1] = true;
-                visitConnectCell(curCell, col + 1, row - 1, isReachSpawn);
-            }
+            //if (canVisit(curCell, col + 1, row - 1)) // TopRight
+            //{
+            //    if (row == 0) isReachSpawn = true;
+            //    isVisited[col + 1, row - 1] = true;
+            //    visitConnectCell(curCell, col + 1, row - 1, isReachSpawn);
+            //}
 
             //if (canVisit(curCell, col + 1, row + 1)) // BottomRight
             //{
@@ -548,11 +623,24 @@ namespace Mkey
 
         bool canVisit(GridCell[,] curCell, int col, int row)
         {
-            if (col >= 0 && col < curCell[col,row].GColumn.Length && row >= 0 && row < curCell[col, row].GRow.Length)
+            if( col >= 0 && row >= 0 && col < grid.Columns.Count && row < grid.Rows.Count)
             {
-                if (curCell[col, row].DynamicObject) return true;
+                if(!isVisited[col, row] && curCell[col, row].DynamicObject) return true;
                 else return false;
+
+                //if (col >= 0 && row >= 0 && col <= grid.Columns.Count && row <= grid.Rows.Count)
+                //{
+                //    if (curCell[col, row].DynamicObject) return true;
+                //        else return false;
+                //}
             }
+
+
+            //if (col >= 0 && col < curCell[col,row].GColumn.Length && row >= 0 && row < curCell[col, row].GRow.Length)
+            //{
+            //    if (curCell[col, row].DynamicObject) return true;
+            //    else return false;
+            //}
 
             else return false;
         }

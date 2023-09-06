@@ -922,6 +922,28 @@ namespace Mkey
             }
         }
 
+        public void initalizeGridOnlyCheckFeasible(DNA<char> p, SpawnController sC)
+        {
+            for (int i = 0; i < mh.grid.Cells.Count; i++)
+            {
+                mh.grid.Cells[i].DestroyGridObjects();
+
+                if (p.genes[i] == '1')
+                {
+                    BlockedObject b = sC.GetRandomBlockedObjectPrefab(LcSet, goSet);
+                    mh.grid.Cells[i].SetObject1(b);
+                }
+
+                else 
+                {
+                    MatchObject m = sC.GetRandomObjectPrefab(LcSet, goSet);
+                    mh.grid.Cells[i].SetObject1(m);
+                }
+
+
+            }
+        }
+
 
         public void initalizeGrid(DNA<char> p, SpawnController sC)
         {
@@ -933,54 +955,76 @@ namespace Mkey
                 mh.grid.Cells[i].SetObject1(m);
 
 
-                if (
-                                        //i == 24 || i == 25 || i == 26 || i == 27 || i == 28 || i == 29 || i == 30 || i == 31 ||
-                                        //i == 32 || i == 33 || i == 34 || i == 35 || i == 36 || i == 37 || i == 38 || i == 39 ||
-                                        //i == 40 || i == 41 || i == 42 || i == 43 || i == 44 || i == 45 || i == 46 || i == 47 ||
-                                        //i == 48 || i == 49 || i == 50 || i == 51 || i == 52 || i == 53 || i == 54 || i == 55 ||
-                                        //i == 56 || i == 57 || i == 58 || i == 59 || i == 60 || i == 61 || i == 62 || i == 63 
+                //if (
 
-                                        //i == 1 ||
-                                        //i == 9 ||
-                                        //i == 17 ||
-                                        //i == 25 ||
-                                        //i == 33 ||
-                                        //i == 41 ||
-                                        //i == 49 ||
-                                        //i == 57 ||
 
-                                        //i == 2 ||
-                                        //i == 10 ||
-                                        //i == 18 ||
-                                        //i == 26 ||
-                                        //i == 34 ||
-                                        //i == 42 ||
-                                        //i == 50 ||
-                                        //i == 58
+                //    //i == 24 || i == 25 || i == 26 || i == 27 || i == 28 || i == 29 || i == 30 || i == 31 ||
+                //    //i == 32 || i == 33 || i == 34 || i == 35 || i == 36 || i == 37 || i == 38 || i == 39 ||
+                //    //i == 40 || i == 41 || i == 42 || i == 43 || i == 44 || i == 45 || i == 46 || i == 47 ||
+                //    //i == 48 || i == 49 || i == 50 || i == 51 || i == 52 || i == 53 || i == 54 || i == 55 ||
+                //    //i == 56 || i == 57 || i == 58 || i == 59 || i == 60 || i == 61 || i == 62 || i == 63
 
-                    //i == 1 ||
-                    //i == 9 ||
-                    //i == 17 ||
-                    //i == 25 ||
-                    //i == 33 ||
-                    //i == 41 ||
-                    //i == 49 ||
-                    //i == 57 ||
+                //    //i == 1 ||
+                //    //i == 9 ||
+                //    //i == 17 ||
+                //    //i == 25 ||
+                //    //i == 33 ||
+                //    //i == 41 ||
+                //    //i == 49 ||
+                //    //i == 57 
 
-                    i == 3 ||
-                    i == 11 ||
-                    i == 19 ||
-                    i == 27 ||
-                    i == 35 ||
-                    i == 43 ||
-                    i == 51 ||
-                    i == 59
+                //    //||
 
-                    )
-                {
-                    BlockedObject b = sC.GetRandomBlockedObjectPrefab(LcSet, goSet);
-                    mh.grid.Cells[i].SetObject1(b);
-                }
+                //    //i == 2 ||
+                //    //i == 10 ||
+                //    //i == 18 ||
+                //    //i == 26 ||
+                //    //i == 34 ||
+                //    i == 42 ||
+                //    //i == 50 ||
+                //    //i == 58
+
+                //    //i == 1 ||
+                //    //i == 9 ||
+                //    //i == 17 ||
+                //    //i == 25 ||
+                //    //i == 33 ||
+                //    //i == 41 ||
+                //    i == 49 ||
+                //    i == 57 ||
+
+                //    //i == 3 ||
+                //    //i == 11 ||
+                //    i == 19 ||
+                //    i == 27 ||
+                //    i == 35 ||
+                //    //i == 43 ||
+                //    i == 51 ||
+                //    i == 59
+
+                //    ////193
+                //    //i == 3 || i == 5 ||
+                //    //i == 10 || i == 11 || i == 13 ||
+                //    //i == 17 || i == 18 || i == 19 || i == 21 ||
+                //    //i == 25 || i == 26 || i == 29 ||
+                //    //i == 32 || i == 33 || i == 37 || i == 38 ||
+                //    //i == 45 || i == 47
+
+                //    ////163
+                //    //i == 3 || i == 6 ||
+                //    //i == 10 || i == 11 || i == 14 ||
+                //    //i == 17 || i == 18 || i == 19 || i == 22 ||
+                //    //i == 25 || i == 26 || i == 30 ||
+                //    //i == 32 || i == 33 || i == 38 ||
+                //    //i == 45 ||
+                //    //i == 52 ||
+                //    //i == 59
+
+                //    )
+                //{
+                //    BlockedObject b = sC.GetRandomBlockedObjectPrefab(LcSet, goSet);
+                //    mh.grid.Cells[i].SetObject1(b);
+                //}
 
 
 
@@ -1091,14 +1135,33 @@ namespace Mkey
                     mh.grid.Cells[i].SetObject1(m);
                 }
             }
+
+            mh.grid.RemoveMatches1();
         }
 
         public bool EstimateFeasible(MatchGrid grid, DNA<char> p)
         {
             int cnt = 0;
-            bool isFeasible = mh.haveInfeasibleCell(grid, cnt);
+            bool isFeasible = mh.isConnected(grid, cnt);
             return false;
         }
+        public void estimateIsFeasible(DNA<char> p)
+        {
+            mh.createFillPath(mh.grid);
+            p.infeasibleCellCnt = 0;
+
+            for (int i = mh.grid.Columns.Count(); i < mh.grid.Cells.Count; i++)
+            {
+                if (mh.grid.Cells[i].Blocked == null && mh.grid.Cells[i].fillPathToSpawner == null)
+                {
+                    if (mh.grid.Cells[i].Neighbors.Top.Blocked != null) p.infeasibleCellCnt++;
+                }
+            }
+
+            if (p.infeasibleCellCnt == 0) p.isFeasible = true;
+            else p.isFeasible = false;
+        }
+
 
         public void estimateFeasible(DNA<char> p)
         {
@@ -1163,12 +1226,14 @@ namespace Mkey
 
             List<int> shortCutCntContainer = new List<int>();
 
-            List<int> list = new List<int>();
+            List<int> possibleList = new List<int>();
+
+            List<int> spawnList = new List<int>();
 
             for (int repeatIdx = 0; repeatIdx < ga.repeat; repeatIdx++)
             {
-                initalizeGrid(p, sC);
-                //initalizeMatchBlock(p, sC);
+                //initalizeGrid(p, sC);
+                initalizeMatchBlock(p, sC);
                 //mh.createAvailableMatchGroup(mh.grid);
 
 
@@ -1181,13 +1246,57 @@ namespace Mkey
 
                     for (int i = 0; i < mh.grid.Cells.Count; i++) matchGroup.countPossible(mh.grid, i);
 
+
+                    ga.possibleCounting = new int[mh.grid.Columns.Count * mh.grid.Rows.Count];
+
                     for (int i = 0; i < mh.grid.Cells.Count; i++)
                     {
                         ga.possibleCnt += mh.grid.Cells[i].possibleCnt;
-                        list.Add(mh.grid.Cells[i].possibleCnt);
+                        //possibleList.Add(mh.grid.Cells[i].possibleCnt);
+
+                        ga.possibleCounting[mh.grid.Cells[i].possibleCnt]++;
+
+                        ga.possibleCountingList.Add(mh.grid.Cells[i].possibleCnt);
                     }
+
+                    
+
+
+
+
+
+                    //for (int i = 0; i < mh.grid.Cells.Count; i++)
+                    //{
+                    //    if (mh.grid.Cells[i].fillPathToSpawner != null)
+                    //    {
+                    //        if(mh.grid.Cells[i].fillPathToSpawner.Count == 0)
+                    //        {
+                    //            spawnList.Add(mh.grid.Cells[i].Column);
+                    //        }
+
+                    //        else
+                    //        {
+                    //            int a = mh.grid.Cells[i].fillPathToSpawner[mh.grid.Cells[i].fillPathToSpawner.Count - 1].Column;
+                    //            spawnList.Add(a);
+                    //        }
+
+                    //    }
+
+                    //    else spawnList.Add(9);
+                    //}
+
+
+                    //mh.isConnected(mh.grid, 0);
+
+
+
+
                     ga.isPossible = false;
                 }
+
+
+
+
 
 
                 p.allMove = 0;
@@ -1304,147 +1413,159 @@ namespace Mkey
         void getMatch3Level(Transform trans)
         {
             SpawnController sC = SpawnController.Instance;
-
             CSVFileWriter cs = new CSVFileWriter();
 
             ga.bestMeanMove = 0;
             ga.bestStd = 0;
             ga.bestFitness = 0;
-
             ga.repeatMovements = new List<List<int>>();
             ga.obstructionRates = new List<List<int>>();
             ga.shorCutRates = new List<List<int>>();
-
             ga.targetNeedCnt = new List<int>();
             ga.possibleCnt = 0;
             ga.isPossible = true;
-
-
             ga.allMovements = new List<List<int>>();
+            ga.possibleCountingList = new List<int>();
 
-            //initalizeGrid1(sC);
+            int cnt = 0;
 
-            //MatchGroup matchGroup = new MatchGroup();
-            ////for (int i = 0; i < mh.grid.Cells.Count; i++) mh.grid.Cells[i].possibleCnt = 0;
-            //for (int i = 0; i < mh.grid.Cells.Count; i++)
-            //{
-            //    matchGroup.countPossible(mh.grid, i);
-            //}
+            int feasibleIdx = 0;
 
-            //int a = 0;
-
-            //for (int i = 0; i < mh.grid.Cells.Count; i++)
-            //{
-            //    a += mh.grid.Cells[i].possibleCnt;
-            //}
-
-            //List<int> pc = new List<int>();
-
-            //for (int i = 0; i < mh.grid.Cells.Count; i++)
-            //{
-            //    pc.Add(mh.grid.Cells[i].possibleCnt);
-            //}
-
-            while (ga.bestFitness < ga.targetFitness && ga.generation <= ga.generationLimit)
+            for(int i= 0;i<200;i++)
             {
-                ga.curGenerationBestMean = 0;
-                ga.curGenerationBestStd = 0;
-                ga.curGenerationBestFitness = 0;
-                ga.repeatMovementsCnt = 0;
-
-                foreach (DNA<char> p in ga.population)
+                for(int j = 0;j< ga.population.Count;j++)
                 {
-                    if (p.fitness != 0)
+                    initalizeGridOnlyCheckFeasible(ga.population[j], sC);
+                    estimateIsFeasible(ga.population[j]);
+                    if (ga.population[j].isFeasible)
                     {
-                        if (p.isFeasible) ga.feasiblePopulation.Add(p);
-                        else ga.infeasiblePopulation.Add(p);
+                        feasibleIdx = j;
+                        break;
                     }
-
-                    else
-                    {
-                        initalizeGrid(p, sC);
-                        estimateFeasible(p);
-                        calculateFitness(p, sC, trans);
-                    }
+                   
+                    calculateFitness(ga.population[j], sC, trans);
                 }
 
-                //double bestAverageMove = 0;
-                //double beststandardDeviation = 0;
-
-                ////for (int i = 0; i < ga.feasible_population.Count; i++)
-                ////{
-                ////    if(bestAverageMove < ga.feasible_population[i].average_move) bestAverageMove = ga.feasible_population[i].average_move;
-                ////    if (beststandardDeviation < ga.feasible_population[i].sd) beststandardDeviation = ga.feasible_population[i].sd;
-                ////}
-
-
-                cs.generation.Add(ga.generation);
-
-                if(ga.infeasiblePopulation == null) cs.infeasiblePopulationCnt.Add(0);
-                else cs.infeasiblePopulationCnt.Add(ga.infeasiblePopulation.Count());
-
-                if (ga.feasiblePopulation == null) cs.feasiblePopulationCnt.Add(0);
-                else cs.feasiblePopulationCnt.Add(ga.feasiblePopulation.Count());
-
-                //cs.infeasiblePopulationCnt.Add(ga.infeasiblePopulation.Count());
-                //cs.feasiblePopulationCnt.Add(ga.feasiblePopulation.Count());
-
-                cs.curGenerationBestMean.Add(ga.curGenerationBestMean);
-                cs.curGenerationBestStd.Add(ga.curGenerationBestStd);
-                cs.curGenerationBestFitness.Add(ga.curGenerationBestFitness);
-
-                cs.bestMeanMove.Add(ga.bestMeanMove);
-                cs.bestStd.Add(ga.bestStd);
-                cs.bestFitness.Add(ga.bestFitness);
-
-                cs.repeatMovementsCntContainer.Add(ga.repeatMovementsCnt);
-
-                if (ga.curBestMoves == null) cs.curBestMoves.Add(new List<int>() { -1 });
-                else cs.curBestMoves.Add(ga.curBestMoves);
-
-                if (ga.bestMoves == null) cs.bestMoves.Add(new List<int>() { -1 });
-                else cs.bestMoves.Add(ga.bestMoves);
-
-
-                if (ga.bestFitness >= ga.targetFitness) break;
-                ga.NewGeneration();
-
-
-                //List<int> mg_cell = GetGridObjectsIDs();
-
-
-                //foreach (var item in mh.curTargets) item.Value.InitCurCount();
-
-
-
-
-
-                //if (ga.feasibleParent == null)
-                //{
-                //    cs.feasibleParent.Add(new List<double>() { -1, -1 });
-                //    cs.feasibleParentIdx.Add(new List<int>() { -1, -1 });
-                //}
-
-                //else
-                //{
-                //    cs.feasibleParent.Add(new List<double>(ga.feasibleParent));
-                //    cs.feasibleParentIdx.Add(new List<int>(ga.feasibleParentIdx));
-                //}
-
-
-                //if (ga.infeasibleParent == null)
-                //{
-                //    cs.infeasibleParent.Add(new List<double>() { -1, -1 });
-                //    cs.infeasibleParentIdx.Add(new List<int>() { -1, -1 });
-                //}
-
-                //else
-                //{
-                //    cs.infeasibleParent.Add(new List<double>(ga.infeasibleParent));
-                //    cs.infeasibleParentIdx.Add(new List<int>(ga.infeasibleParentIdx));
-                //}
-
+                if (!ga.population[feasibleIdx].isFeasible)
+                {
+                    ga.NewGeneration();
+                    cnt++;
+                } 
+                else break;
             }
+
+
+
+
+            if(ga.population[feasibleIdx].isFeasible)
+            {
+                while (ga.generation <= ga.generationLimit)
+                {
+                    ga.curGenerationBestMean = 0;
+                    ga.curGenerationBestStd = 0;
+                    ga.curGenerationBestFitness = 0;
+                    ga.repeatMovementsCnt = 0;
+
+
+                    makeFeasibleFitness(ga.population[feasibleIdx], sC, trans);
+
+                    cs.generation.Add(ga.generation);
+
+                    if (ga.infeasiblePopulation == null) cs.infeasiblePopulationCnt.Add(0);
+                    else cs.infeasiblePopulationCnt.Add(ga.infeasiblePopulation.Count());
+
+                    if (ga.feasiblePopulation == null) cs.feasiblePopulationCnt.Add(0);
+                    else cs.feasiblePopulationCnt.Add(ga.feasiblePopulation.Count());
+
+                    cs.curGenerationBestMean.Add(ga.curGenerationBestMean);
+                    cs.curGenerationBestStd.Add(ga.curGenerationBestStd);
+                    cs.curGenerationBestFitness.Add(ga.curGenerationBestFitness);
+
+                    cs.bestMeanMove.Add(ga.bestMeanMove);
+                    cs.bestStd.Add(ga.bestStd);
+                    cs.bestFitness.Add(ga.bestFitness);
+
+                    cs.repeatMovementsCntContainer.Add(ga.repeatMovementsCnt);
+
+                    if (ga.curBestMoves == null) cs.curBestMoves.Add(new List<int>() { -1 });
+                    else cs.curBestMoves.Add(ga.curBestMoves);
+
+                    if (ga.bestMoves == null) cs.bestMoves.Add(new List<int>() { -1 });
+                    else cs.bestMoves.Add(ga.bestMoves);
+
+
+                    //if (ga.bestFitness >= ga.targetFitness) break;
+
+                    ga.generation++;
+                }
+
+                initalizeGridOnlyCheckFeasible(ga.population[feasibleIdx], sC);
+            }
+
+
+
+            //while (!ga.population[0].isFeasible)
+            //{
+            //    foreach (DNA<char> p in ga.population)
+            //    {
+            //        initalizeGridOnlyCheckFeasible(p, sC);
+            //        estimateIsFeasible(p);
+            //    }
+            //}
+
+
+            //while (ga.generation <= ga.generationLimit)
+            //{
+            //    ga.curGenerationBestMean = 0;
+            //    ga.curGenerationBestStd = 0;
+            //    ga.curGenerationBestFitness = 0;
+            //    ga.repeatMovementsCnt = 0;
+
+            //    foreach (DNA<char> p in ga.population)
+            //    {
+            //        if (p.fitness != 0)
+            //        {
+            //            if (p.isFeasible) ga.feasiblePopulation.Add(p);
+            //            else ga.infeasiblePopulation.Add(p);
+            //        }
+
+            //        else
+            //        {
+            //            initalizeGrid(p, sC);
+            //            estimateFeasible(p);
+            //            calculateFitness(p, sC, trans);
+            //        }
+            //    }
+
+            //    cs.generation.Add(ga.generation);
+
+            //    if (ga.infeasiblePopulation == null) cs.infeasiblePopulationCnt.Add(0);
+            //    else cs.infeasiblePopulationCnt.Add(ga.infeasiblePopulation.Count());
+
+            //    if (ga.feasiblePopulation == null) cs.feasiblePopulationCnt.Add(0);
+            //    else cs.feasiblePopulationCnt.Add(ga.feasiblePopulation.Count());
+
+            //    cs.curGenerationBestMean.Add(ga.curGenerationBestMean);
+            //    cs.curGenerationBestStd.Add(ga.curGenerationBestStd);
+            //    cs.curGenerationBestFitness.Add(ga.curGenerationBestFitness);
+
+            //    cs.bestMeanMove.Add(ga.bestMeanMove);
+            //    cs.bestStd.Add(ga.bestStd);
+            //    cs.bestFitness.Add(ga.bestFitness);
+
+            //    cs.repeatMovementsCntContainer.Add(ga.repeatMovementsCnt);
+
+            //    if (ga.curBestMoves == null) cs.curBestMoves.Add(new List<int>() { -1 });
+            //    else cs.curBestMoves.Add(ga.curBestMoves);
+
+            //    if (ga.bestMoves == null) cs.bestMoves.Add(new List<int>() { -1 });
+            //    else cs.bestMoves.Add(ga.bestMoves);
+
+
+            //    if (ga.bestFitness >= ga.targetFitness) break;
+
+            //    ga.NewGeneration();
+            //}
 
             cs.mixedList = new List<object>
             {
@@ -1486,10 +1607,194 @@ namespace Mkey
 
 
             cs.write(ga, Cells);
-            //cs.write1(ga);
-
-            initalizeGrid(ga.population[0], sC);
+            //initalizeGrid(ga.population[0], sC);
         }
+
+        //void getMatch3Level(Transform trans)
+        //{
+        //    SpawnController sC = SpawnController.Instance;
+        //    CSVFileWriter cs = new CSVFileWriter();
+
+        //    ga.bestMeanMove = 0;
+        //    ga.bestStd = 0;
+        //    ga.bestFitness = 0;
+        //    ga.repeatMovements = new List<List<int>>();
+        //    ga.obstructionRates = new List<List<int>>();
+        //    ga.shorCutRates = new List<List<int>>();
+        //    ga.targetNeedCnt = new List<int>();
+        //    ga.possibleCnt = 0;
+        //    ga.isPossible = true;
+        //    ga.allMovements = new List<List<int>>();
+        //    ga.possibleCountingList = new List<int>();
+
+        //    //initalizeGrid1(sC);
+
+        //    //MatchGroup matchGroup = new MatchGroup();
+        //    ////for (int i = 0; i < mh.grid.Cells.Count; i++) mh.grid.Cells[i].possibleCnt = 0;
+        //    //for (int i = 0; i < mh.grid.Cells.Count; i++)
+        //    //{
+        //    //    matchGroup.countPossible(mh.grid, i);
+        //    //}
+
+        //    //int a = 0;
+
+        //    //for (int i = 0; i < mh.grid.Cells.Count; i++)
+        //    //{
+        //    //    a += mh.grid.Cells[i].possibleCnt;
+        //    //}
+
+        //    //List<int> pc = new List<int>();
+
+        //    //for (int i = 0; i < mh.grid.Cells.Count; i++)
+        //    //{
+        //    //    pc.Add(mh.grid.Cells[i].possibleCnt);
+        //    //}
+
+        //    while (ga.bestFitness < ga.targetFitness && ga.generation <= ga.generationLimit)
+        //    {
+        //        ga.curGenerationBestMean = 0;
+        //        ga.curGenerationBestStd = 0;
+        //        ga.curGenerationBestFitness = 0;
+        //        ga.repeatMovementsCnt = 0;
+
+        //        foreach (DNA<char> p in ga.population)
+        //        {
+        //            if (p.fitness != 0)
+        //            {
+        //                if (p.isFeasible) ga.feasiblePopulation.Add(p);
+        //                else ga.infeasiblePopulation.Add(p);
+        //            }
+
+        //            else
+        //            {
+        //                initalizeGrid(p, sC);
+        //                estimateFeasible(p);
+        //                calculateFitness(p, sC, trans);
+        //            }
+        //        }
+
+        //        //double bestAverageMove = 0;
+        //        //double beststandardDeviation = 0;
+
+        //        ////for (int i = 0; i < ga.feasible_population.Count; i++)
+        //        ////{
+        //        ////    if(bestAverageMove < ga.feasible_population[i].average_move) bestAverageMove = ga.feasible_population[i].average_move;
+        //        ////    if (beststandardDeviation < ga.feasible_population[i].sd) beststandardDeviation = ga.feasible_population[i].sd;
+        //        ////}
+
+
+        //        cs.generation.Add(ga.generation);
+
+        //        if(ga.infeasiblePopulation == null) cs.infeasiblePopulationCnt.Add(0);
+        //        else cs.infeasiblePopulationCnt.Add(ga.infeasiblePopulation.Count());
+
+        //        if (ga.feasiblePopulation == null) cs.feasiblePopulationCnt.Add(0);
+        //        else cs.feasiblePopulationCnt.Add(ga.feasiblePopulation.Count());
+
+        //        //cs.infeasiblePopulationCnt.Add(ga.infeasiblePopulation.Count());
+        //        //cs.feasiblePopulationCnt.Add(ga.feasiblePopulation.Count());
+
+        //        cs.curGenerationBestMean.Add(ga.curGenerationBestMean);
+        //        cs.curGenerationBestStd.Add(ga.curGenerationBestStd);
+        //        cs.curGenerationBestFitness.Add(ga.curGenerationBestFitness);
+
+        //        cs.bestMeanMove.Add(ga.bestMeanMove);
+        //        cs.bestStd.Add(ga.bestStd);
+        //        cs.bestFitness.Add(ga.bestFitness);
+
+        //        cs.repeatMovementsCntContainer.Add(ga.repeatMovementsCnt);
+
+        //        if (ga.curBestMoves == null) cs.curBestMoves.Add(new List<int>() { -1 });
+        //        else cs.curBestMoves.Add(ga.curBestMoves);
+
+        //        if (ga.bestMoves == null) cs.bestMoves.Add(new List<int>() { -1 });
+        //        else cs.bestMoves.Add(ga.bestMoves);
+
+
+        //        if (ga.bestFitness >= ga.targetFitness) break;
+        //        ga.NewGeneration();
+
+
+        //        //List<int> mg_cell = GetGridObjectsIDs();
+
+
+        //        //foreach (var item in mh.curTargets) item.Value.InitCurCount();
+
+
+
+
+
+        //        //if (ga.feasibleParent == null)
+        //        //{
+        //        //    cs.feasibleParent.Add(new List<double>() { -1, -1 });
+        //        //    cs.feasibleParentIdx.Add(new List<int>() { -1, -1 });
+        //        //}
+
+        //        //else
+        //        //{
+        //        //    cs.feasibleParent.Add(new List<double>(ga.feasibleParent));
+        //        //    cs.feasibleParentIdx.Add(new List<int>(ga.feasibleParentIdx));
+        //        //}
+
+
+        //        //if (ga.infeasibleParent == null)
+        //        //{
+        //        //    cs.infeasibleParent.Add(new List<double>() { -1, -1 });
+        //        //    cs.infeasibleParentIdx.Add(new List<int>() { -1, -1 });
+        //        //}
+
+        //        //else
+        //        //{
+        //        //    cs.infeasibleParent.Add(new List<double>(ga.infeasibleParent));
+        //        //    cs.infeasibleParentIdx.Add(new List<int>(ga.infeasibleParentIdx));
+        //        //}
+
+        //    }
+
+        //    cs.mixedList = new List<object>
+        //    {
+        //        cs.generation,
+        //        cs.infeasiblePopulationCnt,
+        //        cs.feasiblePopulationCnt,
+        //        cs.curGenerationBestMean,
+        //        cs.curGenerationBestStd,
+        //        cs.curGenerationBestFitness,
+        //        cs.bestMeanMove,
+        //        cs.bestStd,
+        //        cs.bestFitness,
+        //        cs.feasibleParent,
+        //        cs.feasibleParentIdx,
+        //        cs.infeasibleParent,
+        //        cs.infeasibleParentIdx,
+        //        cs.curBestMoves,
+        //        cs.bestMoves
+        //    };
+
+
+        //    for (int i = 0; i < 7; i++)
+        //    {
+        //        MatchObject m = sC.GetPickMatchObject(LcSet, goSet, i);
+
+        //        int value = 0;
+
+        //        foreach (var item in mh.curTargets)
+        //        {
+        //            if (m.ID == item.Value.ID)
+        //            {
+        //                value = item.Value.NeedCount;
+        //                break;
+        //            }
+        //        }
+
+        //        ga.targetNeedCnt.Add(value);
+        //    }
+
+
+        //    cs.write(ga, Cells);
+        //    //cs.write1(ga);
+
+        //    initalizeGrid(ga.population[0], sC);
+        //}
 
         public List<MatchGroup> mgList;
         public Match_Helper mh;

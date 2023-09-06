@@ -4,7 +4,7 @@ using System.Collections.Generic;
 public class GeneticAlgorithm<T>
 {
     public int generation = 1;
-    public int populationSize = 1;
+    public int populationSize = 10;
     public int elitism = 2;
     public float mutationRate = 0.01f;
 
@@ -56,6 +56,10 @@ public class GeneticAlgorithm<T>
     public List<int> targetNeedCnt;
     public int possibleCnt;
     public bool isPossible;
+
+    public List<int> possibleCountingList;
+
+    public int[] possibleCounting;
 
     public GeneticAlgorithm(int dnaSize, Random random, Func<T> getRandomGene)
 	{
@@ -115,9 +119,9 @@ public class GeneticAlgorithm<T>
 
             for (int i = 0; i < infeasiblePopulation.Count; i++)
             {
-                if (i < elitism) population.Add(infeasiblePopulation[i]);
+                //if (i < elitism) population.Add(infeasiblePopulation[i]);
 
-                else
+                //else
                 {
                     DNA<T> parent1 = ChooseParentInInfeasible();
                     DNA<T> parent2 = ChooseParentInInfeasible();
@@ -131,7 +135,7 @@ public class GeneticAlgorithm<T>
             infeasibleFitnessSum = 0;
             infeasiblePopulation.Clear();
         }
-        generation++;
+        //generation++;
     }
 
 
