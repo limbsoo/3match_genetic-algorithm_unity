@@ -61,7 +61,9 @@ public class GeneticAlgorithm<T>
 
     public int[] possibleCounting;
 
-    public GeneticAlgorithm(int dnaSize, Random random, Func<T> getRandomGene)
+    public int blockeCnt = 0;
+
+    public GeneticAlgorithm(int dnaSize, Random random, Func<T> getRandomGene, Func<T[]> GetGenes)
 	{
         population = new List<DNA<T>>(populationSize);
         feasiblePopulation = new List<DNA<T>>();
@@ -72,7 +74,7 @@ public class GeneticAlgorithm<T>
 
         for (int i = 0; i < populationSize; i++)
         {
-            population.Add(new DNA<T>(dnaSize, random, getRandomGene, shouldInitGenes: true));
+            population.Add(new DNA<T>(dnaSize, random, getRandomGene, GetGenes, shouldInitGenes: true));
         }
     }
 

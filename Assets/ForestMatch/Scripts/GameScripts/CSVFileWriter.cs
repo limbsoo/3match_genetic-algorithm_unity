@@ -124,7 +124,13 @@ public class CSVFileWriter : MonoBehaviour
         gaDatas[32] = "possibleCnt";
         gaDatas[33] = ga.possibleCnt.ToString();
 
-        gaDatas[34] = "possibleCounting";
+
+
+        gaDatas[34] = "blockedCnt";
+        gaDatas[35] = ga.blockeCnt.ToString();
+
+
+        gaDatas[36] = "possibleCounting";
 
         //index2 = 35;
 
@@ -134,7 +140,7 @@ public class CSVFileWriter : MonoBehaviour
         //    index2++;
         //}
 
-        index2 = 35;
+        index2 = 37;
 
         for (int i = 0; i < ga.possibleCountingList.Count; i++)
         {

@@ -685,6 +685,20 @@ namespace Mkey
             }
 
 
+            for (int i = 0; i < Cells.Count; i++)
+            {
+                List<int> res = mh.grid.Cells[i].GetGridObjectsIDs();
+
+                if (mh.CellsContainer[i] != res[0])
+                {
+                    mh.CellsContainer[i] = res[0];
+                    mh.cellCnts[i]++;
+                }
+            }
+
+
+
+
             foreach (var item in mh.curTargets)
             {
                 if (item.Value.Achieved) p.targetClear = true;
@@ -904,10 +918,55 @@ namespace Mkey
             collect_cnt++;
         }
 
+
+        public List<int> randomObsatcles()
+        {
+            List<int> ob = new List<int>();
+
+            for(int i= 0;i < 5;i++)
+            {
+                int number = Random.Range(0, mh.grid.Cells.Count + 1);
+                ob.Add(number);
+            }
+            return ob;
+        }
+
+        public char[] GetGenes()
+        {
+            char[] ti = new char[Cells.Count];
+
+            List<int> newGenes = new List<int>();
+
+            for (int i = 0;i< Cells.Count; i++)
+            {
+                newGenes.Add(0);
+            }
+
+            for (int i = 0; i < 15; i++)
+            {
+                int number = Random.Range(0, Cells.Count);
+                newGenes[number] = 1;
+            }
+
+            for (int i = 0; i < Cells.Count; i++)
+            {
+                ti[i] = (char)(newGenes[i] + '0');
+            }
+
+
+                //int number = Random.Range(0, 2);
+                //return (char)(number + '0');
+
+                return ti;
+        }
+
+
         public char GetRandomGene()
         {
-            int number = Random.Range(0, 2);
-            return (char)(number + '0');
+            //int number = Random.Range(0, 2);
+            //return (char)(number + '0');
+
+            return (char)(0 + '0');
         }
 
         public void initalizeGrid1(SpawnController sC)
@@ -928,18 +987,80 @@ namespace Mkey
             {
                 mh.grid.Cells[i].DestroyGridObjects();
 
+                //if (
+
+
+                //    //i == 9 ||
+                //    //i == 17 ||
+                //    //i == 25 ||
+                //    //i == 33 ||
+                //    //i == 41 ||
+                //    //i == 49 ||
+                //    //i == 57 ||
+
+
+
+                //    i == 11 
+                //    //i == 19 ||
+                //    //i == 27 ||
+                //    //i == 35 ||
+                //    //i == 43 ||
+                //    //i == 51 ||
+                //    //i == 59
+
+
+                //    //i == 1 ||
+                //    //i == 9 ||
+                //    //i == 17 ||
+                //    //i == 25 ||
+                //    //i == 33 ||
+                //    //i == 41 ||
+                //    //i == 49 ||
+                //    //i == 57
+
+                //    //||
+
+                //    //i == 2 ||
+                //    //i == 10 ||
+                //    //i == 18 ||
+                //    //i == 26 ||
+                //    //i == 34 ||
+                //    //i == 42 ||
+                //    //i == 50 ||
+                //    //i == 58
+
+                //    //i == 3 || i == 6 ||
+                //    //i == 10 || i == 11 || i == 14 ||
+                //    //i == 17 || i == 18 || i == 19 || i == 22 ||
+                //    //i == 25 || i == 26 || i == 30 ||
+                //    //i == 32 || i == 33 || i == 38 ||
+                //    //i == 45 ||
+                //    //i == 52 ||
+                //    //i == 59
+
+                //    )
+                //{
+                //    BlockedObject b = sC.GetRandomBlockedObjectPrefab(LcSet, goSet);
+                //    mh.grid.Cells[i].SetObject1(b);
+
+                //}
+
+
+
+
                 if (p.genes[i] == '1')
                 {
                     BlockedObject b = sC.GetRandomBlockedObjectPrefab(LcSet, goSet);
                     mh.grid.Cells[i].SetObject1(b);
+
+
                 }
 
-                else 
+                else
                 {
                     MatchObject m = sC.GetRandomObjectPrefab(LcSet, goSet);
                     mh.grid.Cells[i].SetObject1(m);
                 }
-
 
             }
         }
@@ -1128,12 +1249,20 @@ namespace Mkey
         {
             for (int i = 0; i < mh.grid.Cells.Count; i++)
             {
-                if (p.genes[i] != '1')
+                if (mh.grid.Cells[i].Blocked == null)
                 {
-                    mh.grid.Cells[i].DestroyGridObjects();
+                    //mh.grid.Cells[i].DestroyGridObjects();
                     MatchObject m = sC.GetRandomObjectPrefab(LcSet, goSet);
                     mh.grid.Cells[i].SetObject1(m);
                 }
+
+
+                //if (p.genes[i] != '1')
+                //{
+                //    //mh.grid.Cells[i].DestroyGridObjects();
+                //    MatchObject m = sC.GetRandomObjectPrefab(LcSet, goSet);
+                //    mh.grid.Cells[i].SetObject1(m);
+                //}
             }
 
             mh.grid.RemoveMatches1();
@@ -1232,13 +1361,21 @@ namespace Mkey
 
             for (int repeatIdx = 0; repeatIdx < ga.repeat; repeatIdx++)
             {
+               
                 //initalizeGrid(p, sC);
                 initalizeMatchBlock(p, sC);
                 //mh.createAvailableMatchGroup(mh.grid);
 
 
+                mh.CellsContainer = new List<int>();
+                for (int i=0;i<Cells.Count;i++) 
+                {
+                    List<int> res = mh.grid.Cells[i].GetGridObjectsIDs();
+                    mh.CellsContainer.Add(res[0]);
+                }
+
                 //////////////////////////////////////////////////////////////
-                ///
+
                 if(ga.isPossible)
                 {
                     MatchGroup matchGroup = new MatchGroup();
@@ -1257,9 +1394,15 @@ namespace Mkey
                         ga.possibleCounting[mh.grid.Cells[i].possibleCnt]++;
 
                         ga.possibleCountingList.Add(mh.grid.Cells[i].possibleCnt);
+
+                        if (mh.grid.Cells[i].DynamicObject == null)
+                        {
+                            p.blockedCnt++;
+                        }
+                        
                     }
 
-                    
+                    ga.blockeCnt = p.blockedCnt;
 
 
 
@@ -1327,6 +1470,30 @@ namespace Mkey
 
                     //if (tryCnt > 5000) break;
                     //tryCnt++;
+                }
+
+
+                List<GridCell> gFreeCells = GetFreeCells(mh.grid, true);
+
+                if (gFreeCells.Count > 0)
+                {
+                    mh.createFillPath(mh.grid);
+                    while (gFreeCells.Count > 0)
+                    {
+                        mh.fillGridByStep(gFreeCells, () => { });
+                        gFreeCells = GetFreeCells(mh.grid, true);
+                    }
+                }
+
+                for (int i = 0; i < Cells.Count; i++)
+                {
+                    List<int> res = mh.grid.Cells[i].GetGridObjectsIDs();
+
+                    if (mh.CellsContainer[i] != res[0])
+                    {
+                        mh.CellsContainer[i] = res[0];
+                        mh.cellCnts[i]++;
+                    }
                 }
 
                 shortCutCntContainer.Add(p.shortCutCnt);
@@ -1427,6 +1594,9 @@ namespace Mkey
             ga.allMovements = new List<List<int>>();
             ga.possibleCountingList = new List<int>();
 
+
+            mh.cellCnts = new int[Cells.Count];
+
             int cnt = 0;
 
             int feasibleIdx = 0;
@@ -1435,6 +1605,8 @@ namespace Mkey
             {
                 for(int j = 0;j< ga.population.Count;j++)
                 {
+                    ga.population[j].blockedCnt = 0;
+
                     initalizeGridOnlyCheckFeasible(ga.population[j], sC);
                     estimateIsFeasible(ga.population[j]);
                     if (ga.population[j].isFeasible)
@@ -1502,6 +1674,14 @@ namespace Mkey
                 initalizeGridOnlyCheckFeasible(ga.population[feasibleIdx], sC);
             }
 
+
+
+            List<int> cellPossible = new List<int>();
+
+            for(int i= 0;i < Cells.Count;i++)
+            {
+                cellPossible.Add(mh.grid.Cells[i].possibleCnt);
+            }
 
 
             //while (!ga.population[0].isFeasible)
@@ -1804,7 +1984,7 @@ namespace Mkey
         internal void fillGrid(bool noMatches, MatchGrid g, Dictionary<int, TargetData> targets, Spawner spawnerPrefab, SpawnerStyle spawnerStyle, Transform GridContainer, Transform trans, LevelConstructSet IC)
         {
             randomGa = new System.Random();
-            ga = new GeneticAlgorithm<char>(Cells.Count, randomGa, GetRandomGene); //유전알고리즘 호출
+            ga = new GeneticAlgorithm<char>(Cells.Count, randomGa, GetRandomGene, GetGenes); //유전알고리즘 호출
 
             mh = new Match_Helper();
             mh.board = new GameBoard();

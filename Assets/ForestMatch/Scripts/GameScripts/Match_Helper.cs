@@ -24,6 +24,10 @@ namespace Mkey
         public MatchGrid grid;
         public Dictionary<int, TargetData> curTargets;
 
+        public List<int> CellsContainer;
+
+        public int[] cellCnts;
+
         //public Match_Helper()
         //{
         //}

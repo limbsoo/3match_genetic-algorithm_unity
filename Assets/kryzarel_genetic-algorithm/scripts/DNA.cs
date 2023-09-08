@@ -10,6 +10,9 @@ public class DNA<T>
 	public T[] genes { get; private set; }
 	private System.Random random;
 	private Func<T> getRandomGene;
+    private Func<T[]> GetGenes;
+
+
     public bool isFeasible = false;
     public int infeasibleCellCnt;
 	public double fitness;
@@ -27,14 +30,38 @@ public class DNA<T>
 
     public int allMove = 0;
 
-    public DNA(int size, Random random, Func<T> getRandomGene, bool shouldInitGenes = true)
+    public int obstacleCnt = 0;
+    public int obstacleLimit = 5;
+
+    public int blockedCnt = 0;
+
+
+    public DNA(int size, Random random, Func<T> getRandomGene,  Func<T[]> GetGenes, bool shouldInitGenes = true)
 	{
 		genes = new T[size];
 		this.random = random;
 		this.getRandomGene = getRandomGene;
+        this.GetGenes = GetGenes;
 
-		if (shouldInitGenes) for (int i = 0; i < genes.Length; i++) genes[i] = getRandomGene();
-	}
+        //if (shouldInitGenes) for (int i = 0; i < genes.Length; i++) genes[i] = getRandomGene();
+
+        genes = GetGenes();
+
+        
+
+
+        //List<int> obs = new List<int>();
+
+        //for(int i=0;i < genes.Length; i++)
+        //{
+        //    if (obs[i] == 1)
+        //    {
+        //        genes[i] = '0';
+        //    }
+        //}
+
+
+    }
 
     public void calculateFeasibleFitness(List<int> moveContainer, double targetMove, double targetStd)
     {
@@ -300,7 +327,7 @@ public class DNA<T>
 
     public DNA<T> Crossover(DNA<T> otherParent)
 	{
-		DNA<T> child = new DNA<T>(genes.Length, random, getRandomGene, shouldInitGenes: false);
+		DNA<T> child = new DNA<T>(genes.Length, random, getRandomGene, GetGenes, shouldInitGenes: false);
 
 		for (int i = 0; i < genes.Length; i++)
 		{

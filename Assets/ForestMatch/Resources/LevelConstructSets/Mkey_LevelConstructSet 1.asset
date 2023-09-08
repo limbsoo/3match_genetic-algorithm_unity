@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   levelStartStoryPage: {fileID: 0}
   levelWinStoryPage: {fileID: 0}
-  vertSize: 8
-  horSize: 8
+  vertSize: 7
+  horSize: 7
   distX: 0
   distY: 0
   scale: 0.90000004
