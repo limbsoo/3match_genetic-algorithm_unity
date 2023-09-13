@@ -35,6 +35,8 @@ public class DNA<T>
 
     public int blockedCnt = 0;
 
+    public T[] newGenes;
+
 
     public DNA(int size, Random random, Func<T> getRandomGene,  Func<T[]> GetGenes, bool shouldInitGenes = true)
 	{
@@ -344,4 +346,17 @@ public class DNA<T>
 			if (random.NextDouble() < mutationRate) genes[i] = getRandomGene();
 		}
 	}
+
+    public DNA<T> newCrossover(DNA<T> otherParent)
+    {
+        DNA<T> child = new DNA<T>(genes.Length, random, getRandomGene, GetGenes, shouldInitGenes: false);
+
+        for (int i = 0; i < genes.Length; i++)
+        {
+            child.genes[i] = random.NextDouble() < 0.5 ? newGenes[i] : otherParent.newGenes[i];
+        }
+
+        return child;
+    }
+
 }

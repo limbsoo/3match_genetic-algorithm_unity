@@ -14,10 +14,12 @@ using UnityEditor.VersionControl;
 using UnityEditorInternal.VersionControl;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.Rendering.VirtualTexturing;
 using UnityEngine.UI;
 using UnityEngine.UIElements;
 using static Mkey.Match_Helper;
 using static UnityEditor.PlayerSettings;
+using static UnityEditor.Progress;
 using static UnityEngine.GraphicsBuffer;
 using Random = UnityEngine.Random;
 
@@ -684,21 +686,6 @@ namespace Mkey
                 if (estimateMaxedOut(p,ref fill_cnt, 100)) break;
             }
 
-
-            for (int i = 0; i < Cells.Count; i++)
-            {
-                List<int> res = mh.grid.Cells[i].GetGridObjectsIDs();
-
-                if (mh.CellsContainer[i] != res[0])
-                {
-                    mh.CellsContainer[i] = res[0];
-                    mh.cellCnts[i]++;
-                }
-            }
-
-
-
-
             foreach (var item in mh.curTargets)
             {
                 if (item.Value.Achieved) p.targetClear = true;
@@ -711,15 +698,10 @@ namespace Mkey
             if (p.targetClear) return;
 
             p.curState = 2;
-
-            //NoPhys1(g);
-            //while (!NoPhys1(g));
-            //if (noMatches) RemoveMatches();
         }
 
         public void showState(DNA<char> p, SpawnController sC, Transform trans)
         {
-
             foreach (var item in mh.curTargets)
             {
                 if (item.Value.Achieved) p.targetClear = true;
@@ -735,7 +717,6 @@ namespace Mkey
 
             while (!estimateMaxedOut(p, ref mix_cnt, 100))
             {
-                //mh.cancelTweens(mh.grid);
                 mh.createMatchGroups1(2, true, mh.grid, p);
 
                 if (mh.grid.mgList.Count == 0)
@@ -743,6 +724,7 @@ namespace Mkey
                     mh.mixGrid(null, mh.grid, trans);
                     mix_cnt++;
                 }
+
                 else break;
             }
 
@@ -750,115 +732,51 @@ namespace Mkey
 
             else
             {
-                List<MatchGroup> matchedTarget = new List<MatchGroup>();
+                List<int> targetMatched = new List<int>();
 
-                foreach (var mc in mh.grid.mgList)
+                for(int i = 0;i < mh.grid.mgList.Count;i++)
                 {
                     foreach (var item in mh.curTargets)
                     {
-                        List<int> mg_cell = mc.Cells[0].GetGridObjectsIDs();
-
-                        if (mg_cell[0] == item.Key)
+                        //target:matchBlock
+                        if (item.Value.ID >= 1000 && item.Value.ID <= 1006)
                         {
-                            matchedTarget.Add(mc);
-                            break;
+                            List<int> mg_cell = mh.grid.mgList[i].Cells[0].GetGridObjectsIDs();
+
+                            if (mg_cell[0] == item.Value.ID)
+                            {
+                                targetMatched.Add(i);
+                                break;
+                            }
                         }
+
+                        //target:underlay
+                        else if (item.Value.ID == 200001)
+                        {
+                            for (int j = 0; j < mh.grid.mgList[i].Length; j++)
+                            {
+                                if (mh.grid.mgList[i].Cells[j].Underlay != null)
+                                {
+                                    targetMatched.Add(i);
+                                    break;
+                                }
+                            }
+                        }
+
                     }
                 }
 
-                if (matchedTarget.Count == 0) mh.grid.mgList[0].SwapEstimate();
+                if (targetMatched.Count == 0) mh.grid.mgList[0].SwapEstimate();
 
                 else
                 {
-                    //int target_num = 0;
-                    //mh.grid.mgList[target_num].SwapEstimate();
-                    //mgList에서 랜덤하게 해서 변종확률?
-
                     p.shortCutCnt++;
-
-                    int number = Random.Range(0, matchedTarget.Count - 1);
-
-                    for(int i = 0; i < mh.grid.mgList.Count; i++) 
-                    {
-                        if (matchedTarget[number].Cells[0].DynamicObject == mh.grid.mgList[i].Cells[0].DynamicObject)
-                        {
-                            mh.grid.mgList[i].SwapEstimate();
-                            break;
-                        }
-                    }
-
-                    //foreach (var mc in mh.grid.mgList)
-                    //{
-                    //    if (target_match[number] == mc) mc.SwapEstimate();
-                    //    break;
-                    //}
+                    int number = Random.Range(0, targetMatched.Count - 1);
+                    mh.grid.mgList[targetMatched[number]].SwapEstimate();
                 }
 
                 p.numMove--;
                 p.curState = 2;
-
-
-
-
-                //List<List<int>> targetsInCell = new List<List<int>>();
-
-                //foreach (var currentCellsID in mh.grid.Cells)
-                //{
-                //    List<int> res = currentCellsID.GetGridObjectsIDs();
-
-                //    //Debug.Log("currentCellsID ======Row" + currentCellsID.Row + "---------------------------Column" + currentCellsID.Column);
-
-                //    foreach (var item in mh.curTargets)
-                //    {
-                //        if (!item.Value.Achieved)
-                //        {
-                //            if (item.Value.ID >= 1000 && item.Value.ID <= 1006)
-                //            {
-                //                if (item.Value.ID == res[0]) targetsInCell.Add(new List<int> { currentCellsID.Row, currentCellsID.Column });
-                //            }
-                //        }
-                //    }
-                //}
-
-                //List<int> collectMatch = new List<int>();
-                ////셀판별추가
-                //for (int i = 0; i < mh.grid.mgList.Count; i++)
-                //{
-                //    bool isTargetBlock = false;
-
-                //    for (int j = 0; j < targetsInCell.Count; j++)
-                //    {
-                //        if (mh.grid.mgList[i].Cells[0].Row == targetsInCell[j][0] && mh.grid.mgList[i].Cells[0].Column == targetsInCell[j][1])
-                //        {
-                //            isTargetBlock = true;
-                //            break;
-                //        }
-
-                //        if (mh.grid.mgList[i].Cells[1].Row == targetsInCell[j][0] && mh.grid.mgList[i].Cells[1].Column == targetsInCell[j][1])
-                //        {
-                //            isTargetBlock = true;
-                //            break;
-                //        }
-                //    }
-
-                //    if (isTargetBlock) collectMatch.Add(i);
-                //}
-
-                //int target_num = 0;
-
-                //if (collectMatch.Count <= 0)
-                //{
-                //    mh.grid.mgList[0].SwapEstimate();
-                //    target_num = 0;
-                //}
-
-                //else
-                //{
-                //    int number = Random.Range(0, collectMatch.Count - 1);
-                //    mh.grid.mgList[collectMatch[number]].SwapEstimate();
-                //    target_num = collectMatch[number];
-                //}
-
             }
         }
 
@@ -877,8 +795,6 @@ namespace Mkey
                 return;
             }
 
-            //mh.collectFalling(mh.grid);
-            //mh.cancelTweens(mh.grid);
             mh.createMatchGroups(3, false, mh.grid);
 
             if (mh.grid.mgList.Count == 0)
@@ -891,44 +807,51 @@ namespace Mkey
             {
                 for (int i = 0; i < mh.grid.mgList.Count; i++)
                 {
-                    List<int> res = mh.grid.mgList[i].Cells[0].GetGridObjectsIDs();
-                    foreach (var item in mh.curTargets) if (item.Value.ID == res[0]) item.Value.IncCurrCount(mh.grid.mgList[i].Cells.Count);
-                }
+                    foreach (var item in mh.curTargets)
+                    {
+                        //target:matchBlock
+                        if (item.Value.ID >= 1000 && item.Value.ID <= 1006)
+                        {
+                            List<int> mg_cell = mh.grid.mgList[i].Cells[0].GetGridObjectsIDs();
 
-                ////////
+                            if (item.Value.ID == mg_cell[0])
+                            {
+                                item.Value.IncCurrCount(mh.grid.mgList[i].Cells.Count);
+                                break;
+                            }
+                        }
+
+                        //target:underlay
+                        else if (item.Value.ID >= 200000 && item.Value.ID <= 200001)
+                        {
+                            int cnt = 0;
+
+                            for (int j = 0; j < mh.grid.mgList[i].Length; j++)
+                            {
+                                if (mh.grid.mgList[i].Cells[j].Underlay != null)
+                                {
+                                    cnt++;
+                                }
+                            }
+
+                            item.Value.IncCurrCount(cnt);
+                        }
+                    }
+                }
 
                 for (int i = 0; i < mh.grid.mgList.Count; i++)
                 {
                     if (mh.grid.mgList[i] != null)
                     {
-                        foreach (GridCell c in mh.grid.mgList[i].Cells)
-                        {
-                            c.DestroyGridObjects();
-                        }
+                        foreach (GridCell c in mh.grid.mgList[i].Cells) c.DestroyGridObjects();
                     }
-                 }
+                }
 
                 p.allMove++;
-                //MatchGroupsHelper helper = new MatchGroupsHelper(mh.grid);
-                //helper.CollectMatchGroups1(mh.grid);
-
                 p.curState = 0;
             }
 
             collect_cnt++;
-        }
-
-
-        public List<int> randomObsatcles()
-        {
-            List<int> ob = new List<int>();
-
-            for(int i= 0;i < 5;i++)
-            {
-                int number = Random.Range(0, mh.grid.Cells.Count + 1);
-                ob.Add(number);
-            }
-            return ob;
         }
 
         public char[] GetGenes()
@@ -936,344 +859,155 @@ namespace Mkey
             char[] ti = new char[Cells.Count];
 
             List<int> newGenes = new List<int>();
-
-            for (int i = 0;i< Cells.Count; i++)
-            {
-                newGenes.Add(0);
-            }
-
-            for (int i = 0; i < 15; i++)
-            {
-                int number = Random.Range(0, Cells.Count);
-                newGenes[number] = 1;
-            }
-
-            for (int i = 0; i < Cells.Count; i++)
-            {
-                ti[i] = (char)(newGenes[i] + '0');
-            }
+            for (int i = 0;i< Cells.Count; i++) newGenes.Add(0);
 
 
-                //int number = Random.Range(0, 2);
-                //return (char)(number + '0');
 
-                return ti;
+            //for (int i = 0; i < 7; i++)
+            //{
+            //    int number = Random.Range(0, Cells.Count);
+                
+
+            //    //if (
+            //    //   number == 9 || number == 10 || number == 11 ||
+            //    //   number == 16 || number == 17 || number == 18 ||
+            //    //   number == 23 || number == 24 || number == 25
+            //    //   )
+            //    //{
+
+            //    //}
+
+            //    else  newGenes[number] = 1;
+            //}
+
+            for (int i = 0; i < Cells.Count; i++) ti[i] = (char)(newGenes[i] + '0');
+
+            return ti;
         }
 
 
         public char GetRandomGene()
         {
-            //int number = Random.Range(0, 2);
-            //return (char)(number + '0');
-
-            return (char)(0 + '0');
+            int number = Random.Range(0, 2);
+            return (char)(number + '0');
         }
 
-        public void initalizeGrid1(SpawnController sC)
+        public void destroyAllGridObjects()
         {
+            for (int i = 0; i < mh.grid.Cells.Count; i++) mh.grid.Cells[i].DestroyGridObjects();
+        }
+
+        public void setBlockedFromNewGene(DNA<char> p, SpawnController sC)
+        {
+            BlockedObject b = sC.GetSelectUnbreakableBlockedObjectPrefab(LcSet, goSet);
+
             for (int i = 0; i < mh.grid.Cells.Count; i++)
             {
-                mh.grid.Cells[i].DestroyGridObjects();
-
-                MatchObject m = sC.GetRandomObjectPrefab(LcSet, goSet);
-                mh.grid.Cells[i].SetObject1(m);
-
+                if (p.newGenes[i] == '1') mh.grid.Cells[i].SetObject1(b);
             }
         }
 
-        public void initalizeGridOnlyCheckFeasible(DNA<char> p, SpawnController sC)
+        public void setBlockedFromGene(DNA<char> p, SpawnController sC)
         {
+            BlockedObject b = sC.GetSelectUnbreakableBlockedObjectPrefab(LcSet, goSet);
+
             for (int i = 0; i < mh.grid.Cells.Count; i++)
             {
-                mh.grid.Cells[i].DestroyGridObjects();
+                if (p.genes[i] == '1') mh.grid.Cells[i].SetObject1(b);
+            }
+        }
 
-                //if (
-
-
-                //    //i == 9 ||
-                //    //i == 17 ||
-                //    //i == 25 ||
-                //    //i == 33 ||
-                //    //i == 41 ||
-                //    //i == 49 ||
-                //    //i == 57 ||
-
+        public void setBlockedFromTargetString(DNA<char> p, SpawnController sC)
+        {
+            p.newGenes = new char[Cells.Count];
+            p.newGenes = p.genes;
+            
+            for (int i = 0; i < ga.targetString.Length; i++) p.newGenes[ga.targetString[i]] = '1';
+        }
 
 
-                //    i == 11 
-                //    //i == 19 ||
-                //    //i == 27 ||
-                //    //i == 35 ||
-                //    //i == 43 ||
-                //    //i == 51 ||
-                //    //i == 59
+        public void initGrid(DNA<char> p, SpawnController sC)
+        {
+            BlockedObject b = sC.GetSelectUnbreakableBlockedObjectPrefab(LcSet, goSet);
 
-
-                //    //i == 1 ||
-                //    //i == 9 ||
-                //    //i == 17 ||
-                //    //i == 25 ||
-                //    //i == 33 ||
-                //    //i == 41 ||
-                //    //i == 49 ||
-                //    //i == 57
-
-                //    //||
-
-                //    //i == 2 ||
-                //    //i == 10 ||
-                //    //i == 18 ||
-                //    //i == 26 ||
-                //    //i == 34 ||
-                //    //i == 42 ||
-                //    //i == 50 ||
-                //    //i == 58
-
-                //    //i == 3 || i == 6 ||
-                //    //i == 10 || i == 11 || i == 14 ||
-                //    //i == 17 || i == 18 || i == 19 || i == 22 ||
-                //    //i == 25 || i == 26 || i == 30 ||
-                //    //i == 32 || i == 33 || i == 38 ||
-                //    //i == 45 ||
-                //    //i == 52 ||
-                //    //i == 59
-
-                //    )
-                //{
-                //    BlockedObject b = sC.GetRandomBlockedObjectPrefab(LcSet, goSet);
-                //    mh.grid.Cells[i].SetObject1(b);
-
-                //}
-
-
-
-
-                if (p.genes[i] == '1')
-                {
-                    BlockedObject b = sC.GetRandomBlockedObjectPrefab(LcSet, goSet);
-                    mh.grid.Cells[i].SetObject1(b);
-
-
-                }
+            for (int i = 0; i < mh.grid.Cells.Count; i++)
+            {
+                if (p.genes[i] == '1') mh.grid.Cells[i].SetObject1(b);
 
                 else
                 {
                     MatchObject m = sC.GetRandomObjectPrefab(LcSet, goSet);
                     mh.grid.Cells[i].SetObject1(m);
                 }
-
             }
         }
 
-
-        public void initalizeGrid(DNA<char> p, SpawnController sC)
+        public void setTargetBlock(DNA<char> p, SpawnController sC, int targetID)
         {
-            for (int i = 0; i < mh.grid.Cells.Count; i++)
+            //target: underlay (Grass)
+            if (targetID == 200001)
             {
-                mh.grid.Cells[i].DestroyGridObjects();
-
-                MatchObject m = sC.GetRandomObjectPrefab(LcSet, goSet);
-                mh.grid.Cells[i].SetObject1(m);
-
-
-                //if (
-
-
-                //    //i == 24 || i == 25 || i == 26 || i == 27 || i == 28 || i == 29 || i == 30 || i == 31 ||
-                //    //i == 32 || i == 33 || i == 34 || i == 35 || i == 36 || i == 37 || i == 38 || i == 39 ||
-                //    //i == 40 || i == 41 || i == 42 || i == 43 || i == 44 || i == 45 || i == 46 || i == 47 ||
-                //    //i == 48 || i == 49 || i == 50 || i == 51 || i == 52 || i == 53 || i == 54 || i == 55 ||
-                //    //i == 56 || i == 57 || i == 58 || i == 59 || i == 60 || i == 61 || i == 62 || i == 63
-
-                //    //i == 1 ||
-                //    //i == 9 ||
-                //    //i == 17 ||
-                //    //i == 25 ||
-                //    //i == 33 ||
-                //    //i == 41 ||
-                //    //i == 49 ||
-                //    //i == 57 
-
-                //    //||
-
-                //    //i == 2 ||
-                //    //i == 10 ||
-                //    //i == 18 ||
-                //    //i == 26 ||
-                //    //i == 34 ||
-                //    i == 42 ||
-                //    //i == 50 ||
-                //    //i == 58
-
-                //    //i == 1 ||
-                //    //i == 9 ||
-                //    //i == 17 ||
-                //    //i == 25 ||
-                //    //i == 33 ||
-                //    //i == 41 ||
-                //    i == 49 ||
-                //    i == 57 ||
-
-                //    //i == 3 ||
-                //    //i == 11 ||
-                //    i == 19 ||
-                //    i == 27 ||
-                //    i == 35 ||
-                //    //i == 43 ||
-                //    i == 51 ||
-                //    i == 59
-
-                //    ////193
-                //    //i == 3 || i == 5 ||
-                //    //i == 10 || i == 11 || i == 13 ||
-                //    //i == 17 || i == 18 || i == 19 || i == 21 ||
-                //    //i == 25 || i == 26 || i == 29 ||
-                //    //i == 32 || i == 33 || i == 37 || i == 38 ||
-                //    //i == 45 || i == 47
-
-                //    ////163
-                //    //i == 3 || i == 6 ||
-                //    //i == 10 || i == 11 || i == 14 ||
-                //    //i == 17 || i == 18 || i == 19 || i == 22 ||
-                //    //i == 25 || i == 26 || i == 30 ||
-                //    //i == 32 || i == 33 || i == 38 ||
-                //    //i == 45 ||
-                //    //i == 52 ||
-                //    //i == 59
-
-                //    )
-                //{
-                //    BlockedObject b = sC.GetRandomBlockedObjectPrefab(LcSet, goSet);
-                //    mh.grid.Cells[i].SetObject1(b);
-                //}
-
-
-
-                //if (p.genes[i] == '1')
-                //{
-                //    BlockedObject b = sC.GetRandomBlockedObjectPrefab(LcSet, goSet);
-                //    mh.grid.Cells[i].SetObject1(b);
-                //}
+                UnderlayObject u = sC.GetSelectUnderlayObjectPrefab(LcSet, goSet);
+                for (int i = 0; i < ga.targetString.Length; i++) mh.grid.Cells[ga.targetString[i]].SetObject1(u);
             }
 
-            //public List<GridCell> GetAllByID(int id)
-            //{
-            //    List<GridCell> res = new List<GridCell>();
-            //    foreach (var item in Cells)
-            //    {
-            //        if (item.HaveObjectWithID(id))
-            //        {
-            //            res.Add(item);
-            //        }
-            //    }
-            //    return res;
-
-
-
-
-            //List<MatchGroup> matchedTarget = new List<MatchGroup>();
-
-            //foreach (var mc in mh.grid.mgList)
-            //{
-            //    foreach (var item in mh.curTargets)
-            //    {
-            //        List<int> mg_cell = mc.Cells[0].GetGridObjectsIDs();
-
-            //        if (mg_cell[0] == item.Key)
-            //        {
-            //            matchedTarget.Add(mc);
-            //            break;
-            //        }
-            //    }
-            //}
-
-
-
-            //List<int> list = new List<int>();
-            //List<int> s_list = new List<int>();
-
-            //foreach (var item in Cells)
-            //{
-            //    s_list = item.GetGridObjectsIDs();
-            //    list.Add(s_list[0]);
-            //}
-
-            mh.grid.RemoveMatches1();
-
-           // List<int> lis1t = new List<int>();
-           // List<int> s_list1 = new List<int>();
-
-
-           // foreach (var item in Cells)
-           // {
-           //     s_list1 = item.GetGridObjectsIDs();
-           //     lis1t.Add(s_list1[0]);
-           // }
-
-
-           //List<int> res = Cells[0].GetGridObjectsIDs();
-
-
-            //for (int i = 0; i < mh.grid.Cells.Count; i++)
-            //{
-            //    if(mh.grid.Cells[i].HaveObjectWithID(0))
-            //    {
-
-            //    }
-            //}
-
-
-
-            //for (int i = 0; i < 7; i++)
-            //{
-            //    MatchObject m = sC.GetPickMatchObject(LcSet, goSet, i);
-
-            //    int value = 0;
-
-            //    foreach (var item in mh.curTargets)
-            //    {
-            //        if (m.ID == item.Value.ID)
-            //        {
-            //            value = item.Value.NeedCount;
-            //            break;
-            //        }
-            //    }
-
-            //    ga.targetNeedCnt.Add(value);
-            //}
-
-
-        }
-
-        public void initalizeMatchBlock(DNA<char> p, SpawnController sC)
-        {
-            for (int i = 0; i < mh.grid.Cells.Count; i++)
+            //target: overlay (Lianna) 
+            else if (targetID == 100001)
             {
-                if (mh.grid.Cells[i].Blocked == null)
+                OverlayObject o = sC.GetSelectOverlayObjectPrefab(LcSet, goSet);
+                for (int i = 0; i < ga.targetString.Length; i++) mh.grid.Cells[ga.targetString[i]].SetObject1(o);
+            }
+
+            //target: blocked (Root)
+            else if (targetID == 101)
+            {
+                BlockedObject b = sC.GetSelectBreakableBlockedObjectPrefab(LcSet, goSet);
+
+                for (int i = 0; i < ga.targetString.Length; i++)
                 {
-                    //mh.grid.Cells[i].DestroyGridObjects();
-                    MatchObject m = sC.GetRandomObjectPrefab(LcSet, goSet);
-                    mh.grid.Cells[i].SetObject1(m);
+                    mh.grid.Cells[ga.targetString[i]].DestroyGridObjects();
+                    mh.grid.Cells[ga.targetString[i]].SetObject1(b);
                 }
-
-
-                //if (p.genes[i] != '1')
-                //{
-                //    //mh.grid.Cells[i].DestroyGridObjects();
-                //    MatchObject m = sC.GetRandomObjectPrefab(LcSet, goSet);
-                //    mh.grid.Cells[i].SetObject1(m);
-                //}
             }
-
-            mh.grid.RemoveMatches1();
         }
 
-        public bool EstimateFeasible(MatchGrid grid, DNA<char> p)
+
+
+        //public void initalizeGrid(DNA<char> p, SpawnController sC)
+        //{
+        //    for (int i = 0; i < mh.grid.Cells.Count; i++)
+        //    {
+        //        mh.grid.Cells[i].DestroyGridObjects();
+        //        MatchObject m = sC.GetRandomObjectPrefab(LcSet, goSet);
+        //        mh.grid.Cells[i].SetObject1(m);
+        //    }
+        //    mh.grid.RemoveMatches1();
+        //}
+
+        public bool isObstacleTarget(int targetID)
         {
-            int cnt = 0;
-            bool isFeasible = mh.isConnected(grid, cnt);
+            //target: overlay (Lianna), blocked (Root)
+            if (targetID == 100001 || targetID == 101) return true;
+
             return false;
         }
+
+
+        //public void initGridWithOutBlockedBlock(DNA<char> p, SpawnController sC)
+        //{
+        //    for (int i = 0; i < mh.grid.Cells.Count; i++)
+        //    {
+        //        if (mh.grid.Cells[i].Blocked == null)
+        //        {
+        //            //mh.grid.Cells[i].DestroyGridObjects();
+        //            MatchObject m = sC.GetRandomObjectPrefab(LcSet, goSet);
+        //            mh.grid.Cells[i].SetObject1(m);
+        //        }
+        //    }
+
+        //    mh.grid.RemoveMatches1();
+        //}
+
         public void estimateIsFeasible(DNA<char> p)
         {
             mh.createFillPath(mh.grid);
@@ -1292,27 +1026,6 @@ namespace Mkey
         }
 
 
-        public void estimateFeasible(DNA<char> p)
-        {
-
-            p.isFeasible = true;
-
-
-            //mh.createFillPath(mh.grid);
-            //p.infeasibleCellCnt = 0;
-
-            //for (int i = mh.grid.Columns.Count(); i < mh.grid.Cells.Count; i++)
-            //{
-            //    if (mh.grid.Cells[i].Blocked == null && mh.grid.Cells[i].fillPathToSpawner == null)
-            //    {
-            //        if (mh.grid.Cells[i].Neighbors.Top.Blocked != null) p.infeasibleCellCnt++;
-            //    }
-            //}
-
-            //if (p.infeasibleCellCnt == 0) p.isFeasible = true;
-            //else p.isFeasible = false;
-        }
-
         public void calculateFitness(DNA<char> p, SpawnController sC, Transform trans)
         {
             if (p.isFeasible)
@@ -1320,7 +1033,6 @@ namespace Mkey
                 makeFeasibleFitness(p, sC, trans);
                 ga.feasiblePopulation.Add(p);
                 ga.feasibleFitnessSum += p.fitness;
-
             }
 
             else
@@ -1331,119 +1043,43 @@ namespace Mkey
             }
         }
 
-        public bool estimateFloationgPoint(double a, double b)
-        {
-            //double epsilon = 1e-9;
-
-            if (areEqual(a, b) || a < b) return true;
-       
-            return false;
-
-        }
-
-        public bool areEqual(double a, double b, double tolerance = 1e-9)
-        {
-            return Math.Abs(a - b) <= tolerance;
-        }
-
 
         public void makeFeasibleFitness(DNA<char> p, SpawnController sC, Transform trans)
         {
             List<int> moveContainer = new List<int>();
-
             List<int> nMoveContainer = new List<int>();
-
             List<int> shortCutCntContainer = new List<int>();
-
             List<int> possibleList = new List<int>();
-
             List<int> spawnList = new List<int>();
 
             for (int repeatIdx = 0; repeatIdx < ga.repeat; repeatIdx++)
             {
-               
-                //initalizeGrid(p, sC);
-                initalizeMatchBlock(p, sC);
-                //mh.createAvailableMatchGroup(mh.grid);
+                initGrid(p, sC);
+                foreach (var item in mh.curTargets) setTargetBlock(p, sC, item.Value.ID);
+                mh.grid.RemoveMatches1();
 
-
-                mh.CellsContainer = new List<int>();
-                for (int i=0;i<Cells.Count;i++) 
-                {
-                    List<int> res = mh.grid.Cells[i].GetGridObjectsIDs();
-                    mh.CellsContainer.Add(res[0]);
-                }
-
-                //////////////////////////////////////////////////////////////
-
-                if(ga.isPossible)
+                if (ga.isPossible)
                 {
                     MatchGroup matchGroup = new MatchGroup();
                     for (int i = 0; i < mh.grid.Cells.Count; i++) mh.grid.Cells[i].possibleCnt = 0;
-
                     for (int i = 0; i < mh.grid.Cells.Count; i++) matchGroup.countPossible(mh.grid, i);
-
-
                     ga.possibleCounting = new int[mh.grid.Columns.Count * mh.grid.Rows.Count];
 
                     for (int i = 0; i < mh.grid.Cells.Count; i++)
                     {
                         ga.possibleCnt += mh.grid.Cells[i].possibleCnt;
-                        //possibleList.Add(mh.grid.Cells[i].possibleCnt);
-
                         ga.possibleCounting[mh.grid.Cells[i].possibleCnt]++;
-
                         ga.possibleCountingList.Add(mh.grid.Cells[i].possibleCnt);
 
-                        if (mh.grid.Cells[i].DynamicObject == null)
-                        {
-                            p.blockedCnt++;
-                        }
-                        
+                        if (mh.grid.Cells[i].DynamicObject == null) p.blockedCnt++;
                     }
 
                     ga.blockeCnt = p.blockedCnt;
-
-
-
-
-
-                    //for (int i = 0; i < mh.grid.Cells.Count; i++)
-                    //{
-                    //    if (mh.grid.Cells[i].fillPathToSpawner != null)
-                    //    {
-                    //        if(mh.grid.Cells[i].fillPathToSpawner.Count == 0)
-                    //        {
-                    //            spawnList.Add(mh.grid.Cells[i].Column);
-                    //        }
-
-                    //        else
-                    //        {
-                    //            int a = mh.grid.Cells[i].fillPathToSpawner[mh.grid.Cells[i].fillPathToSpawner.Count - 1].Column;
-                    //            spawnList.Add(a);
-                    //        }
-
-                    //    }
-
-                    //    else spawnList.Add(9);
-                    //}
-
-
-                    //mh.isConnected(mh.grid, 0);
-
-
-
-
                     ga.isPossible = false;
                 }
 
-
-
-
-
-
+                
                 p.allMove = 0;
-                //int tryCnt = 0;
                 p.numMove = ga.moveLimit;
                 p.targetClear = false;
                 p.maxedOut = false;
@@ -1457,19 +1093,13 @@ namespace Mkey
                 {
                     switch (p.curState)
                     {
-                        case 0:
-                            fillState(p, sC);
+                        case 0: fillState(p, sC);
                             break;
-                        case 1:
-                            showState(p, sC, trans);
+                        case 1: showState(p, sC, trans);
                             break;
-                        case 2:
-                            collectState(p);
+                        case 2: collectState(p);
                             break;
                     }
-
-                    //if (tryCnt > 5000) break;
-                    //tryCnt++;
                 }
 
 
@@ -1485,52 +1115,30 @@ namespace Mkey
                     }
                 }
 
-                for (int i = 0; i < Cells.Count; i++)
-                {
-                    List<int> res = mh.grid.Cells[i].GetGridObjectsIDs();
-
-                    if (mh.CellsContainer[i] != res[0])
-                    {
-                        mh.CellsContainer[i] = res[0];
-                        mh.cellCnts[i]++;
-                    }
-                }
-
                 shortCutCntContainer.Add(p.shortCutCnt);
-                //shortCutCntContainer.Add(p.obstructionRate);
 
                 if (p.maxedOut == true || p.targetClear == false)
                 {
                     moveContainer.Add(ga.moveLimit);
                     nMoveContainer.Add(ga.moveLimit);
-
-                    //continue;
                 }
 
-                //////// 교체함
                 else
                 {
                     moveContainer.Add(ga.moveLimit - p.numMove);
                     nMoveContainer.Add(p.allMove);
                 }
-                
-                //mh.CancelTweens(mh.grid);
-                //else num_move_container.Add(0);
+
             }
 
             p.calculateFeasibleFitness(moveContainer, (double)ga.targetMove, ga.targetStd);
 
-            //double alpha = 0.5;
+
 
             ga.repeatMovements.Add(moveContainer);
             ga.repeatMovementsCnt++;
-
             ga.allMovements.Add(nMoveContainer);
-
-
-
             ga.shorCutRates.Add(shortCutCntContainer);
-
             if (ga.curGenerationBestFitness < p.fitness)
             {
                 ga.curGenerationBestFitness = p.fitness;
@@ -1538,7 +1146,6 @@ namespace Mkey
                 ga.curGenerationBestStd = p.stanardDeviation;
                 ga.curBestMoves = moveContainer;
             }
-
             if (ga.bestFitness < p.fitness)
             {
                 ga.bestFitness = p.fitness;
@@ -1546,35 +1153,6 @@ namespace Mkey
                 ga.bestStd = p.stanardDeviation;
                 ga.bestMoves = moveContainer;
             }
-
-
-
-            //if(estimateFloationgPoint(ga.curGenerationBestFitness, p.fitness))
-            //{
-            //    ga.curGenerationBestFitness = p.fitness;
-            //    ga.curGenerationBestMean = p.mean;
-            //    ga.curGenerationBestStd = p.stanardDeviation;
-            //}
-
-            //if (estimateFloationgPoint(ga.bestFitness, p.fitness))
-            //{
-            //    ga.bestFitness = p.fitness;
-            //    ga.bestMeanMove = p.mean;
-            //    ga.bestStd = p.stanardDeviation;
-            //}
-
-
-
-
-
-            //if(alpha * (1.0 / (1.0 + Math.Abs(mean - target_move))) + (1 - alpha) * (1.0 / (1.0 + Math.Abs(standardDeviation - target_std));
-            //if (Math.Abs(ga.targetMove - ga.curBestMeanMove) > Math.Abs(ga.targetMove - p.mean))
-            //{
-            //    ga.curBestMeanMove = p.mean;
-            //}
-
-
-
         }
 
         void getMatch3Level(Transform trans)
@@ -1594,42 +1172,55 @@ namespace Mkey
             ga.allMovements = new List<List<int>>();
             ga.possibleCountingList = new List<int>();
 
-
             mh.cellCnts = new int[Cells.Count];
+            ga.isAddObstacle = false;
+            mh.feasibleIdx = 0;
 
             int cnt = 0;
 
-            int feasibleIdx = 0;
-
-            for(int i= 0;i<200;i++)
+            foreach (var item in mh.curTargets)
             {
-                for(int j = 0;j< ga.population.Count;j++)
+                ga.isAddObstacle = isObstacleTarget(item.Value.ID);
+
+                if(ga.isAddObstacle)
+                {
+                    for (int i = 0; i < ga.population.Count; i++) setBlockedFromTargetString(ga.population[i], sC);
+                }
+            }
+            
+            for (int i= 0; i < ga.findFeasibleLimit; i++)
+            {
+                for (int j = 0; j< ga.population.Count;j++)
                 {
                     ga.population[j].blockedCnt = 0;
 
-                    initalizeGridOnlyCheckFeasible(ga.population[j], sC);
+                    destroyAllGridObjects();
+
+                    if (ga.isAddObstacle) setBlockedFromNewGene(ga.population[j], sC);
+                    else setBlockedFromGene(ga.population[j], sC);
+
                     estimateIsFeasible(ga.population[j]);
+
                     if (ga.population[j].isFeasible)
                     {
-                        feasibleIdx = j;
+                        mh.feasibleIdx = j;
                         break;
                     }
-                   
+
                     calculateFitness(ga.population[j], sC, trans);
                 }
 
-                if (!ga.population[feasibleIdx].isFeasible)
+                if (!ga.population[mh.feasibleIdx].isFeasible)
                 {
                     ga.NewGeneration();
                     cnt++;
                 } 
+
                 else break;
             }
 
 
-
-
-            if(ga.population[feasibleIdx].isFeasible)
+            if(ga.population[mh.feasibleIdx].isFeasible)
             {
                 while (ga.generation <= ga.generationLimit)
                 {
@@ -1638,114 +1229,36 @@ namespace Mkey
                     ga.curGenerationBestFitness = 0;
                     ga.repeatMovementsCnt = 0;
 
+                    destroyAllGridObjects();
+                    makeFeasibleFitness(ga.population[mh.feasibleIdx], sC, trans);
 
-                    makeFeasibleFitness(ga.population[feasibleIdx], sC, trans);
+
 
                     cs.generation.Add(ga.generation);
-
                     if (ga.infeasiblePopulation == null) cs.infeasiblePopulationCnt.Add(0);
                     else cs.infeasiblePopulationCnt.Add(ga.infeasiblePopulation.Count());
-
                     if (ga.feasiblePopulation == null) cs.feasiblePopulationCnt.Add(0);
                     else cs.feasiblePopulationCnt.Add(ga.feasiblePopulation.Count());
-
                     cs.curGenerationBestMean.Add(ga.curGenerationBestMean);
                     cs.curGenerationBestStd.Add(ga.curGenerationBestStd);
                     cs.curGenerationBestFitness.Add(ga.curGenerationBestFitness);
-
                     cs.bestMeanMove.Add(ga.bestMeanMove);
                     cs.bestStd.Add(ga.bestStd);
                     cs.bestFitness.Add(ga.bestFitness);
-
                     cs.repeatMovementsCntContainer.Add(ga.repeatMovementsCnt);
-
                     if (ga.curBestMoves == null) cs.curBestMoves.Add(new List<int>() { -1 });
                     else cs.curBestMoves.Add(ga.curBestMoves);
-
                     if (ga.bestMoves == null) cs.bestMoves.Add(new List<int>() { -1 });
                     else cs.bestMoves.Add(ga.bestMoves);
-
-
-                    //if (ga.bestFitness >= ga.targetFitness) break;
 
                     ga.generation++;
                 }
 
-                initalizeGridOnlyCheckFeasible(ga.population[feasibleIdx], sC);
+                initGrid(ga.population[mh.feasibleIdx], sC);
             }
-
-
 
             List<int> cellPossible = new List<int>();
-
-            for(int i= 0;i < Cells.Count;i++)
-            {
-                cellPossible.Add(mh.grid.Cells[i].possibleCnt);
-            }
-
-
-            //while (!ga.population[0].isFeasible)
-            //{
-            //    foreach (DNA<char> p in ga.population)
-            //    {
-            //        initalizeGridOnlyCheckFeasible(p, sC);
-            //        estimateIsFeasible(p);
-            //    }
-            //}
-
-
-            //while (ga.generation <= ga.generationLimit)
-            //{
-            //    ga.curGenerationBestMean = 0;
-            //    ga.curGenerationBestStd = 0;
-            //    ga.curGenerationBestFitness = 0;
-            //    ga.repeatMovementsCnt = 0;
-
-            //    foreach (DNA<char> p in ga.population)
-            //    {
-            //        if (p.fitness != 0)
-            //        {
-            //            if (p.isFeasible) ga.feasiblePopulation.Add(p);
-            //            else ga.infeasiblePopulation.Add(p);
-            //        }
-
-            //        else
-            //        {
-            //            initalizeGrid(p, sC);
-            //            estimateFeasible(p);
-            //            calculateFitness(p, sC, trans);
-            //        }
-            //    }
-
-            //    cs.generation.Add(ga.generation);
-
-            //    if (ga.infeasiblePopulation == null) cs.infeasiblePopulationCnt.Add(0);
-            //    else cs.infeasiblePopulationCnt.Add(ga.infeasiblePopulation.Count());
-
-            //    if (ga.feasiblePopulation == null) cs.feasiblePopulationCnt.Add(0);
-            //    else cs.feasiblePopulationCnt.Add(ga.feasiblePopulation.Count());
-
-            //    cs.curGenerationBestMean.Add(ga.curGenerationBestMean);
-            //    cs.curGenerationBestStd.Add(ga.curGenerationBestStd);
-            //    cs.curGenerationBestFitness.Add(ga.curGenerationBestFitness);
-
-            //    cs.bestMeanMove.Add(ga.bestMeanMove);
-            //    cs.bestStd.Add(ga.bestStd);
-            //    cs.bestFitness.Add(ga.bestFitness);
-
-            //    cs.repeatMovementsCntContainer.Add(ga.repeatMovementsCnt);
-
-            //    if (ga.curBestMoves == null) cs.curBestMoves.Add(new List<int>() { -1 });
-            //    else cs.curBestMoves.Add(ga.curBestMoves);
-
-            //    if (ga.bestMoves == null) cs.bestMoves.Add(new List<int>() { -1 });
-            //    else cs.bestMoves.Add(ga.bestMoves);
-
-
-            //    if (ga.bestFitness >= ga.targetFitness) break;
-
-            //    ga.NewGeneration();
-            //}
+            for(int i= 0;i < Cells.Count;i++) cellPossible.Add(mh.grid.Cells[i].possibleCnt);
 
             cs.mixedList = new List<object>
             {
@@ -1770,7 +1283,6 @@ namespace Mkey
             for (int i = 0; i < 7; i++)
             {
                 MatchObject m = sC.GetPickMatchObject(LcSet, goSet, i);
-
                 int value = 0;
 
                 foreach (var item in mh.curTargets)
@@ -1784,203 +1296,13 @@ namespace Mkey
 
                 ga.targetNeedCnt.Add(value);
             }
-
-
             cs.write(ga, Cells);
-            //initalizeGrid(ga.population[0], sC);
         }
-
-        //void getMatch3Level(Transform trans)
-        //{
-        //    SpawnController sC = SpawnController.Instance;
-        //    CSVFileWriter cs = new CSVFileWriter();
-
-        //    ga.bestMeanMove = 0;
-        //    ga.bestStd = 0;
-        //    ga.bestFitness = 0;
-        //    ga.repeatMovements = new List<List<int>>();
-        //    ga.obstructionRates = new List<List<int>>();
-        //    ga.shorCutRates = new List<List<int>>();
-        //    ga.targetNeedCnt = new List<int>();
-        //    ga.possibleCnt = 0;
-        //    ga.isPossible = true;
-        //    ga.allMovements = new List<List<int>>();
-        //    ga.possibleCountingList = new List<int>();
-
-        //    //initalizeGrid1(sC);
-
-        //    //MatchGroup matchGroup = new MatchGroup();
-        //    ////for (int i = 0; i < mh.grid.Cells.Count; i++) mh.grid.Cells[i].possibleCnt = 0;
-        //    //for (int i = 0; i < mh.grid.Cells.Count; i++)
-        //    //{
-        //    //    matchGroup.countPossible(mh.grid, i);
-        //    //}
-
-        //    //int a = 0;
-
-        //    //for (int i = 0; i < mh.grid.Cells.Count; i++)
-        //    //{
-        //    //    a += mh.grid.Cells[i].possibleCnt;
-        //    //}
-
-        //    //List<int> pc = new List<int>();
-
-        //    //for (int i = 0; i < mh.grid.Cells.Count; i++)
-        //    //{
-        //    //    pc.Add(mh.grid.Cells[i].possibleCnt);
-        //    //}
-
-        //    while (ga.bestFitness < ga.targetFitness && ga.generation <= ga.generationLimit)
-        //    {
-        //        ga.curGenerationBestMean = 0;
-        //        ga.curGenerationBestStd = 0;
-        //        ga.curGenerationBestFitness = 0;
-        //        ga.repeatMovementsCnt = 0;
-
-        //        foreach (DNA<char> p in ga.population)
-        //        {
-        //            if (p.fitness != 0)
-        //            {
-        //                if (p.isFeasible) ga.feasiblePopulation.Add(p);
-        //                else ga.infeasiblePopulation.Add(p);
-        //            }
-
-        //            else
-        //            {
-        //                initalizeGrid(p, sC);
-        //                estimateFeasible(p);
-        //                calculateFitness(p, sC, trans);
-        //            }
-        //        }
-
-        //        //double bestAverageMove = 0;
-        //        //double beststandardDeviation = 0;
-
-        //        ////for (int i = 0; i < ga.feasible_population.Count; i++)
-        //        ////{
-        //        ////    if(bestAverageMove < ga.feasible_population[i].average_move) bestAverageMove = ga.feasible_population[i].average_move;
-        //        ////    if (beststandardDeviation < ga.feasible_population[i].sd) beststandardDeviation = ga.feasible_population[i].sd;
-        //        ////}
-
-
-        //        cs.generation.Add(ga.generation);
-
-        //        if(ga.infeasiblePopulation == null) cs.infeasiblePopulationCnt.Add(0);
-        //        else cs.infeasiblePopulationCnt.Add(ga.infeasiblePopulation.Count());
-
-        //        if (ga.feasiblePopulation == null) cs.feasiblePopulationCnt.Add(0);
-        //        else cs.feasiblePopulationCnt.Add(ga.feasiblePopulation.Count());
-
-        //        //cs.infeasiblePopulationCnt.Add(ga.infeasiblePopulation.Count());
-        //        //cs.feasiblePopulationCnt.Add(ga.feasiblePopulation.Count());
-
-        //        cs.curGenerationBestMean.Add(ga.curGenerationBestMean);
-        //        cs.curGenerationBestStd.Add(ga.curGenerationBestStd);
-        //        cs.curGenerationBestFitness.Add(ga.curGenerationBestFitness);
-
-        //        cs.bestMeanMove.Add(ga.bestMeanMove);
-        //        cs.bestStd.Add(ga.bestStd);
-        //        cs.bestFitness.Add(ga.bestFitness);
-
-        //        cs.repeatMovementsCntContainer.Add(ga.repeatMovementsCnt);
-
-        //        if (ga.curBestMoves == null) cs.curBestMoves.Add(new List<int>() { -1 });
-        //        else cs.curBestMoves.Add(ga.curBestMoves);
-
-        //        if (ga.bestMoves == null) cs.bestMoves.Add(new List<int>() { -1 });
-        //        else cs.bestMoves.Add(ga.bestMoves);
-
-
-        //        if (ga.bestFitness >= ga.targetFitness) break;
-        //        ga.NewGeneration();
-
-
-        //        //List<int> mg_cell = GetGridObjectsIDs();
-
-
-        //        //foreach (var item in mh.curTargets) item.Value.InitCurCount();
-
-
-
-
-
-        //        //if (ga.feasibleParent == null)
-        //        //{
-        //        //    cs.feasibleParent.Add(new List<double>() { -1, -1 });
-        //        //    cs.feasibleParentIdx.Add(new List<int>() { -1, -1 });
-        //        //}
-
-        //        //else
-        //        //{
-        //        //    cs.feasibleParent.Add(new List<double>(ga.feasibleParent));
-        //        //    cs.feasibleParentIdx.Add(new List<int>(ga.feasibleParentIdx));
-        //        //}
-
-
-        //        //if (ga.infeasibleParent == null)
-        //        //{
-        //        //    cs.infeasibleParent.Add(new List<double>() { -1, -1 });
-        //        //    cs.infeasibleParentIdx.Add(new List<int>() { -1, -1 });
-        //        //}
-
-        //        //else
-        //        //{
-        //        //    cs.infeasibleParent.Add(new List<double>(ga.infeasibleParent));
-        //        //    cs.infeasibleParentIdx.Add(new List<int>(ga.infeasibleParentIdx));
-        //        //}
-
-        //    }
-
-        //    cs.mixedList = new List<object>
-        //    {
-        //        cs.generation,
-        //        cs.infeasiblePopulationCnt,
-        //        cs.feasiblePopulationCnt,
-        //        cs.curGenerationBestMean,
-        //        cs.curGenerationBestStd,
-        //        cs.curGenerationBestFitness,
-        //        cs.bestMeanMove,
-        //        cs.bestStd,
-        //        cs.bestFitness,
-        //        cs.feasibleParent,
-        //        cs.feasibleParentIdx,
-        //        cs.infeasibleParent,
-        //        cs.infeasibleParentIdx,
-        //        cs.curBestMoves,
-        //        cs.bestMoves
-        //    };
-
-
-        //    for (int i = 0; i < 7; i++)
-        //    {
-        //        MatchObject m = sC.GetPickMatchObject(LcSet, goSet, i);
-
-        //        int value = 0;
-
-        //        foreach (var item in mh.curTargets)
-        //        {
-        //            if (m.ID == item.Value.ID)
-        //            {
-        //                value = item.Value.NeedCount;
-        //                break;
-        //            }
-        //        }
-
-        //        ga.targetNeedCnt.Add(value);
-        //    }
-
-
-        //    cs.write(ga, Cells);
-        //    //cs.write1(ga);
-
-        //    initalizeGrid(ga.population[0], sC);
-        //}
 
         public List<MatchGroup> mgList;
         public Match_Helper mh;
         System.Random randomGa;
         GeneticAlgorithm<char> ga;
-
         internal void fillGrid(bool noMatches, MatchGrid g, Dictionary<int, TargetData> targets, Spawner spawnerPrefab, SpawnerStyle spawnerStyle, Transform GridContainer, Transform trans, LevelConstructSet IC)
         {
             randomGa = new System.Random();
@@ -1992,23 +1314,6 @@ namespace Mkey
             g.mgList = new List<MatchGroup>();
             mh.grid = g;
             mh.curTargets = targets;
-
-
-            //List<double> doubles = new List<double>();
-
-            //for (double i = 0; i < 10; i += 0.01)
-            //{
-            //    string result = string.Format("{0:0.########0}", Math.Exp(-Math.Abs(i)));
-
-            //    doubles.Add((Double.Parse(result)));
-            //}
-
-            //List<double> doubles = new List<double>();
-            //for (double i = 0; i < 100; i += 0.01)
-            //{
-            //    doubles.Add(1.0 / (1.0 + Math.Abs(i)));
-            //}
-
             getMatch3Level(trans);
         }
 

@@ -95,6 +95,7 @@ namespace Mkey
         public MatchGrid NextGrid { get { return (HaveNextGrid) ? (new List<MatchGrid>(AdditionalGrids.Values))[AddGridIndex + 1] : null; } }
 
 
+        public bool isGenetic = false;
 
 
         #endregion grids
@@ -508,55 +509,64 @@ namespace Mkey
 
                     /////////////////////////////////////////////////////////////////////////
 
-                    foreach (var item in GOSet.TargetObjects)
+                    isGenetic = true;
+
+                    if (isGenetic)
                     {
-                        if (g.LcSet.levelMission.Targets.ContainObjectID(item.ID) && (g.LcSet.levelMission.Targets.CountByID(item.ID) > 0))
-                            CurTargets[item.ID] = new TargetData(item.ID, g.LcSet.levelMission.GetTargetCount(item.ID));
+                        foreach (var item in GOSet.TargetObjects)
+                        {
+                            if (g.LcSet.levelMission.Targets.ContainObjectID(item.ID) && (g.LcSet.levelMission.Targets.CountByID(item.ID) > 0))
+                                CurTargets[item.ID] = new TargetData(item.ID, g.LcSet.levelMission.GetTargetCount(item.ID));
+                        }
+
+                        g.haveFillPath = lC.HaveFillPath(g);
+                        List<CellData> cells = new List<CellData>();
+                        cells = lC.spawnCells;
+
+
+                        g.fillGrid(true, g, CurTargets, spawnerPrefab, spawnerStyle, GridContainer, transform, lC);
                     }
-
-                    g.haveFillPath = lC.HaveFillPath(g);
-                    List<CellData> cells = new List<CellData>();
-                    cells = lC.spawnCells;
-
-
-                    g.fillGrid(true, g, CurTargets, spawnerPrefab, spawnerStyle, GridContainer, transform, lC);
 
 
                     ///////////////////////////////////////////////////
 
-                    //g.FillGrid(true);
+                    else
+                    {
+                        g.FillGrid(true);
 
-                    //int cnt = 0;
+                        int cnt = 0;
 
-                    //// create spawners
-                    //g.haveFillPath = lC.HaveFillPath(g);
-                    //if (g.haveFillPath)
-                    //{
-                    //    foreach (var item in lC.spawnCells)
-                    //    {
-                    //        if (g[item.Row, item.Column]) g[item.Row, item.Column].CreateSpawner(spawnerPrefab, Vector2.zero);
-                    //    }
+                        // create spawners
+                        g.haveFillPath = lC.HaveFillPath(g);
+                        if (g.haveFillPath)
+                        {
+                            foreach (var item in lC.spawnCells)
+                            {
+                                if (g[item.Row, item.Column]) g[item.Row, item.Column].CreateSpawner(spawnerPrefab, Vector2.zero);
+                            }
 
-                    //}
-                    //else
-                    //{
-                    //    g.Columns.ForEach((c) =>
-                    //    {
-                    //        if(cnt == 1 || cnt == 7) c.CreateTopSpawner(spawnerPrefab, spawnerStyle, GridContainer.lossyScale, transform);
+                        }
+                        else
+                        {
+                            g.Columns.ForEach((c) =>
+                            {
+                                //if (cnt == 1 || cnt == 7) c.CreateTopSpawner(spawnerPrefab, spawnerStyle, GridContainer.lossyScale, transform);
 
-                    //        cnt++;
+                                //cnt++;
 
-                    //        //c.CreateTopSpawner(spawnerPrefab, spawnerStyle, GridContainer.lossyScale, transform);
-                    //    });
-                    //}
+                                c.CreateTopSpawner(spawnerPrefab, spawnerStyle, GridContainer.lossyScale, transform);
+                            });
+                        }
 
-                    //// create pathes to spawners
-                    //CreateFillPath(g);
+                        // create pathes to spawners
+                        CreateFillPath(g);
 
-                    //g.Cells.ForEach((c) =>
-                    //{
-                    //    c.CreateBorder();
-                    //});
+                        g.Cells.ForEach((c) =>
+                        {
+                            c.CreateBorder();
+                        });
+
+                    }
 
                     ///////////////////////////////////////////////////
 
@@ -971,7 +981,7 @@ namespace Mkey
 
         private void CollectState()
         {
-            return;
+            if (isGenetic) return;
 
             MbState = MatchBoardState.Waiting;
             collected = 0;
@@ -1037,7 +1047,7 @@ namespace Mkey
 
         private void FillState()
         {
-            return;
+            if (isGenetic) return;
 
 
             if (fStarted) return;
@@ -1093,7 +1103,9 @@ namespace Mkey
 
         private void ShowEstimateState()
         {
-            if (!CurrentGrid.NoPhys()) return;
+            if(isGenetic) return;
+
+            //if (!CurrentGrid.NoPhys()) return;
 
             MbState = MatchBoardState.Waiting;
             EstimateGroups.CancelTweens();

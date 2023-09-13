@@ -28,6 +28,11 @@ namespace Mkey
 
         public int[] cellCnts;
 
+
+
+        
+        public int feasibleIdx;
+
         //public Match_Helper()
         //{
         //}

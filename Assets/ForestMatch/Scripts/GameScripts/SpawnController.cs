@@ -88,13 +88,26 @@ namespace Mkey
 
         public BlockedObject GetRandomBlockedObjectPrefab(LevelConstructSet lCSet, GameObjectsSet gOSet)
         {
-            //List<MatchObject> gridObjects = lCSet.GetMatchObjects(gOSet);
-
             List<BlockedObject> gridObjects = lCSet.GetBlockedObjects(gOSet);
 
-            //gridObjects.Shuffle();
+            gridObjects.Shuffle();
             return gridObjects.Count > 0 ? gridObjects[0] : null;
         }
+
+        public BlockedObject GetSelectUnbreakableBlockedObjectPrefab(LevelConstructSet lCSet, GameObjectsSet gOSet)
+        {
+            List<BlockedObject> gridObjects = lCSet.GetBlockedObjects(gOSet);
+            return gridObjects[0];
+        }
+
+        public BlockedObject GetSelectBreakableBlockedObjectPrefab(LevelConstructSet lCSet, GameObjectsSet gOSet)
+        {
+            List<BlockedObject> gridObjects = lCSet.GetBlockedObjects(gOSet);
+            return gridObjects[1];
+        }
+
+
+
 
         public OverlayObject GetRandomOverlayObjectPrefab(LevelConstructSet lCSet, GameObjectsSet gOSet)
         {
@@ -107,15 +120,29 @@ namespace Mkey
             return gridObjects.Count > 0 ? gridObjects[0] : null;
         }
 
+        public OverlayObject GetSelectOverlayObjectPrefab(LevelConstructSet lCSet, GameObjectsSet gOSet)
+        {
+            List<OverlayObject> gridObjects = lCSet.GetOverlayObjects(gOSet);
+            return gridObjects[0];
+        }
+
         public UnderlayObject GetRandomUnderlayObjectPrefab(LevelConstructSet lCSet, GameObjectsSet gOSet)
         {
-            //List<MatchObject> gridObjects = lCSet.GetMatchObjects(gOSet);
-
             List<UnderlayObject> gridObjects = lCSet.GetUnderlayObjects(gOSet);
 
             gridObjects.Shuffle();
             return gridObjects.Count > 0 ? gridObjects[0] : null;
         }
+
+        public UnderlayObject GetSelectUnderlayObjectPrefab(LevelConstructSet lCSet, GameObjectsSet gOSet)
+        {
+            List<UnderlayObject> gridObjects = lCSet.GetUnderlayObjects(gOSet);
+
+            return gridObjects[1];
+        }
+
+
+
 
         public FallingObject GetRandomUgetFallingObjectPrefab(LevelConstructSet lCSet, GameObjectsSet gOSet)
         {

@@ -8,8 +8,8 @@ public class GeneticAlgorithm<T>
     public int elitism = 2;
     public float mutationRate = 0.01f;
 
-    public int generationLimit = 100;
-    public int repeat = 20;
+    public int generationLimit = 2;
+    public int repeat = 2;
     public int moveLimit = 200;
 
     public int targetMove = 30;
@@ -22,6 +22,8 @@ public class GeneticAlgorithm<T>
 
     private Random random;
     private int dnaSize;
+
+    public int findFeasibleLimit = 200;
 
 
     public double feasibleFitnessSum;
@@ -49,7 +51,6 @@ public class GeneticAlgorithm<T>
 
 
     public List<List<int>> allMovements;
-
     public List<List<int>> obstructionRates;
     public List<List<int>> shorCutRates;
 
@@ -62,6 +63,10 @@ public class GeneticAlgorithm<T>
     public int[] possibleCounting;
 
     public int blockeCnt = 0;
+    public string targetString;
+
+    public List<DNA<T>> addObstaclePopulation;
+    public bool isAddObstacle;
 
     public GeneticAlgorithm(int dnaSize, Random random, Func<T> getRandomGene, Func<T[]> GetGenes)
 	{
@@ -89,7 +94,6 @@ public class GeneticAlgorithm<T>
 
         if (feasiblePopulation.Count != 0)
 		{
-
             feasiblePopulation.Sort(CompareDNA);
 
             for (int i = 0; i < feasiblePopulation.Count; i++) feasibleMeanMoveSum += feasiblePopulation[i].mean;

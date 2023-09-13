@@ -42,9 +42,9 @@ MonoBehaviour:
         count: 0
       - id: 1005
         count: 0
-      - id: 400101
-        count: 0
       - id: 200001
+        count: 9
+      - id: 400101
         count: 0
       - id: 800000
         count: 0
