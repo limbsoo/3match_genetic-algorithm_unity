@@ -10,6 +10,8 @@ namespace Mkey
         public Sprite[] protectionStateImages;
         public GameObject hitAnimPrefab;
 
+        public int hitCnt = 0;
+
         #region properties
         public bool Destroyable { get { return destroyable; } }
         public int Protection

@@ -8,8 +8,8 @@ public class GeneticAlgorithm<T>
     public int elitism = 2;
     public float mutationRate = 0.01f;
 
-    public int generationLimit = 2;
-    public int repeat = 2;
+    public int generationLimit = 10;
+    public int repeat = 20;
     public int moveLimit = 200;
 
     public int targetMove = 30;
@@ -63,7 +63,8 @@ public class GeneticAlgorithm<T>
     public int[] possibleCounting;
 
     public int blockeCnt = 0;
-    public string targetString;
+    //public int[] targetArray = { 1, 2, 3 };
+    //public int[] geneArray = { 7, 8, 9 };
 
     public List<DNA<T>> addObstaclePopulation;
     public bool isAddObstacle;
@@ -74,7 +75,8 @@ public class GeneticAlgorithm<T>
         feasiblePopulation = new List<DNA<T>>();
         infeasiblePopulation = new List<DNA<T>>();
 
-		this.random = random;
+
+        this.random = random;
 		this.dnaSize = dnaSize;
 
         for (int i = 0; i < populationSize; i++)

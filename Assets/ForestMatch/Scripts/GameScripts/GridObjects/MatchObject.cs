@@ -396,10 +396,10 @@ namespace Mkey
                 SRenderer.sortingOrder = SortingOrder.Main;
         }
 
-        public override string ToString()
-        {
-            return "MainObject: " + ID;
-        }
+        //public override string ToString()
+        //{
+        //    return "MainObject: " + ID;
+        //}
 
         public override GridObject Create(GridCell parent, Action<int> TargetCollectEvent)
         {
@@ -426,6 +426,22 @@ namespace Mkey
         }
 
         /// ////////////////////////////////////////////////////////////////////////////////////////
+
+        public override GridObject new_create(GridCell parent)
+        {
+            if (!parent) return null;
+            if (parent.IsDisabled || parent.Blocked) { return null; }
+            if (parent.DynamicObject)
+            {
+                GameObject old = parent.DynamicObject;
+                DestroyImmediate(old);
+            }
+
+            MatchObject gridObject = Instantiate(this, parent.transform);
+            if (!gridObject) return null;
+
+            return gridObject;
+        }
 
         public override GridObject Create1(GridCell parent, Action<int> TargetCollectEvent)
         {

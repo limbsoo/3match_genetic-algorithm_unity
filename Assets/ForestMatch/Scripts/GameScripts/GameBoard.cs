@@ -476,10 +476,8 @@ namespace Mkey
                 c.CreateBorder();
             });
 
-            MainGrid = g;
+            //MainGrid = g;
         }
-
-
 
         #region grid construct
         public void CreateGameBoard()
@@ -524,7 +522,20 @@ namespace Mkey
                         cells = lC.spawnCells;
 
 
-                        g.fillGrid(true, g, CurTargets, spawnerPrefab, spawnerStyle, GridContainer, transform, lC);
+                        ///////////////////////////////////////////////////////////////////////////////////////////
+                        MatchGrid tmpGrid = new MatchGrid(lC, GOSet, cont, SortingOrder.Base, GMode);
+                        for (int i = 0; i < tmpGrid.Cells.Count; i++)
+                        {
+                            tmpGrid.Cells[i].GCPointerDownEvent = MatchPointerDownHandler;
+                            tmpGrid.Cells[i].GCDragEnterEvent = MatchDragEnterHandler;
+                            tmpGrid.Cells[i].GCDoubleClickEvent = MatchDoubleClickHandler;
+                        }
+
+                        tmpGrid.haveFillPath = lC.HaveFillPath(tmpGrid);
+
+                        ///////////////////////////////////////////////////////////////////////////////////////////
+
+                        g.fillGrid(true, g, tmpGrid, CurTargets, spawnerPrefab, spawnerStyle, GridContainer, transform, lC);
                     }
 
 

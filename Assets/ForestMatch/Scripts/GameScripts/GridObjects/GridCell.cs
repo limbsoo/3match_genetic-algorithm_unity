@@ -380,6 +380,17 @@ namespace Mkey
 
         /// ////////////////////////////////////////////////////////////////////////////////////
 
+        internal GridObject new_setObject(GridObject prefab)
+        {
+            if (!prefab) return null;
+
+            int a = prefab.ID;
+
+            GridObject gO = prefab.new_create(this);
+            return gO;
+        }
+
+
         internal GridObject SetObject1(GridObject prefab)
         {
             if (!prefab) return null;
@@ -440,6 +451,12 @@ namespace Mkey
             }).SetEase(EaseAnim.EaseInSine);
         }
 
+        internal void new_GrabDynamicObject(GameObject dObject)
+        {
+            if (dObject) dObject.transform.parent = transform;
+        }
+
+
         internal void GrabDynamicObject1(GameObject dObject, bool fast, Action completeCallBack)
         {
             if (dObject)
@@ -476,6 +493,28 @@ namespace Mkey
         /// Try to grab match object from fill path
         /// </summary>
         /// <param name="completeCallBack"></param>
+        /// 
+
+        internal void new_fillGrab()
+        {
+            GameObject mObject = null;
+            GridCell gCell = null;
+
+            if (spawner)
+            {
+                GridObject mo = spawner.new_get();
+                mObject = (mo) ? mo.gameObject : null;
+            }
+            else
+            {
+                gCell = (fillPathToSpawner != null && fillPathToSpawner.Count > 0) ? fillPathToSpawner[0] : GravityMather;
+                mObject = gCell.DynamicObject;
+            }
+            //if (mObject && gCell && (gCell.PhysStep)) return;
+
+            new_GrabDynamicObject(mObject);
+        }
+
         internal void fillGrab1(Action completeCallBack)
         {
             GameObject mObject = null;

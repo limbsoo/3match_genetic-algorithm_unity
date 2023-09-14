@@ -22,6 +22,9 @@ namespace Mkey
     {
         public GameBoard board;
         public MatchGrid grid;
+        public MatchGrid tmpGrid;
+
+
         public Dictionary<int, TargetData> curTargets;
 
         public List<int> CellsContainer;
@@ -29,8 +32,10 @@ namespace Mkey
         public int[] cellCnts;
 
 
+        public int[] targetArray = { 22,24,26 };
+        public int[] geneArray = { };
 
-        
+
         public int feasibleIdx;
 
         //public Match_Helper()
@@ -334,6 +339,23 @@ namespace Mkey
             }
         }
 
+        public void getParent(List<GridCell> freeCells)
+        {
+
+        }
+
+
+
+
+
+        public void new_fillGridByStep(List<GridCell> freeCells)
+        {
+            if (freeCells.Count == 0) return;
+
+            foreach (GridCell gc in freeCells) gc.new_fillGrab();
+        }
+
+
         public void fillGridByStep(List<GridCell> freeCells, Action completeCallBack)
         {
             if (freeCells.Count == 0)
@@ -467,192 +489,192 @@ namespace Mkey
         public int[,] connected;
         public int[] possibleArea;
 
-        public bool isConnected(MatchGrid grid, int cnt)
-        {
-            GridCell[,] curCell = new GridCell[grid.Columns.Count, grid.Rows.Count];
+        //public bool isConnected(MatchGrid grid, int cnt)
+        //{
+        //    GridCell[,] curCell = new GridCell[grid.Columns.Count, grid.Rows.Count];
 
-            for (int i = 0; i < grid.Columns.Count; i++)
-            {
-                for (int j = 0; j < grid.Rows.Count; j++)
-                {
-                    curCell[i, j] = grid.Cells[i * grid.Rows.Count + j];
-                }
-            }
+        //    for (int i = 0; i < grid.Columns.Count; i++)
+        //    {
+        //        for (int j = 0; j < grid.Rows.Count; j++)
+        //        {
+        //            curCell[i, j] = grid.Cells[i * grid.Rows.Count + j];
+        //        }
+        //    }
 
-            isVisited = new bool[grid.Columns.Count, grid.Rows.Count];
-            connected = new int[grid.Columns.Count, grid.Rows.Count];
+        //    isVisited = new bool[grid.Columns.Count, grid.Rows.Count];
+        //    connected = new int[grid.Columns.Count, grid.Rows.Count];
 
-            //for (int i = 0; i < grid.Columns.Count; i++)
-            //{
-            //    for (int j = 0; j < grid.Rows.Count; j++)
-            //    {
-            //        isVisited[i,j] = true;
+        //    //for (int i = 0; i < grid.Columns.Count; i++)
+        //    //{
+        //    //    for (int j = 0; j < grid.Rows.Count; j++)
+        //    //    {
+        //    //        isVisited[i,j] = true;
 
-            //        if(curCell[i, j].DynamicObject)
-            //        {
-            //            bool isReachSpawn = false;
-            //            visitConnectCell(curCell, i, j, isReachSpawn);
-            //            break;
-            //        }
-
-
-            //        //if (!isVisited[i, j] && curCell[i, j].DynamicObject)
-            //        //{
-            //        //    bool isReachSpawn = false;
-            //        //    visitConnectCell(curCell, i, j, isReachSpawn);
-            //        //    if (!isReachSpawn) return false;
-            //        //}
-            //    }
-
-            //    break;
-            //}
-
-            for (int row = 0; row < grid.Rows.Count; row++)
-            {
-                for (int col = 0; col < grid.Columns.Count; col++)
-                {
-                    if(!curCell[col, row].DynamicObject)
-                    {
-                        isVisited[col, row] = true;
-                        connected[col, row] = grid.Columns.Count + 1;
-                    }
-                }
-            }
-
-            int area = 1;
-
-            for (int row = 0; row < grid.Rows.Count; row++)
-            {
-                int col = 0;
-
-                if (!isVisited[col, row])
-                {
-                    isVisited[col, row] = true;
-                    bool isReachSpawn = false;
-                    visitConnectCell(curCell, col, row, isReachSpawn);
-
-                    for (int i = 0; i < grid.Columns.Count; i++)
-                    {
-                        for (int j = 0; j < grid.Rows.Count; j++)
-                        {
-                            if (isVisited[i,j] && connected[i, j] == 0) connected[i, j] = area;
-                        }
-                    }
-
-                    area++;
-                }
-            }
-
-            possibleArea = new int[grid.Columns.Count + 2];
-
-            for (int i = 0; i < grid.Columns.Count; i++)
-            {
-                for (int j = 0; j < grid.Rows.Count; j++)
-                {
-                    possibleArea[connected[i, j]] += grid.Cells[i * grid.Rows.Count + j].possibleCnt;
-                }
-            }
+        //    //        if(curCell[i, j].DynamicObject)
+        //    //        {
+        //    //            bool isReachSpawn = false;
+        //    //            visitConnectCell(curCell, i, j, isReachSpawn);
+        //    //            break;
+        //    //        }
 
 
-            //int[,] possibleCnts = new int[grid.Columns.Count, grid.Rows.Count];
-            //int[] cnts = new int[16];
+        //    //        //if (!isVisited[i, j] && curCell[i, j].DynamicObject)
+        //    //        //{
+        //    //        //    bool isReachSpawn = false;
+        //    //        //    visitConnectCell(curCell, i, j, isReachSpawn);
+        //    //        //    if (!isReachSpawn) return false;
+        //    //        //}
+        //    //    }
 
-            //for (int i = 0; i < grid.Columns.Count; i++)
-            //{
-            //    for (int j = 0; j < grid.Rows.Count; j++)
-            //    {
-            //        possibleCnts[i, j] = grid.Cells[i * grid.Rows.Count + j].possibleCnt;
-            //        cnts[grid.Cells[i * grid.Rows.Count + j].possibleCnt]++;
-            //    }
-            //}
+        //    //    break;
+        //    //}
 
+        //    for (int row = 0; row < grid.Rows.Count; row++)
+        //    {
+        //        for (int col = 0; col < grid.Columns.Count; col++)
+        //        {
+        //            if(!curCell[col, row].DynamicObject)
+        //            {
+        //                isVisited[col, row] = true;
+        //                connected[col, row] = grid.Columns.Count + 1;
+        //            }
+        //        }
+        //    }
 
+        //    int area = 1;
 
-            return true;
-        }
+        //    for (int row = 0; row < grid.Rows.Count; row++)
+        //    {
+        //        int col = 0;
 
-        void visitConnectCell(GridCell[,] curCell, int col, int row, bool isReachSpawn)
-        {
-            if (canVisit(curCell, col, row - 1)) // Top
-            {
-                if (row == 0) isReachSpawn = true;
-                isVisited[col,row - 1] = true;
-                visitConnectCell(curCell, col, row - 1, isReachSpawn);
-            }
+        //        if (!isVisited[col, row])
+        //        {
+        //            isVisited[col, row] = true;
+        //            bool isReachSpawn = false;
+        //            visitConnectCell(curCell, col, row, isReachSpawn);
 
-            if (canVisit(curCell, col, row + 1)) // Bottom
-            {
-                if (row == 0) isReachSpawn = true;
-                isVisited[col, row + 1] = true;
-                visitConnectCell(curCell, col, row + 1, isReachSpawn);
-            }
+        //            for (int i = 0; i < grid.Columns.Count; i++)
+        //            {
+        //                for (int j = 0; j < grid.Rows.Count; j++)
+        //                {
+        //                    if (isVisited[i,j] && connected[i, j] == 0) connected[i, j] = area;
+        //                }
+        //            }
 
-            if (canVisit(curCell, col - 1, row)) // Left
-            {
-                if (row == 0) isReachSpawn = true;
-                isVisited[col - 1,row] = true;
-                visitConnectCell(curCell, col - 1, row, isReachSpawn);
-            }
+        //            area++;
+        //        }
+        //    }
 
-            if (canVisit(curCell, col + 1, row)) // Right
-            {
-                if (row == 0) isReachSpawn = true;
-                isVisited[col + 1,row] = true;
-                visitConnectCell(curCell, col + 1, row, isReachSpawn);
-            }
+        //    possibleArea = new int[grid.Columns.Count + 2];
 
-            //if (canVisit(curCell, col - 1, row - 1)) // TopLeft
-            //{
-            //    if (row == 0) isReachSpawn = true;
-            //    isVisited[col - 1,row - 1] = true;
-            //    visitConnectCell(curCell, col - 1, row - 1, isReachSpawn);
-            //}
-
-            //if (canVisit(curCell, col - 1, row + 1)) // BottomLeft
-            //{
-            //    if (row == 0) isReachSpawn = true;
-            //    isVisited[col - 1, row + 1] = true;
-            //    visitConnectCell(curCell, col - 1, row + 1, isReachSpawn);
-            //}
-
-            //if (canVisit(curCell, col + 1, row - 1)) // TopRight
-            //{
-            //    if (row == 0) isReachSpawn = true;
-            //    isVisited[col + 1, row - 1] = true;
-            //    visitConnectCell(curCell, col + 1, row - 1, isReachSpawn);
-            //}
-
-            //if (canVisit(curCell, col + 1, row + 1)) // BottomRight
-            //{
-            //    if (row == 0) isReachSpawn = true;
-            //    isVisited[col + 1, row + 1] = true;
-            //    visitConnectCell(curCell, col + 1, row + 1, isReachSpawn);
-            //}
-        }
-
-        bool canVisit(GridCell[,] curCell, int col, int row)
-        {
-            if( col >= 0 && row >= 0 && col < grid.Columns.Count && row < grid.Rows.Count)
-            {
-                if(!isVisited[col, row] && curCell[col, row].DynamicObject) return true;
-                else return false;
-
-                //if (col >= 0 && row >= 0 && col <= grid.Columns.Count && row <= grid.Rows.Count)
-                //{
-                //    if (curCell[col, row].DynamicObject) return true;
-                //        else return false;
-                //}
-            }
+        //    for (int i = 0; i < grid.Columns.Count; i++)
+        //    {
+        //        for (int j = 0; j < grid.Rows.Count; j++)
+        //        {
+        //            possibleArea[connected[i, j]] += grid.Cells[i * grid.Rows.Count + j].possibleCnt;
+        //        }
+        //    }
 
 
-            //if (col >= 0 && col < curCell[col,row].GColumn.Length && row >= 0 && row < curCell[col, row].GRow.Length)
-            //{
-            //    if (curCell[col, row].DynamicObject) return true;
-            //    else return false;
-            //}
+        //    //int[,] possibleCnts = new int[grid.Columns.Count, grid.Rows.Count];
+        //    //int[] cnts = new int[16];
 
-            else return false;
-        }
+        //    //for (int i = 0; i < grid.Columns.Count; i++)
+        //    //{
+        //    //    for (int j = 0; j < grid.Rows.Count; j++)
+        //    //    {
+        //    //        possibleCnts[i, j] = grid.Cells[i * grid.Rows.Count + j].possibleCnt;
+        //    //        cnts[grid.Cells[i * grid.Rows.Count + j].possibleCnt]++;
+        //    //    }
+        //    //}
+
+
+
+        //    return true;
+        //}
+
+        //void visitConnectCell(GridCell[,] curCell, int col, int row, bool isReachSpawn)
+        //{
+        //    if (canVisit(curCell, col, row - 1)) // Top
+        //    {
+        //        if (row == 0) isReachSpawn = true;
+        //        isVisited[col,row - 1] = true;
+        //        visitConnectCell(curCell, col, row - 1, isReachSpawn);
+        //    }
+
+        //    if (canVisit(curCell, col, row + 1)) // Bottom
+        //    {
+        //        if (row == 0) isReachSpawn = true;
+        //        isVisited[col, row + 1] = true;
+        //        visitConnectCell(curCell, col, row + 1, isReachSpawn);
+        //    }
+
+        //    if (canVisit(curCell, col - 1, row)) // Left
+        //    {
+        //        if (row == 0) isReachSpawn = true;
+        //        isVisited[col - 1,row] = true;
+        //        visitConnectCell(curCell, col - 1, row, isReachSpawn);
+        //    }
+
+        //    if (canVisit(curCell, col + 1, row)) // Right
+        //    {
+        //        if (row == 0) isReachSpawn = true;
+        //        isVisited[col + 1,row] = true;
+        //        visitConnectCell(curCell, col + 1, row, isReachSpawn);
+        //    }
+
+        //    //if (canVisit(curCell, col - 1, row - 1)) // TopLeft
+        //    //{
+        //    //    if (row == 0) isReachSpawn = true;
+        //    //    isVisited[col - 1,row - 1] = true;
+        //    //    visitConnectCell(curCell, col - 1, row - 1, isReachSpawn);
+        //    //}
+
+        //    //if (canVisit(curCell, col - 1, row + 1)) // BottomLeft
+        //    //{
+        //    //    if (row == 0) isReachSpawn = true;
+        //    //    isVisited[col - 1, row + 1] = true;
+        //    //    visitConnectCell(curCell, col - 1, row + 1, isReachSpawn);
+        //    //}
+
+        //    //if (canVisit(curCell, col + 1, row - 1)) // TopRight
+        //    //{
+        //    //    if (row == 0) isReachSpawn = true;
+        //    //    isVisited[col + 1, row - 1] = true;
+        //    //    visitConnectCell(curCell, col + 1, row - 1, isReachSpawn);
+        //    //}
+
+        //    //if (canVisit(curCell, col + 1, row + 1)) // BottomRight
+        //    //{
+        //    //    if (row == 0) isReachSpawn = true;
+        //    //    isVisited[col + 1, row + 1] = true;
+        //    //    visitConnectCell(curCell, col + 1, row + 1, isReachSpawn);
+        //    //}
+        //}
+
+        //bool canVisit(GridCell[,] curCell, int col, int row)
+        //{
+        //    if( col >= 0 && row >= 0 && col < grid.Columns.Count && row < grid.Rows.Count)
+        //    {
+        //        if(!isVisited[col, row] && curCell[col, row].DynamicObject) return true;
+        //        else return false;
+
+        //        //if (col >= 0 && row >= 0 && col <= grid.Columns.Count && row <= grid.Rows.Count)
+        //        //{
+        //        //    if (curCell[col, row].DynamicObject) return true;
+        //        //        else return false;
+        //        //}
+        //    }
+
+
+        //    //if (col >= 0 && col < curCell[col,row].GColumn.Length && row >= 0 && row < curCell[col, row].GRow.Length)
+        //    //{
+        //    //    if (curCell[col, row].DynamicObject) return true;
+        //    //    else return false;
+        //    //}
+
+        //    else return false;
+        //}
 
 
 
@@ -748,3 +770,5 @@ namespace Mkey
 
 
 }
+
+

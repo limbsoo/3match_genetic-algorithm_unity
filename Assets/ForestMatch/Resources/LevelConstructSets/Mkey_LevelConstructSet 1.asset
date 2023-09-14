@@ -43,10 +43,10 @@ MonoBehaviour:
       - id: 1005
         count: 0
       - id: 200001
-        count: 9
-      - id: 400101
         count: 0
-      - id: 800000
+      - id: 100004
+        count: 0
+      - id: 101
         count: 0
       - id: 200000
         count: 0

@@ -4293,3 +4293,514 @@
 
 
 
+//using Mkey;
+/////
+//using System.Collections.Generic;
+/////
+//public void fillState(DNA<char> p, SpawnController sC)
+//{
+//    List<GridCell> gFreeCells = GetFreeCells(mh.grid, true);
+//    if (gFreeCells.Count > 0) mh.createFillPath(mh.grid);
+
+//    int fill_cnt = 0;
+
+//    while (gFreeCells.Count > 0)
+//    {
+//        //mh.fillGridByStep(gFreeCells, () => { });
+//        mh.new_fillGridByStep(gFreeCells);
+//        gFreeCells = GetFreeCells(mh.grid, true);
+//        if (estimateMaxedOut(p, ref fill_cnt, 100)) break;
+//    }
+
+//    foreach (var item in mh.curTargets)
+//    {
+//        if (item.Value.Achieved) p.targetClear = true;
+
+//        else
+//        {
+//            p.targetClear = false;
+//            break;
+//        }
+//    }
+//    if (p.targetClear) return;
+
+//    p.curState = 2;
+//}
+
+//public void showState(DNA<char> p, SpawnController sC, Transform trans)
+//{
+//    foreach (var item in mh.curTargets)
+//    {
+//        if (item.Value.Achieved) p.targetClear = true;
+//        else
+//        {
+//            p.targetClear = false;
+//            break;
+//        }
+//    }
+//    if (p.targetClear) return;
+
+//    int mix_cnt = 0;
+
+//    while (!estimateMaxedOut(p, ref mix_cnt, 100))
+//    {
+//        mh.createMatchGroups1(2, true, mh.grid, p);
+
+//        if (mh.grid.mgList.Count == 0)
+//        {
+//            mh.mixGrid(null, mh.grid, trans);
+//            mix_cnt++;
+//        }
+//        else break;
+//    }
+
+
+//    if (p.maxedOut) return;
+
+//    else
+//    {
+//        //List<int> targetMatched = new List<int>();
+
+//        //for (int i = 0; i < mh.grid.mgList.Count; i++)
+//        //{
+//        //    foreach (var item in mh.curTargets)
+//        //    {
+//        //        //target: matchBlock
+//        //        if (item.Value.ID >= 1000 && item.Value.ID <= 1006)
+//        //        {
+//        //            List<int> mg_cell = mh.grid.mgList[i].Cells[0].GetGridObjectsIDs();
+
+//        //            if (mg_cell[0] == item.Value.ID)
+//        //            {
+//        //                targetMatched.Add(i);
+//        //                break;
+//        //            }
+//        //        }
+
+//        //        //target:underlay (Grass)
+//        //        else if (item.Value.ID == 200001)
+//        //        {
+//        //            for (int j = 0; j < mh.grid.mgList[i].Length; j++)
+//        //            {
+//        //                if (mh.grid.mgList[i].Cells[j].Underlay != null)
+//        //                {
+//        //                    targetMatched.Add(i);
+//        //                    break;
+//        //                }
+//        //            }
+//        //        }
+
+//        //        //target: overlay (lianna) 
+//        //        else if (item.Value.ID == 100004)
+//        //        {
+//        //            for (int j = 0; j < mh.grid.mgList[i].Length; j++)
+//        //            {
+//        //                if (mh.grid.mgList[i].Cells[j].Overlay != null)
+//        //                {
+//        //                    targetMatched.Add(i);
+//        //                    break;
+//        //                }
+//        //            }
+//        //        }
+
+//        //        //target: blocked (Root)
+//        //        else if (item.Value.ID == 101)
+//        //        {
+//        //            //int blockedCnt = 0;
+
+//        //            for (int j = 0; j < mh.grid.mgList[i].Cells.Count; j++)
+//        //            {
+//        //                GridCell g = mh.grid.mgList[i].Cells[j];
+
+//        //                if (g.Neighbors.Top != null)
+//        //                {
+//        //                    if (g.Neighbors.Top.Blocked != null && g.Neighbors.Top.Blocked.Destroyable)
+//        //                    {
+//        //                        targetMatched.Add(i);
+//        //                        break;
+//        //                    }
+//        //                }
+
+//        //                if (g.Neighbors.Left != null)
+//        //                {
+//        //                    if (g.Neighbors.Left.Blocked != null && g.Neighbors.Left.Blocked.Destroyable)
+//        //                    {
+//        //                        targetMatched.Add(i);
+//        //                        break;
+//        //                    }
+//        //                }
+
+//        //                if (g.Neighbors.Right != null)
+//        //                {
+//        //                    if (g.Neighbors.Right.Blocked != null && g.Neighbors.Right.Blocked.Destroyable)
+//        //                    {
+//        //                        targetMatched.Add(i);
+//        //                        break;
+//        //                    }
+//        //                }
+
+//        //                if (g.Neighbors.Bottom != null)
+//        //                {
+//        //                    if (g.Neighbors.Bottom.Blocked != null && g.Neighbors.Bottom.Blocked.Destroyable)
+//        //                    {
+//        //                        targetMatched.Add(i);
+//        //                        break;
+//        //                    }
+//        //                }
+
+//        //            }
+
+//        //        }
+
+//        //    }
+//        //}
+
+//        ////if (targetMatched.Count > 1)
+//        ////{
+//        ////    for (int i = 0; i < targetMatched.Count; i++)
+//        ////    {
+//        ////        for (int j = 0; j < Cells.Count; j++)
+//        ////        {
+//        ////            List<int> mgCell = mh.grid.Cells[j].GetGridObjectsIDs();
+//        ////            for (int k = 0; k < mgCell.Count; k++) mh.tmpGrid.Cells[j].SetObject(mgCell[k]);
+//        ////        }
+
+//        ////        mh.createMatchGroups1(2, true, mh.tmpGrid, p);
+//        ////        mh.tmpGrid.mgList[i].SwapEstimate();
+
+//        ////        mh.createMatchGroups(3, false, mh.tmpGrid);
+
+//        ////        for (int j = 0; j < mh.tmpGrid.mgList.Count; j++)
+//        ////        {
+//        ////            int cnt = 0;
+
+//        ////            foreach (var item in mh.curTargets)
+//        ////            {
+//        ////                //target: matchBlock
+//        ////                if (item.Value.ID >= 1000 && item.Value.ID <= 1006)
+//        ////                {
+//        ////                    for (int k = 0; k < mh.tmpGrid.mgList[j].Cells.Count; k++)
+//        ////                    {
+//        ////                        List<int> mgCell = mh.tmpGrid.mgList[j].Cells[k].GetGridObjectsIDs();
+//        ////                        if (mgCell[0] == item.Value.ID) cnt++;
+//        ////                        mh.tmpGrid.mgList[j].Cells[k].DestroyGridObjects();
+//        ////                    }
+//        ////                }
+
+//        ////                //target:underlay
+//        ////                else if (item.Value.ID == 200001)
+//        ////                {
+//        ////                    for (int k = 0; k < mh.tmpGrid.mgList[j].Cells.Count; k++)
+//        ////                    {
+//        ////                        List<int> mgCell = mh.tmpGrid.mgList[j].Cells[k].GetGridObjectsIDs();
+//        ////                        if (mgCell.Count > 1) cnt++;
+//        ////                        mh.tmpGrid.mgList[i].Cells[j].DestroyGridObjects();
+//        ////                    }
+//        ////                }
+
+//        ////                //target: overlay (lianna) 
+//        ////                else if (item.Value.ID == 100004)
+//        ////                {
+//        ////                    for (int k = 0; k < mh.tmpGrid.mgList[j].Cells.Count; k++)
+//        ////                    {
+//        ////                        List<int> mgCell = mh.tmpGrid.mgList[j].Cells[k].GetGridObjectsIDs();
+//        ////                        if (mgCell.Count > 1)
+//        ////                        {
+//        ////                            if (mh.tmpGrid.mgList[i].Cells[j].Overlay.hitCnt == 1)
+//        ////                            {
+//        ////                                cnt++;
+//        ////                                mh.tmpGrid.mgList[i].Cells[j].DestroyGridObjects();
+//        ////                            }
+
+//        ////                        }
+
+//        ////                        else mh.tmpGrid.mgList[i].Cells[j].DestroyGridObjects();
+//        ////                    }
+
+//        ////                }
+
+//        ////                //target: blocked (Root)
+//        ////                else if (item.Value.ID == 101)
+//        ////                {
+//        ////                    for (int k = 0; k < mh.tmpGrid.mgList[j].Cells.Count; k++)
+//        ////                    {
+//        ////                        GridCell g = mh.tmpGrid.mgList[i].Cells[j];
+
+//        ////                        if (g.Neighbors.Top != null)
+//        ////                        {
+//        ////                            if (g.Neighbors.Top.Blocked != null && g.Neighbors.Top.Blocked.Destroyable)
+//        ////                            {
+//        ////                                if (g.Neighbors.Top.Blocked.hitCnt == g.Neighbors.Top.Blocked.Protection - 1)
+//        ////                                {
+//        ////                                    cnt++;
+//        ////                                    g.Neighbors.Top.DestroyGridObjects();
+//        ////                                }
+//        ////                            }
+//        ////                        }
+
+//        ////                        if (g.Neighbors.Left != null)
+//        ////                        {
+//        ////                            if (g.Neighbors.Left.Blocked != null && g.Neighbors.Left.Blocked.Destroyable)
+//        ////                            {
+//        ////                                if (g.Neighbors.Left.Blocked.hitCnt == g.Neighbors.Left.Blocked.Protection - 1)
+//        ////                                {
+//        ////                                    cnt++;
+//        ////                                    g.Neighbors.Left.DestroyGridObjects();
+//        ////                                }
+//        ////                            }
+//        ////                        }
+
+//        ////                        if (g.Neighbors.Right != null)
+//        ////                        {
+//        ////                            if (g.Neighbors.Right.Blocked != null && g.Neighbors.Right.Blocked.Destroyable)
+//        ////                            {
+//        ////                                if (g.Neighbors.Right.Blocked.hitCnt == g.Neighbors.Right.Blocked.Protection - 1)
+//        ////                                {
+//        ////                                    cnt++;
+//        ////                                    g.Neighbors.Right.DestroyGridObjects();
+//        ////                                }
+//        ////                            }
+//        ////                        }
+
+//        ////                        if (g.Neighbors.Bottom != null)
+//        ////                        {
+//        ////                            if (g.Neighbors.Bottom.Blocked != null && g.Neighbors.Bottom.Blocked.Destroyable)
+//        ////                            {
+//        ////                                if (g.Neighbors.Bottom.Blocked.hitCnt == g.Neighbors.Bottom.Blocked.Protection - 1)
+//        ////                                {
+//        ////                                    cnt++;
+//        ////                                    g.Neighbors.Bottom.DestroyGridObjects();
+//        ////                                }
+//        ////                            }
+//        ////                        }
+
+//        ////                        mh.tmpGrid.mgList[i].Cells[j].DestroyGridObjects();
+//        ////                    }
+
+//        ////                }
+//        ////            }
+//        ////        }
+
+//        ////        List<GridCell> gFreeCells = GetFreeCells(mh.tmpGrid, true);
+//        ////        if (gFreeCells.Count > 0) mh.createFillPath(mh.tmpGrid);
+
+//        ////        int fill_cnt = 0;
+
+//        ////        while (gFreeCells.Count > 0)
+//        ////        {
+//        ////            //mh.fillGridByStep(gFreeCells, () => { });
+//        ////            mh.new_fillGridByStep(gFreeCells);
+//        ////            gFreeCells = GetFreeCells(mh.tmpGrid, true);
+//        ////        }
+
+//        ////        mh.createMatchGroups1(2, true, mh.tmpGrid, p);
+
+//        ////    }
+
+
+
+//        ////}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//        //if (targetMatched.Count == 0) mh.grid.mgList[0].SwapEstimate();
+
+//        //else
+//        //{
+//        //    p.shortCutCnt++;
+//        //    int number = Random.Range(0, targetMatched.Count - 1);
+//        //    mh.grid.mgList[targetMatched[number]].SwapEstimate();
+//        //}
+
+//        p.numMove--;
+//        p.curState = 2;
+
+//    }
+
+//}
+
+//int collect_cnt = 0;
+//public void collectState(DNA<char> p)
+//{
+//    if (collect_cnt >= 100)
+//    {
+//        p.maxedOut = true;
+//        return;
+//    }
+
+//    if (mh.grid.GetFreeCells(true).Count > 0)
+//    {
+//        p.curState = 0;
+//        return;
+//    }
+
+//    mh.createMatchGroups(3, false, mh.grid);
+
+//    if (mh.grid.mgList.Count == 0)
+//    {
+//        collect_cnt = 0;
+//        p.curState = 1;
+//    }
+
+//    else
+//    {
+//        //destory
+//        for (int i = 0; i < mh.grid.mgList.Count; i++)
+//        {
+//            foreach (var item in mh.curTargets)
+//            {
+//                //target: matchBlock
+//                if (item.Value.ID >= 1000 && item.Value.ID <= 1006)
+//                {
+//                    for (int j = 0; j < mh.grid.mgList[i].Cells.Count; j++)
+//                    {
+//                        List<int> mgCell = mh.grid.mgList[i].Cells[j].GetGridObjectsIDs();
+
+//                        if (mgCell[0] == item.Value.ID)
+//                        {
+//                            item.Value.IncCurrCount(1);
+//                        }
+
+//                        mh.grid.mgList[i].Cells[j].DestroyGridObjects();
+//                    }
+//                }
+
+
+//                //target:underlay
+//                else if (item.Value.ID == 200001)
+//                {
+//                    for (int j = 0; j < mh.grid.mgList[i].Cells.Count; j++)
+//                    {
+//                        List<int> mgCell = mh.grid.mgList[i].Cells[j].GetGridObjectsIDs();
+//                        if (mgCell.Count > 1)
+//                        {
+//                            item.Value.IncCurrCount(1);
+//                            //mh.grid.mgList[i].Cells[j].RemoveObject(mgCell[1]);
+//                        }
+
+//                        mh.grid.mgList[i].Cells[j].DestroyGridObjects();
+//                    }
+//                }
+
+//                //target: overlay (lianna) 
+//                else if (item.Value.ID == 100004)
+//                {
+//                    for (int j = 0; j < mh.grid.mgList[i].Cells.Count; j++)
+//                    {
+//                        List<int> mgCell = mh.grid.mgList[i].Cells[j].GetGridObjectsIDs();
+//                        if (mgCell.Count > 1)
+//                        {
+//                            mh.grid.mgList[i].Cells[j].Overlay.hitCnt++;
+
+//                            if (mh.grid.mgList[i].Cells[j].Overlay.hitCnt == 2)
+//                            {
+//                                item.Value.IncCurrCount(1);
+//                                mh.grid.mgList[i].Cells[j].DestroyGridObjects();
+//                                //mh.grid.mgList[i].Cells[j].RemoveObject(mgCell[1]);
+//                            }
+//                        }
+
+//                        else mh.grid.mgList[i].Cells[j].DestroyGridObjects();
+//                    }
+
+//                }
+
+//                //target: blocked (Root)
+//                else if (item.Value.ID == 101)
+//                {
+//                    for (int j = 0; j < mh.grid.mgList[i].Cells.Count; j++)
+//                    {
+//                        GridCell g = mh.grid.mgList[i].Cells[j];
+
+//                        if (g.Neighbors.Top != null)
+//                        {
+//                            if (g.Neighbors.Top.Blocked != null && g.Neighbors.Top.Blocked.Destroyable)
+//                            {
+//                                g.Neighbors.Top.Blocked.hitCnt++;
+
+//                                if (g.Neighbors.Top.Blocked.hitCnt == g.Neighbors.Top.Blocked.Protection)
+//                                {
+//                                    item.Value.IncCurrCount(1);
+//                                    g.Neighbors.Top.DestroyGridObjects();
+//                                }
+//                            }
+//                        }
+
+//                        if (g.Neighbors.Left != null)
+//                        {
+//                            if (g.Neighbors.Left.Blocked != null && g.Neighbors.Left.Blocked.Destroyable)
+//                            {
+//                                g.Neighbors.Left.Blocked.hitCnt++;
+
+//                                if (g.Neighbors.Left.Blocked.hitCnt == g.Neighbors.Left.Blocked.Protection)
+//                                {
+//                                    item.Value.IncCurrCount(1);
+//                                    g.Neighbors.Left.DestroyGridObjects();
+//                                }
+//                            }
+//                        }
+
+//                        if (g.Neighbors.Right != null)
+//                        {
+//                            if (g.Neighbors.Right.Blocked != null && g.Neighbors.Right.Blocked.Destroyable)
+//                            {
+//                                g.Neighbors.Right.Blocked.hitCnt++;
+
+//                                if (g.Neighbors.Right.Blocked.hitCnt == g.Neighbors.Right.Blocked.Protection)
+//                                {
+//                                    item.Value.IncCurrCount(1);
+//                                    g.Neighbors.Right.DestroyGridObjects();
+//                                }
+//                            }
+//                        }
+
+//                        if (g.Neighbors.Bottom != null)
+//                        {
+//                            if (g.Neighbors.Bottom.Blocked != null && g.Neighbors.Bottom.Blocked.Destroyable)
+//                            {
+//                                g.Neighbors.Bottom.Blocked.hitCnt++;
+
+//                                if (g.Neighbors.Bottom.Blocked.hitCnt == g.Neighbors.Bottom.Blocked.Protection)
+//                                {
+//                                    item.Value.IncCurrCount(1);
+//                                    g.Neighbors.Bottom.DestroyGridObjects();
+//                                }
+//                            }
+//                        }
+
+//                        mh.grid.mgList[i].Cells[j].DestroyGridObjects();
+//                    }
+
+
+
+//                }
+
+//            }
+//        }
+
+//        //for (int i = 0; i < mh.grid.mgList.Count; i++)
+//        //{
+//        //    if (mh.grid.mgList[i] != null)
+//        //    {
+//        //        foreach (GridCell c in mh.grid.mgList[i].Cells) c.DestroyGridObjects();
+//        //    }
+//        //}
+
+//        p.allMove++;
+//        p.curState = 0;
+//    }
+
+//    collect_cnt++;
+//}

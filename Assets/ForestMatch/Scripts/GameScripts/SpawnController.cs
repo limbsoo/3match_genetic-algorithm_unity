@@ -42,6 +42,22 @@ namespace Mkey
             return match;
         }
 
+        public GridObject new_Get(GridCell gridCell, LevelConstructSet lCSet, GameObjectsSet gOSet, GameBoard mBoard, Vector3 position)
+        {
+            if (!gridCell) return null;
+            MatchObject prefab = GetMainRandomObjectPrefab(lCSet, gOSet);
+            if (!prefab) return null;
+
+            GridObject match = prefab.new_create(gridCell);
+            if (match)
+            {
+                match.transform.position = position;
+            }
+            return match;
+        }
+
+
+
         public MatchObject GetMainRandomObjectPrefab(LevelConstructSet lCSet, GameObjectsSet gOSet)
         {
 
@@ -123,7 +139,7 @@ namespace Mkey
         public OverlayObject GetSelectOverlayObjectPrefab(LevelConstructSet lCSet, GameObjectsSet gOSet)
         {
             List<OverlayObject> gridObjects = lCSet.GetOverlayObjects(gOSet);
-            return gridObjects[0];
+            return gridObjects[4];
         }
 
         public UnderlayObject GetRandomUnderlayObjectPrefab(LevelConstructSet lCSet, GameObjectsSet gOSet)

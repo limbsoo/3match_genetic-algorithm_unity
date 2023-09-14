@@ -10,6 +10,9 @@ namespace Mkey
         public Sprite[] protectionStateImages;
         public GameObject hitAnimPrefab;
 
+        public int hitCnt = 0;
+
+
         #region properties
         public int Protection
         {

@@ -36,6 +36,17 @@ namespace Mkey
             return SController.Get(gridCell, GetGet(), GOSet, MBoard, transform.position);
         }
 
+        public GridObject new_get()
+        {
+            //return SController.Get(gridCell, MBoard.CurrentGrid.LcSet,  GOSet, MBoard, transform.position);
+
+            return SController.new_Get(gridCell, GetGet(), GOSet, MBoard, transform.position);
+        }
+
+
+
+        
+
         public void Show(bool show)
         {
             SpriteRenderer sR = GetComponent<SpriteRenderer>();
