@@ -62,14 +62,14 @@ namespace Mkey
 
 
 
-        public int possibleCnt;
+        public int matchFromSwapPotential;
+        public int nearBreakableObstacle;
+        public int includeMatchObstacle;
 
 
+        public int setProtection;
 
-
-
-
-
+        public bool isNotFill = false;
 
 
 
@@ -380,6 +380,16 @@ namespace Mkey
 
         /// ////////////////////////////////////////////////////////////////////////////////////
 
+
+        internal void new_SetObject(int ID, int hits)
+        {
+            GridObject prefab = GOSet.GetObject(ID);
+            if (prefab) prefab.Hits = hits;
+            SetObject(prefab);
+        }
+
+
+
         internal GridObject new_setObject(GridObject prefab)
         {
             if (!prefab) return null;
@@ -389,6 +399,7 @@ namespace Mkey
             GridObject gO = prefab.new_create(this);
             return gO;
         }
+
 
 
         internal GridObject SetObject1(GridObject prefab)

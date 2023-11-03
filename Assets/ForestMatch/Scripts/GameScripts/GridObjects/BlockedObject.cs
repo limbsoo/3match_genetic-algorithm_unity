@@ -20,6 +20,12 @@ namespace Mkey
         }
         #endregion properties
 
+
+
+
+
+
+
         #region override
         public override void Hit(GridCell gCell, Action completeCallBack)
         {

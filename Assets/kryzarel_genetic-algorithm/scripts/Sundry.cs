@@ -4804,3 +4804,805 @@
 
 //    collect_cnt++;
 //}
+
+
+
+//int collect_cnt = 0;
+//public void collectState(DNA<char> p)
+//{
+//    if (collect_cnt >= 100)
+//    {
+//        p.maxedOut = true;
+//        return;
+//    }
+
+//    if (mh.grid.GetFreeCells(true).Count > 0)
+//    {
+//        p.curState = 0;
+//        return;
+//    }
+
+//    mh.createMatchGroups(3, false, mh.grid);
+
+//    if (mh.grid.mgList.Count == 0)
+//    {
+//        collect_cnt = 0;
+//        p.curState = 1;
+//    }
+
+//    else
+//    {
+//        //destory
+//        for (int i = 0; i < mh.grid.mgList.Count; i++)
+//        {
+//            foreach (var item in mh.curTargets)
+//            {
+//                //target: matchBlock
+//                if (item.Value.ID >= 1000 && item.Value.ID <= 1006)
+//                {
+//                    for (int j = 0; j < mh.grid.mgList[i].Cells.Count; j++)
+//                    {
+//                        List<int> mgCell = mh.grid.mgList[i].Cells[j].GetGridObjectsIDs();
+
+//                        if (mgCell[0] == item.Value.ID)
+//                        {
+//                            item.Value.IncCurrCount(1);
+//                        }
+
+//                        mh.grid.mgList[i].Cells[j].DestroyGridObjects();
+//                    }
+//                }
+
+
+//                //target:underlay
+//                else if (item.Value.ID == 200001)
+//                {
+//                    for (int j = 0; j < mh.grid.mgList[i].Cells.Count; j++)
+//                    {
+//                        List<int> mgCell = mh.grid.mgList[i].Cells[j].GetGridObjectsIDs();
+//                        if (mgCell.Count > 1)
+//                        {
+//                            item.Value.IncCurrCount(1);
+//                            //mh.grid.mgList[i].Cells[j].RemoveObject(mgCell[1]);
+//                        }
+
+//                        mh.grid.mgList[i].Cells[j].DestroyGridObjects();
+//                    }
+//                }
+
+//                //target: overlay (lianna) 
+//                else if (item.Value.ID == 100004)
+//                {
+//                    for (int j = 0; j < mh.grid.mgList[i].Cells.Count; j++)
+//                    {
+//                        List<int> mgCell = mh.grid.mgList[i].Cells[j].GetGridObjectsIDs();
+//                        if (mgCell.Count > 1)
+//                        {
+//                            mh.grid.mgList[i].Cells[j].Overlay.hitCnt++;
+
+//                            if (mh.grid.mgList[i].Cells[j].Overlay.hitCnt == 2)
+//                            {
+//                                item.Value.IncCurrCount(1);
+//                                mh.grid.mgList[i].Cells[j].DestroyGridObjects();
+//                                //mh.grid.mgList[i].Cells[j].RemoveObject(mgCell[1]);
+//                            }
+//                        }
+
+//                        else mh.grid.mgList[i].Cells[j].DestroyGridObjects();
+//                    }
+
+//                }
+
+//                //target: blocked (Root)
+//                else if (item.Value.ID == 101)
+//                {
+//                    for (int j = 0; j < mh.grid.mgList[i].Cells.Count; j++)
+//                    {
+//                        GridCell g = mh.grid.mgList[i].Cells[j];
+
+//                        if (g.Neighbors.Top != null)
+//                        {
+//                            if (g.Neighbors.Top.Blocked != null && g.Neighbors.Top.Blocked.Destroyable)
+//                            {
+//                                g.Neighbors.Top.Blocked.hitCnt++;
+
+//                                if (g.Neighbors.Top.Blocked.hitCnt == g.Neighbors.Top.Blocked.Protection)
+//                                {
+//                                    item.Value.IncCurrCount(1);
+//                                    g.Neighbors.Top.DestroyGridObjects();
+//                                }
+//                            }
+//                        }
+
+//                        if (g.Neighbors.Left != null)
+//                        {
+//                            if (g.Neighbors.Left.Blocked != null && g.Neighbors.Left.Blocked.Destroyable)
+//                            {
+//                                g.Neighbors.Left.Blocked.hitCnt++;
+
+//                                if (g.Neighbors.Left.Blocked.hitCnt == g.Neighbors.Left.Blocked.Protection)
+//                                {
+//                                    item.Value.IncCurrCount(1);
+//                                    g.Neighbors.Left.DestroyGridObjects();
+//                                }
+//                            }
+//                        }
+
+//                        if (g.Neighbors.Right != null)
+//                        {
+//                            if (g.Neighbors.Right.Blocked != null && g.Neighbors.Right.Blocked.Destroyable)
+//                            {
+//                                g.Neighbors.Right.Blocked.hitCnt++;
+
+//                                if (g.Neighbors.Right.Blocked.hitCnt == g.Neighbors.Right.Blocked.Protection)
+//                                {
+//                                    item.Value.IncCurrCount(1);
+//                                    g.Neighbors.Right.DestroyGridObjects();
+//                                }
+//                            }
+//                        }
+
+//                        if (g.Neighbors.Bottom != null)
+//                        {
+//                            if (g.Neighbors.Bottom.Blocked != null && g.Neighbors.Bottom.Blocked.Destroyable)
+//                            {
+//                                g.Neighbors.Bottom.Blocked.hitCnt++;
+
+//                                if (g.Neighbors.Bottom.Blocked.hitCnt == g.Neighbors.Bottom.Blocked.Protection)
+//                                {
+//                                    item.Value.IncCurrCount(1);
+//                                    g.Neighbors.Bottom.DestroyGridObjects();
+//                                }
+//                            }
+//                        }
+
+//                        mh.grid.mgList[i].Cells[j].DestroyGridObjects();
+//                    }
+
+
+
+//                }
+
+//            }
+//        }
+
+//        //for (int i = 0; i < mh.grid.mgList.Count; i++)
+//        //{
+//        //    if (mh.grid.mgList[i] != null)
+//        //    {
+//        //        foreach (GridCell c in mh.grid.mgList[i].Cells) c.DestroyGridObjects();
+//        //    }
+//        //}
+
+//        p.allMove++;
+//        p.curState = 0;
+//    }
+
+//    collect_cnt++;
+//}
+
+
+
+
+
+
+
+////if (targetMatched.Count > 1)
+////{
+////    for (int i = 0; i < targetMatched.Count; i++)
+////    {
+////        for (int j = 0; j < Cells.Count; j++)
+////        {
+////            List<int> mgCell = mh.grid.Cells[j].GetGridObjectsIDs();
+////            for (int k = 0; k < mgCell.Count; k++) mh.tmpGrid.Cells[j].SetObject(mgCell[k]);
+////        }
+
+////        mh.createMatchGroups1(2, true, mh.tmpGrid, p);
+////        mh.tmpGrid.mgList[i].SwapEstimate();
+
+////        mh.createMatchGroups(3, false, mh.tmpGrid);
+
+////        for (int j = 0; j < mh.tmpGrid.mgList.Count; j++)
+////        {
+////            int cnt = 0;
+
+////            foreach (var item in mh.curTargets)
+////            {
+////                //target: matchBlock
+////                if (item.Value.ID >= 1000 && item.Value.ID <= 1006)
+////                {
+////                    for (int k = 0; k < mh.tmpGrid.mgList[j].Cells.Count; k++)
+////                    {
+////                        List<int> mgCell = mh.tmpGrid.mgList[j].Cells[k].GetGridObjectsIDs();
+////                        if (mgCell[0] == item.Value.ID) cnt++;
+////                        mh.tmpGrid.mgList[j].Cells[k].DestroyGridObjects();
+////                    }
+////                }
+
+////                //target:underlay
+////                else if (item.Value.ID == 200001)
+////                {
+////                    for (int k = 0; k < mh.tmpGrid.mgList[j].Cells.Count; k++)
+////                    {
+////                        List<int> mgCell = mh.tmpGrid.mgList[j].Cells[k].GetGridObjectsIDs();
+////                        if (mgCell.Count > 1) cnt++;
+////                        mh.tmpGrid.mgList[i].Cells[j].DestroyGridObjects();
+////                    }
+////                }
+
+////                //target: overlay (lianna) 
+////                else if (item.Value.ID == 100004)
+////                {
+////                    for (int k = 0; k < mh.tmpGrid.mgList[j].Cells.Count; k++)
+////                    {
+////                        List<int> mgCell = mh.tmpGrid.mgList[j].Cells[k].GetGridObjectsIDs();
+////                        if (mgCell.Count > 1)
+////                        {
+////                            if (mh.tmpGrid.mgList[i].Cells[j].Overlay.hitCnt == 1)
+////                            {
+////                                cnt++;
+////                                mh.tmpGrid.mgList[i].Cells[j].DestroyGridObjects();
+////                            }
+
+////                        }
+
+////                        else mh.tmpGrid.mgList[i].Cells[j].DestroyGridObjects();
+////                    }
+
+////                }
+
+////                //target: blocked (Root)
+////                else if (item.Value.ID == 101)
+////                {
+////                    for (int k = 0; k < mh.tmpGrid.mgList[j].Cells.Count; k++)
+////                    {
+////                        GridCell g = mh.tmpGrid.mgList[i].Cells[j];
+
+////                        if (g.Neighbors.Top != null)
+////                        {
+////                            if (g.Neighbors.Top.Blocked != null && g.Neighbors.Top.Blocked.Destroyable)
+////                            {
+////                                if (g.Neighbors.Top.Blocked.hitCnt == g.Neighbors.Top.Blocked.Protection - 1)
+////                                {
+////                                    cnt++;
+////                                    g.Neighbors.Top.DestroyGridObjects();
+////                                }
+////                            }
+////                        }
+
+////                        if (g.Neighbors.Left != null)
+////                        {
+////                            if (g.Neighbors.Left.Blocked != null && g.Neighbors.Left.Blocked.Destroyable)
+////                            {
+////                                if (g.Neighbors.Left.Blocked.hitCnt == g.Neighbors.Left.Blocked.Protection - 1)
+////                                {
+////                                    cnt++;
+////                                    g.Neighbors.Left.DestroyGridObjects();
+////                                }
+////                            }
+////                        }
+
+////                        if (g.Neighbors.Right != null)
+////                        {
+////                            if (g.Neighbors.Right.Blocked != null && g.Neighbors.Right.Blocked.Destroyable)
+////                            {
+////                                if (g.Neighbors.Right.Blocked.hitCnt == g.Neighbors.Right.Blocked.Protection - 1)
+////                                {
+////                                    cnt++;
+////                                    g.Neighbors.Right.DestroyGridObjects();
+////                                }
+////                            }
+////                        }
+
+////                        if (g.Neighbors.Bottom != null)
+////                        {
+////                            if (g.Neighbors.Bottom.Blocked != null && g.Neighbors.Bottom.Blocked.Destroyable)
+////                            {
+////                                if (g.Neighbors.Bottom.Blocked.hitCnt == g.Neighbors.Bottom.Blocked.Protection - 1)
+////                                {
+////                                    cnt++;
+////                                    g.Neighbors.Bottom.DestroyGridObjects();
+////                                }
+////                            }
+////                        }
+
+////                        mh.tmpGrid.mgList[i].Cells[j].DestroyGridObjects();
+////                    }
+
+////                }
+////            }
+////        }
+
+////        List<GridCell> gFreeCells = GetFreeCells(mh.tmpGrid, true);
+////        if (gFreeCells.Count > 0) mh.createFillPath(mh.tmpGrid);
+
+////        int fill_cnt = 0;
+
+////        while (gFreeCells.Count > 0)
+////        {
+////            //mh.fillGridByStep(gFreeCells, () => { });
+////            mh.new_fillGridByStep(gFreeCells);
+////            gFreeCells = GetFreeCells(mh.tmpGrid, true);
+////        }
+
+////        mh.createMatchGroups1(2, true, mh.tmpGrid, p);
+
+////    }
+
+
+
+////}
+
+
+//if (targetMatched.Count == 0) mh.grid.mgList[0].SwapEstimate();
+
+//else
+//{
+//    p.shortCutCnt++;
+//    int number = Random.Range(0, targetMatched.Count - 1);
+//    mh.grid.mgList[targetMatched[number]].SwapEstimate();
+//}
+
+
+
+//using Mkey;
+/////
+//using System.Collections.Generic;
+/////
+//if (mh.grid.mgList.Count > 1)
+//{
+//    mh.isCounting = true;
+//    mh.count = 0;
+//    List<int> h = new List<int>();
+
+//    List<List<int>> l = new List<List<int>>();
+
+//    List<int> mgCell = new List<int>();
+//    for (int j = 0; j < Cells.Count; j++)
+//    {
+//        mgCell = mh.grid.Cells[j].GetGridObjectsIDs();
+//        l.Add(mgCell);
+//    }
+//    for (int i = 0; i < mh.grid.mgList.Count; i++)
+//    {
+//        int predictCnt = 0;
+//        predictCnt = estimateIncludeTarget(mh.grid.mgList[i]);
+//        //h.Add(estimateIncludeTarget(mh.grid.mgList[i]));
+
+//        for (int j = 0; j < Cells.Count; j++)
+//        {
+//            mh.tmpGrid.Cells[j] = mh.grid.Cells[j];
+
+//            //mgCell = mh.grid.Cells[j].GetGridObjectsIDs();
+//            //for (int k = 0; k < mgCell.Count; k++)
+//            //{
+//            //    mh.tmpGrid.Cells[j].SetObject(mgCell[k]);
+//            //}
+
+//        }
+
+//        mh.createFillPath(mh.grid);
+//        mh.createMatchGroups(2, true, mh.grid);
+//        //mh.tmpGrid.mgList = new List<MatchGroup>();
+
+
+//        mh.grid.mgList.Add(mh.grid.mgList[i]);
+//        mh.tmpGrid.mgList[0].new_SwapEstimate();
+//        mh.createMatchGroups(3, false, mh.tmpGrid);
+
+//        /////////
+//        if (mh.tmpGrid.mgList.Count == 0)
+//        {
+//            h.Add(predictCnt);
+//            continue;
+//        }
+
+//        for (int j = 0; j < mh.tmpGrid.mgList.Count; i++)
+//        {
+//            destroyAndCntBlocks(mh.tmpGrid.mgList[j]);
+//        }
+
+//        predictCnt += mh.count;
+//        mh.count = 0;
+
+
+//        List<GridCell> gFreeCells = GetFreeCells(mh.tmpGrid, true);
+//        if (gFreeCells.Count > 0) mh.createFillPath(mh.tmpGrid);
+
+//        int fill_cnt = 0;
+//        while (gFreeCells.Count > 0)
+//        {
+//            mh.new_fillGridByStep(gFreeCells);
+//            gFreeCells = GetFreeCells(mh.tmpGrid, true);
+//            if (estimateMaxedOut(p, ref fill_cnt, 100)) break;
+//        }
+
+//        if (p.maxedOut)
+//        {
+//            h.Add(predictCnt);
+//            continue;
+//        }
+
+
+//        mh.createMatchGroups(2, true, mh.tmpGrid);
+
+//        if (mh.tmpGrid.mgList.Count != 0)
+//        {
+//            int maxPredict = 0;
+//            for (int j = 0; j < mh.tmpGrid.mgList.Count; j++)
+//            {
+//                int cal = estimateIncludeTarget(mh.tmpGrid.mgList[j]);
+
+//                if (maxPredict < cal) maxPredict = cal;
+//            }
+//            predictCnt += maxPredict;
+//        }
+
+//        h.Add(predictCnt);
+
+//        //for (int j = 0; j < mh.tmpGrid.Cells.Count; j++)
+//        //{
+//        //    mh.tmpGrid.Cells[i].DestroyGridObjects();
+//        //}
+
+//    }
+
+
+
+
+
+//using Mkey;
+/////
+//using System.Collections.Generic;
+/////
+//public void showState(DNA<char> p, SpawnController sC, Transform trans)
+//{
+//    Debug.Log("show");
+//    foreach (var item in mh.curTargets)
+//    {
+//        if (item.Value.Achieved) p.targetClear = true;
+//        else
+//        {
+//            p.targetClear = false;
+//            break;
+//        }
+//    }
+//    if (p.targetClear) return;
+
+//    int mix_cnt = 0;
+
+//    while (!estimateMaxedOut(p, ref mix_cnt, 100))
+//    {
+//        //mh.createMatchGroups1(2, true, mh.grid);
+//        mh.createMatchGroups(2, true, mh.grid);
+
+//        if (mh.grid.mgList.Count == 0)
+//        {
+//            mh.mixGrid(null, mh.grid, trans);
+//            mix_cnt++;
+//        }
+//        else break;
+//    }
+
+//    if (p.maxedOut) return;
+
+//    if (mh.grid.mgList.Count > 1)
+//    {
+//        mh.isCounting = true;
+//        mh.count = 0;
+//        List<int> predicCollect = new List<int>();
+//        List<List<int>> l = new List<List<int>>();
+
+//        for (int j = 0; j < Cells.Count; j++)
+//        {
+//            List<int> mgCell = new List<int>();
+//            mgCell = mh.grid.Cells[j].GetGridObjectsIDs();
+//            l.Add(mgCell);
+//        }
+
+//        List<MatchGroup> saveList = new List<MatchGroup>();
+//        saveList = mh.grid.mgList;
+
+//        for (int i = 0; i < saveList.Count; i++)
+//        {
+//            Debug.Log("0");
+//            int predictCnt = 0;
+//            predictCnt = estimateIncludeTarget(saveList[i]);
+//            mh.createFillPath(mh.grid);
+//            mh.createMatchGroups(2, true, mh.grid);
+//            mh.grid.mgList[i].SwapEstimate();
+//            mh.createMatchGroups(3, false, mh.grid);
+
+//            ///////////
+//            if (mh.grid.mgList.Count == 0)
+//            {
+//                p.maxedOut = true;
+//                break;
+//                //h.Add(predictCnt);
+//                //continue;
+//            }
+
+//            for (int j = 0; j < mh.grid.mgList.Count; j++)
+//            {
+//                destroyAndCntBlocks(mh.grid.mgList[j]);
+//            }
+
+//            Debug.Log("1");
+
+//            predictCnt += mh.count;
+//            mh.count = 0;
+
+//            List<GridCell> gFreeCells = GetFreeCells(mh.grid, true);
+//            if (gFreeCells.Count > 0) mh.createFillPath(mh.grid);
+
+//            int fill_cnt = 0;
+//            while (gFreeCells.Count > 0)
+//            {
+//                mh.new_fillGridByStep(gFreeCells);
+//                gFreeCells = GetFreeCells(mh.grid, true);
+//                if (estimateMaxedOut(p, ref fill_cnt, 100)) break;
+//            }
+
+//            Debug.Log("2");
+//            mh.createMatchGroups(2, true, mh.grid);
+
+//            if (mh.grid.mgList.Count != 0)
+//            {
+//                int maxPredict = 0;
+//                for (int j = 0; j < mh.grid.mgList.Count; j++)
+//                {
+//                    int cal = estimateIncludeTarget(mh.grid.mgList[j]);
+
+//                    if (maxPredict < cal) maxPredict = cal;
+//                }
+//                predictCnt += maxPredict;
+//            }
+
+//            predicCollect.Add(predictCnt);
+
+//            for (int j = 0; j < l.Count; j++)
+//            {
+//                for (int k = 0; k < l[j].Count; k++) mh.grid.Cells[j].SetObject(l[j][k]);
+//            }
+//            //mh.createFillPath(mh.grid);
+//            Debug.Log("3");
+//        }
+
+//        mh.createMatchGroups(2, true, mh.grid);
+
+//        int max = 0;
+//        int maxIdx = 0;
+
+//        for (int i = 0; i < predicCollect.Count; i++)
+//        {
+//            if (max < predicCollect[i])
+//            {
+//                max = predicCollect[i];
+//                maxIdx = i;
+//            }
+//        }
+
+//        mh.grid.mgList[maxIdx].SwapEstimate();
+
+//        Debug.Log("4");
+//    }
+
+
+
+//    else
+//    {
+//        mh.grid.mgList[0].SwapEstimate();
+
+//        //List<int> h = new List<int>();
+
+//        //for(int i= 0;i<mh.grid.mgList.Count;i++)
+//        //{
+//        //    h.Add(estimateIncludeTarget(mh.grid.mgList[i]));
+//        //}
+
+//        //int max = 0;
+//        //int maxIdx = 0;
+
+//        //for (int i = 0; i < h.Count; i++)
+//        //{
+//        //    if (max < h[i])
+//        //    {
+//        //        max = h[i];
+//        //        maxIdx = i;
+//        //    }
+//        //}
+
+//        //mh.grid.mgList[maxIdx].SwapEstimate();
+
+//    }
+//    Debug.Log("5");
+//    p.numMove--;
+//    p.curState = 2;
+//    Debug.Log("6");
+//}
+
+
+//using System.Collections.Generic;
+/////
+//if (mh.grid.mgList.Count > 1)
+//{
+//    mh.isCounting = true;
+//    mh.count = 0;
+//    List<int> predicCollect = new List<int>();
+
+//    //GridCell[,] curCell = new GridCell[mh.grid.Columns.Count, mh.grid.Rows.Count];
+
+//    //for (int i = 0; i < mh.grid.Columns.Count; i++)
+//    //{
+//    //    for (int j = 0; j < mh.grid.Rows.Count; j++)
+//    //    {
+//    //        curCell[i, j] = mh.grid.Cells[i * mh.grid.Rows.Count + j];
+//    //    }
+//    //}
+
+//    for (int i = 0; i < mh.grid.mgList.Count; i++)
+//    {
+//        int predictCnt = 0;
+//        predictCnt += estimateIncludeTarget(mh.grid.mgList[i]);
+
+//        //for (int j = 0; j < mh.grid.mgList[i].Length; j++)
+//        //{
+//        //    GridCell cur = curCell[mh.grid.mgList[i].Cells[j].Column, mh.grid.mgList[i].Cells[j].Row];
+
+//        //    if(mh.grid.mgList[i].Cells[j].fillPathToSpawner == null) cur.isNotFill = true;
+
+//        //    for (int k = 0; k < mh.grid.mgList[i].Cells[j].fillPathToSpawner.Count; k++)
+//        //    {
+//        //        curCell[mh.grid.mgList[i].Cells[j].Column, mh.grid.mgList[i].Cells[j].Row] = mh.grid.mgList[i].Cells[j].fillPathToSpawner[k];
+//        //        cur = mh.grid.mgList[i].Cells[j].fillPathToSpawner[k];
+//        //    }
+//        //    cur.isNotFill = true;
+//        //}
+
+//        //mh.new_createMatchGroups(2, true, curCell);
+//        //predictCnt += mh.l_mgList.Count;
+
+//        predicCollect.Add(predictCnt);
+//    }
+
+
+
+//    ////List<List<int>> l = new List<List<int>>();
+//    ////for (int j = 0; j < Cells.Count; j++)
+//    ////{
+//    ////    List<int> mgCell = new List<int>();
+//    ////    mgCell = mh.grid.Cells[j].GetGridObjectsIDs();
+//    ////    l.Add(mgCell);
+//    ////}
+
+//    //List<MatchGroup> saveList = new List<MatchGroup>();
+//    //saveList = mh.grid.mgList;
+
+//    //for (int i = 0; i < saveList.Count; i++)
+//    //{
+//    //    int predictCnt = 0;
+//    //    Debug.Log("0");
+
+//    //    predictCnt += estimateIncludeTarget(saveList[i]);
+
+//    //    //for(int j = 0; j< saveList[i].Length;j++)
+//    //    //{
+//    //    //    for (int k = 0; k < saveList[i].Cells.Count; k++)
+//    //    //    {
+
+//    //    //    }
+
+
+
+
+
+//    //    //    curCell[saveList[i].Cells[j].Column, saveList[i].Cells[j].Row] = curCell[saveList[i].Cells[j].Column, saveList[i].Cells[j].Row].fillPathToSpawner[0];
+//    //    //}
+
+
+//    //    int a = saveList[i].Cells[0].Column + saveList[i].Cells[0].Row;
+
+
+//    //    //saveList[i].SwapEstimate();
+//    //    //mh.createMatchGroups(3, false, mh.grid);
+
+//    //    //for (int j = 0; j < mh.grid.mgList.Count; j++)
+//    //    //{
+//    //    //    destroyAndCntBlocks(mh.grid.mgList[j]);
+//    //    //}
+
+//    //    //predictCnt += mh.count;
+
+
+//    //    predicCollect.Add(predictCnt);
+
+
+//    //}
+
+//    int max = 0;
+//    int maxIdx = 0;
+
+//    for (int i = 0; i < predicCollect.Count; i++)
+//    {
+//        if (max < predicCollect[i])
+//        {
+//            max = predicCollect[i];
+//            maxIdx = i;
+//        }
+//    }
+//    mh.grid.mgList[maxIdx].new_SwapEstimate();
+//}
+
+
+//#include <iostream>
+//#include <vector>
+
+//using UnityEngine;
+/////
+//int main()
+//{
+//    // 가로 길이와 세로 길이를 입력으로 받습니다.
+//    int width, height;
+//    std::cout << "가로 길이를 입력하세요: ";
+//    std::cin >> width;
+
+//    std::cout << "세로 길이를 입력하세요: ";
+//    std::cin >> height;
+
+//    // 그리드를 생성하고 초기화합니다.
+//    std::vector<std::vector<int>> grid(height, std::vector<int>(width, 0));
+
+//// 화점 위치를 설정합니다.
+//grid[1][1] = 1;                                  // (1, 1)
+//grid[1][width - 2] = 1;                          // (1, 가로길이 - 2)
+//grid[height - 2][1] = 1;                         // (세로길이 - 2, 1)
+//grid[height - 2][width - 2] = 1;                 // (세로길이 - 2, 가로길이 - 2)
+
+//// 중앙점 위치 설정 (가로 방향 중앙점)
+//int middle_x = width / 2;
+
+//// 중앙점 위치 설정 (세로 방향 중앙점)
+//int middle_y = height / 2;
+
+//// 중앙점에 화점을 추가합니다.
+//grid[middle_y][middle_x] = 1;
+
+//// 중앙점을 제외한 4개의 화점 위치를 설정합니다.
+//int middle_top_x = middle_x;
+//int middle_top_y = 1;
+
+//int middle_bottom_x = middle_x;
+//int middle_bottom_y = height - 2;
+
+//int middle_left_x = 1;
+//int middle_left_y = middle_y;
+
+//int middle_right_x = width - 2;
+//int middle_right_y = middle_y;
+
+//// 4개의 화점 위치를 설정합니다.
+//grid[middle_top_y][middle_top_x] = 1;
+//grid[middle_bottom_y][middle_bottom_x] = 1;
+//grid[middle_left_y][middle_left_x] = 1;
+//grid[middle_right_y][middle_right_x] = 1;
+
+//// 그리드 출력
+//for (int i = 0; i < height; i++)
+//{
+//    for (int j = 0; j < width; j++)
+//    {
+//        if (grid[i][j] == 1)
+//        {
+//            std::cout << "●";  // ●는 1을 나타냅니다.
+//        }
+//        else
+//        {
+//            std::cout << "○";  // ○는 0을 나타냅니다.
+//        }
+//    }
+//    std::cout << std::endl;
+//}
+
+//return 0;
+//}
+

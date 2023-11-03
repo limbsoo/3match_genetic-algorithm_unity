@@ -56,14 +56,28 @@ namespace Mkey
             return match;
         }
 
+        /// <summary>11111111111111111111111111sacascasfas
+        /// /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// </summary>
+        /// <param name="lCSet"></param>
+        /// <param name="gOSet"></param>
+        /// <returns></returns>
 
+        public int numOfMatchBlock;
 
         public MatchObject GetMainRandomObjectPrefab(LevelConstructSet lCSet, GameObjectsSet gOSet)
         {
 
+            //List<MatchObject> gridObjects = lCSet.GetMatchObjects(gOSet);
+            //gridObjects.Shuffle();
+            //return gridObjects.Count > 0 ? gridObjects[0] : null;
+
             List<MatchObject> gridObjects = lCSet.GetMatchObjects(gOSet);
-            gridObjects.Shuffle();
-            return gridObjects.Count > 0 ? gridObjects[0] : null;
+            List<MatchObject> gridObjects1 = new List<MatchObject>();
+
+            for (int i = 0; i < numOfMatchBlock; i++) gridObjects1.Add(gridObjects[i]);
+            gridObjects1.Shuffle();
+            return gridObjects1.Count > 0 ? gridObjects1[0] : null;
         }
 
         //get picked object block
@@ -92,13 +106,17 @@ namespace Mkey
 
         public MatchObject GetRandomObjectPrefab(LevelConstructSet lCSet, GameObjectsSet gOSet)
         {
+            //List<MatchObject> gridObjects = lCSet.GetMatchObjects(gOSet);
+            //gridObjects.Shuffle();
+            //return gridObjects.Count > 0 ? gridObjects[0] : null;
+
+
             List<MatchObject> gridObjects = lCSet.GetMatchObjects(gOSet);
+            List<MatchObject> gridObjects1 = new List<MatchObject>();
 
-            //List<MatchObject> gridObjects = lCSet.GetAllObjects(gOSet);
-
-
-            gridObjects.Shuffle();
-            return gridObjects.Count > 0 ? gridObjects[0] : null;
+            for (int i = 0; i < numOfMatchBlock; i++) gridObjects1.Add(gridObjects[i]);
+            gridObjects1.Shuffle();
+            return gridObjects1.Count > 0 ? gridObjects1[0] : null;
         }
 
 
@@ -110,7 +128,7 @@ namespace Mkey
             return gridObjects.Count > 0 ? gridObjects[0] : null;
         }
 
-        public BlockedObject GetSelectUnbreakableBlockedObjectPrefab(LevelConstructSet lCSet, GameObjectsSet gOSet)
+        public BlockedObject GetObstacleObjectPrefab(LevelConstructSet lCSet, GameObjectsSet gOSet)
         {
             List<BlockedObject> gridObjects = lCSet.GetBlockedObjects(gOSet);
             return gridObjects[0];

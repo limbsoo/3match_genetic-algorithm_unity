@@ -23,6 +23,29 @@ namespace Mkey
             Touch.SetTarget(null);
         }
 
+        public static void new_Swap(GridCell gc1, GridCell gc2)
+        {
+            Source = gc1;
+            Target = gc2;
+
+            if (Source && Source.CanSwap(Target))
+            {
+                //if (Source && Source.CanCombined(Target))
+                //{
+                //    if (BombsCombinedEvent != null && BombsCombinedEvent(Source, Target)) return;
+                //}
+                //SwapBeginEvent?.Invoke(Source, Target);
+                MatchObject dM = Source.Match;
+                MatchObject tM = Target.Match;
+                //if (dM) dM.SwapTime = Time.time;
+                //if (tM) tM.SwapTime = Time.time;
+                GameObject tDO = Target.DynamicObject;
+                GameObject sDO = Source.DynamicObject;
+                Source.new_GrabDynamicObject(tDO);
+                Target.new_GrabDynamicObject(sDO);
+            }
+        }
+
         public static void Swap(GridCell gc1, GridCell gc2)
         {
             Source = gc1;
