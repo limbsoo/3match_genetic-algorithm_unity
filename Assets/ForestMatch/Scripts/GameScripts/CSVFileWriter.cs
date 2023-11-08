@@ -96,61 +96,231 @@ public class CSVFileWriter : MonoBehaviour
             csvIdx++;
         }
 
+        //gaDatas[csvIdx] = "map"; csvIdx++;
+        //gaDatas[csvIdx] = ga.population[0].swapablePottential.map.ToString(); csvIdx++;
 
-        gaDatas[csvIdx] = "obstacleCnt"; csvIdx++;
-        gaDatas[csvIdx] = ga.population[0].obstacleCnt.ToString(); csvIdx++;
-
-        gaDatas[csvIdx] = "possibleCnt"; csvIdx++;
-        gaDatas[csvIdx] = ga.population[0].mapMatchPotential.ToString(); csvIdx++;
-
-        gaDatas[csvIdx] = "notObstacleCnt"; csvIdx++;
-        gaDatas[csvIdx] = ga.population[0].notObstacleCnt.ToString(); csvIdx++;
-
-        gaDatas[csvIdx] = "obstaclePottentialCnt"; csvIdx++;
-        gaDatas[csvIdx] = ga.population[0].obstaclePottentialCnt.ToString(); csvIdx++;
-
-        gaDatas[csvIdx] = "blockedPottentialCnt"; csvIdx++;
-        gaDatas[csvIdx] = ga.population[0].blockedPottentialCnt.ToString(); csvIdx++;
+        //gaDatas[csvIdx] = "notObstacle"; csvIdx++;
+        //gaDatas[csvIdx] = ga.population[0].swapablePottential.notObstacle.ToString(); csvIdx++;
 
 
-        gaDatas[csvIdx] = "blockedPerPottential"; csvIdx++;
+        gaDatas[csvIdx] = "map"; csvIdx++;
+        gaDatas[csvIdx] = ga.population[0].allPottential.map.ToString(); csvIdx++;
 
-        for (int i = 0;i < 3;i++)
-        {
-            gaDatas[csvIdx] = ga.population[0].blocks[i].pottential.ToString(); csvIdx++;
-        }
+        gaDatas[csvIdx] = "obstacle"; csvIdx++;
+        gaDatas[csvIdx] = ga.population[0].allPottential.obstacle.ToString(); csvIdx++;
 
-        gaDatas[csvIdx] = "overlayPottentialCnt"; csvIdx++;
-        gaDatas[csvIdx] = ga.population[0].overlayPottentialCnt.ToString(); csvIdx++;
+        gaDatas[csvIdx] = "blocked1"; csvIdx++;
+        gaDatas[csvIdx] = ga.population[0].allPottential.blocked1.ToString(); csvIdx++;
 
-        gaDatas[csvIdx] = "overlayPerPottential"; csvIdx++;
+        gaDatas[csvIdx] = "blocked2"; csvIdx++;
+        gaDatas[csvIdx] = ga.population[0].allPottential.blocked2.ToString(); csvIdx++;
 
-        for (int i = 3; i < 6; i++)
-        {
-            gaDatas[csvIdx] = ga.population[0].blocks[i].pottential.ToString(); csvIdx++;
-        }
+        gaDatas[csvIdx] = "blocked3"; csvIdx++;
+        gaDatas[csvIdx] = ga.population[0].allPottential.blocked3.ToString(); csvIdx++;
+
+        gaDatas[csvIdx] = "overlay1"; csvIdx++;
+        gaDatas[csvIdx] = ga.population[0].allPottential.overlay1.ToString(); csvIdx++;
+
+        gaDatas[csvIdx] = "overlay2"; csvIdx++;
+        gaDatas[csvIdx] = ga.population[0].allPottential.overlay2.ToString(); csvIdx++;
+
+        gaDatas[csvIdx] = "overlay3"; csvIdx++;
+        gaDatas[csvIdx] = ga.population[0].allPottential.overlay3.ToString(); csvIdx++;
+
+        gaDatas[csvIdx] = "somethingWrong"; csvIdx++;
+        gaDatas[csvIdx] = ga.population[0].allPottential.somethingWrong.ToString(); csvIdx++;
+
+
+
+
+
+        //gaDatas[csvIdx] = "map"; csvIdx++;
+        //gaDatas[csvIdx] = ga.population[0].swapablePottential.map.ToString(); csvIdx++;
+
+        //gaDatas[csvIdx] = "obstacle"; csvIdx++;
+        //gaDatas[csvIdx] = ga.population[0].obstacle.ToString(); csvIdx++;
+
+        //gaDatas[csvIdx] = "blocked1"; csvIdx++;
+        //gaDatas[csvIdx] = ga.population[0].blocked1.ToString(); csvIdx++;
+
+        //gaDatas[csvIdx] = "blocked2"; csvIdx++;
+        //gaDatas[csvIdx] = ga.population[0].blocked2.ToString(); csvIdx++;
+
+        //gaDatas[csvIdx] = "blocked3"; csvIdx++;
+        //gaDatas[csvIdx] = ga.population[0].blocked3.ToString(); csvIdx++;
+
+        //gaDatas[csvIdx] = "overlay1"; csvIdx++;
+        //gaDatas[csvIdx] = ga.population[0].overlay1.ToString(); csvIdx++;
+
+        //gaDatas[csvIdx] = "overlay2"; csvIdx++;
+        //gaDatas[csvIdx] = ga.population[0].overlay2.ToString(); csvIdx++;
+
+        //gaDatas[csvIdx] = "overlay3"; csvIdx++;
+        //gaDatas[csvIdx] = ga.population[0].overlay3.ToString(); csvIdx++;
+
+        //gaDatas[csvIdx] = "somethingWrong"; csvIdx++;
+        //gaDatas[csvIdx] = ga.population[0].somethingWrong.ToString(); csvIdx++;
+
+
+
+        //gaDatas[csvIdx] = "map"; csvIdx++;
+        //gaDatas[csvIdx] = ga.population[0].swapablePottential.map.ToString(); csvIdx++;
+
+        //gaDatas[csvIdx] = "obstacle"; csvIdx++;
+        //gaDatas[csvIdx] = ga.population[0].mapObstacle.ToString(); csvIdx++;
+
+        //gaDatas[csvIdx] = "blocked1"; csvIdx++;
+        //gaDatas[csvIdx] = ga.population[0].mapBlocked1.ToString(); csvIdx++;
+
+        //gaDatas[csvIdx] = "blocked2"; csvIdx++;
+        //gaDatas[csvIdx] = ga.population[0].mapBlocked2.ToString(); csvIdx++;
+
+        //gaDatas[csvIdx] = "blocked3"; csvIdx++;
+        //gaDatas[csvIdx] = ga.population[0].mapBlocked3.ToString(); csvIdx++;
+
+        //gaDatas[csvIdx] = "overlay1"; csvIdx++;
+        //gaDatas[csvIdx] = ga.population[0].mapOverlay1.ToString(); csvIdx++;
+
+        //gaDatas[csvIdx] = "overlay2"; csvIdx++;
+        //gaDatas[csvIdx] = ga.population[0].mapOverlay2.ToString(); csvIdx++;
+
+        //gaDatas[csvIdx] = "overlay3"; csvIdx++;
+        //gaDatas[csvIdx] = ga.population[0].mapOverlay3.ToString(); csvIdx++;
+
+        //gaDatas[csvIdx] = "somethingWrong"; csvIdx++;
+        //gaDatas[csvIdx] = ga.population[0].mapSomethingWrong.ToString(); csvIdx++;
+
+
+
+
+
+
+
+
+
+
+
+
+
+        //gaDatas[csvIdx] = "onlyObstacle"; csvIdx++;
+        //gaDatas[csvIdx] = ga.population[0].pottential.onlyObstacle.ToString(); csvIdx++;
+
+        //gaDatas[csvIdx] = "onlyAllBlocked"; csvIdx++;
+        //gaDatas[csvIdx] = ga.population[0].pottential.onlyAllBlocked.ToString(); csvIdx++;
+
+        //gaDatas[csvIdx] = "onlyBlocked"; csvIdx++;
+        //gaDatas[csvIdx] = ga.population[0].pottential.onlyBlocked1.ToString(); csvIdx++;
+        //gaDatas[csvIdx] = ga.population[0].pottential.onlyBlocked2.ToString(); csvIdx++;
+        //gaDatas[csvIdx] = ga.population[0].pottential.onlyBlocked3.ToString(); csvIdx++;
+
+        //gaDatas[csvIdx] = "onlyAllOverlay"; csvIdx++;
+        //gaDatas[csvIdx] = ga.population[0].pottential.onlyAllOverlay.ToString(); csvIdx++;
+
+        //gaDatas[csvIdx] = "onlyOverlay"; csvIdx++;
+        //gaDatas[csvIdx] = ga.population[0].pottential.onlyOverlay1.ToString(); csvIdx++;
+        //gaDatas[csvIdx] = ga.population[0].pottential.onlyOverlay2.ToString(); csvIdx++;
+        //gaDatas[csvIdx] = ga.population[0].pottential.onlyOverlay3.ToString(); csvIdx++;
+
+
+        //gaDatas[csvIdx] = "obstacleAndAllBlocked"; csvIdx++;
+        //gaDatas[csvIdx] = ga.population[0].pottential.obstacleAndAllBlocked.ToString(); csvIdx++;
+
+        //gaDatas[csvIdx] = "obstacleAndBlocked"; csvIdx++;
+        //gaDatas[csvIdx] = ga.population[0].pottential.obstacleAndBlocked1.ToString(); csvIdx++;
+        //gaDatas[csvIdx] = ga.population[0].pottential.obstacleAndBlocked2.ToString(); csvIdx++;
+        //gaDatas[csvIdx] = ga.population[0].pottential.obstacleAndBlocked3.ToString(); csvIdx++;
+
+
+        //gaDatas[csvIdx] = "obstacleAndAllOverlay"; csvIdx++;
+        //gaDatas[csvIdx] = ga.population[0].pottential.obstacleAndAllOverlay.ToString(); csvIdx++;
+
+        //gaDatas[csvIdx] = "obstacleAndOverlay"; csvIdx++;
+        //gaDatas[csvIdx] = ga.population[0].pottential.obstacleAndOverlay1.ToString(); csvIdx++;
+        //gaDatas[csvIdx] = ga.population[0].pottential.obstacleAndOverlay2.ToString(); csvIdx++;
+        //gaDatas[csvIdx] = ga.population[0].pottential.obstacleAndOverlay3.ToString(); csvIdx++;
 
 
         gaDatas[csvIdx] = "numOfMatchBlock"; csvIdx++;
         gaDatas[csvIdx] = m3h.numOfMatchBlock.ToString(); csvIdx++;
 
-
-
         string s111 = "'";
-        gaDatas[csvIdx] = "cellsID"; csvIdx++;
-        for (int i = 0; i < ga.population[0].cellsID.Count; i++)
+        gaDatas[csvIdx] = "gridObjects"; csvIdx++;
+        for (int i = 0; i < ga.population[0].gridObjects.Count; i++)
         {
-            s111 += ga.population[0].cellsID[i].ToString();
+            s111 += ga.population[0].gridObjects[i].ToString();
         }
         gaDatas[csvIdx] = s111; csvIdx++;
 
         string s1112222 = "'";
-        gaDatas[csvIdx] = "protections"; csvIdx++;
-        for (int i = 0; i < m3h.protections.Count; i++)
+        gaDatas[csvIdx] = "objectProtection"; csvIdx++;
+        for (int i = 0; i < ga.population[0].objectProtection.Count; i++)
         {
-            s1112222 += m3h.protections[i].ToString();
+            s1112222 += ga.population[0].objectProtection[i].ToString();
         }
         gaDatas[csvIdx] = s1112222; csvIdx++;
+
+
+
+
+
+
+
+
+
+        //gaDatas[csvIdx] = "obstacleCnt"; csvIdx++;
+        //gaDatas[csvIdx] = ga.population[0].obstacleCnt.ToString(); csvIdx++;
+
+        //gaDatas[csvIdx] = "possibleCnt"; csvIdx++;
+        //gaDatas[csvIdx] = ga.population[0].mapMatchPotential.ToString(); csvIdx++;
+
+        //gaDatas[csvIdx] = "notObstacleCnt"; csvIdx++;
+        //gaDatas[csvIdx] = ga.population[0].notObstacleCnt.ToString(); csvIdx++;
+
+        //gaDatas[csvIdx] = "obstaclePottentialCnt"; csvIdx++;
+        //gaDatas[csvIdx] = ga.population[0].obstaclePottentialCnt.ToString(); csvIdx++;
+
+        //gaDatas[csvIdx] = "blockedPottentialCnt"; csvIdx++;
+        //gaDatas[csvIdx] = ga.population[0].blockedPottentialCnt.ToString(); csvIdx++;
+
+
+        //gaDatas[csvIdx] = "blockedPerPottential"; csvIdx++;
+
+        //for (int i = 0;i < 3;i++)
+        //{
+        //    gaDatas[csvIdx] = ga.population[0].blocks[i].pottential.ToString(); csvIdx++;
+        //}
+
+        //gaDatas[csvIdx] = "overlayPottentialCnt"; csvIdx++;
+        //gaDatas[csvIdx] = ga.population[0].overlayPottentialCnt.ToString(); csvIdx++;
+
+        //gaDatas[csvIdx] = "overlayPerPottential"; csvIdx++;
+
+        //for (int i = 3; i < 6; i++)
+        //{
+        //    gaDatas[csvIdx] = ga.population[0].blocks[i].pottential.ToString(); csvIdx++;
+        //}
+
+
+        //gaDatas[csvIdx] = "numOfMatchBlock"; csvIdx++;
+        //gaDatas[csvIdx] = m3h.numOfMatchBlock.ToString(); csvIdx++;
+
+
+
+        //string s111 = "'";
+        //gaDatas[csvIdx] = "cellsID"; csvIdx++;
+        //for (int i = 0; i < ga.population[0].cellsID.Count; i++)
+        //{
+        //    s111 += ga.population[0].cellsID[i].ToString();
+        //}
+        //gaDatas[csvIdx] = s111; csvIdx++;
+
+        //string s1112222 = "'";
+        //gaDatas[csvIdx] = "protections"; csvIdx++;
+        //for (int i = 0; i < m3h.protections.Count; i++)
+        //{
+        //    s1112222 += m3h.protections[i].ToString();
+        //}
+        //gaDatas[csvIdx] = s1112222; csvIdx++;
 
 
 

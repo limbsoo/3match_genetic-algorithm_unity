@@ -674,7 +674,22 @@ namespace Mkey
         }
         public char[] getGenes()
         {
-            return m3h.difficults[m3h.csvCnt].map;
+            char[] genes = new char[Cells.Count];
+
+            string s = m3h.setMaps(m3h.csvCnt, true);
+
+            for (int i = 0; i < Cells.Count; i++)
+            {
+                genes[i] = s[i];
+            }
+
+
+            return genes;
+
+
+
+
+            //return m3h.difficults[m3h.csvCnt].map;
 
             //char[] genes = new char[Cells.Count];
 
@@ -723,93 +738,79 @@ namespace Mkey
             }
         }
 
-        public void setGridPerProtection(DNA<char> p, SpawnController sC)
+        //public void setGridPerProtection(DNA<char> p, SpawnController sC)
+        //{
+        //    BlockedObject b = sC.GetObstacleObjectPrefab(LcSet, goSet);
+        //    BlockedObject b0 = sC.GetSelectBreakableBlockedObjectPrefab(LcSet, goSet);
+        //    OverlayObject o = sC.GetSelectOverlayObjectPrefab(LcSet, goSet);
+
+        //    for(int i = 0; i < 6; i++)
+        //    {
+        //        destoryAllCellInGrid();
+
+        //        for (int j = 0; j < m3h.grid.Cells.Count; j++)
+        //        {
+        //            if (p.cellsID[j] == p.blocks[i].kind && m3h.protections[j] == p.blocks[i].protection)
+        //            {
+        //                if(p.blocks[i].kind == 1)
+        //                {
+        //                    m3h.grid.Cells[j].SetObject1(b0);
+        //                    p.blocks[i].cnt++;
+        //                }
+
+        //                else if (p.blocks[i].kind == 2)
+        //                {
+        //                    MatchObject m = sC.GetRandomObjectPrefab(LcSet, goSet);
+        //                    m3h.grid.Cells[j].SetObject1(m);
+        //                    m3h.grid.Cells[j].SetObject1(o);
+        //                    p.blocks[i].cnt++;
+        //                }
+
+        //            }
+
+        //            else
+        //            {
+        //                if (p.cellsID[j] == 0)
+        //                {
+        //                    m3h.grid.Cells[j].SetObject1(b);
+        //                }
+
+        //                else
+        //                {
+        //                    MatchObject m = sC.GetRandomObjectPrefab(LcSet, goSet);
+        //                    m3h.grid.Cells[j].SetObject1(m);
+        //                }
+        //            }
+        //        }
+
+        //        if (p.blocks[i].cnt != 0) p.blocks[i].pottential = m3h.cntPerPottential(p);
+        //        else p.blocks[i].pottential = 0;
+        //    }
+
+        //}
+
+
+        public void setGridEachKind(DNA<char> p, SpawnController sC, bool isSpawnObstacle, bool isSpawnBlocked, bool isSpawnOverlay, bool isEachProtection, int protection)
         {
             BlockedObject b = sC.GetObstacleObjectPrefab(LcSet, goSet);
             BlockedObject b0 = sC.GetSelectBreakableBlockedObjectPrefab(LcSet, goSet);
             OverlayObject o = sC.GetSelectOverlayObjectPrefab(LcSet, goSet);
 
-            for(int i = 0; i < 6; i++)
+            destoryAllCellInGrid();
+
+            if (!isEachProtection)
             {
-                destoryAllCellInGrid();
-
-                for (int j = 0; j < m3h.grid.Cells.Count; j++)
+                for (int i = 0; i < m3h.grid.Cells.Count; i++)
                 {
-                    if (p.cellsID[j] == p.blocks[i].kind && m3h.protections[j] == p.blocks[i].protection)
+                    if (isSpawnObstacle && p.gridObjects[i] == 0) m3h.grid.Cells[i].SetObject1(b);
+
+                    else if (isSpawnBlocked && p.gridObjects[i] == 1) m3h.grid.Cells[i].SetObject1(b0);
+
+                    else if (isSpawnOverlay && p.gridObjects[i] == 2)
                     {
-                        if(p.blocks[i].kind == 1)
-                        {
-                            m3h.grid.Cells[j].SetObject1(b0);
-                            p.blocks[i].cnt++;
-                        }
-
-                        else if (p.blocks[i].kind == 2)
-                        {
-                            MatchObject m = sC.GetRandomObjectPrefab(LcSet, goSet);
-                            m3h.grid.Cells[j].SetObject1(m);
-                            m3h.grid.Cells[j].SetObject1(o);
-                            p.blocks[i].cnt++;
-                        }
-
-                    }
-
-                    else
-                    {
-                        if (p.cellsID[j] == 0)
-                        {
-                            m3h.grid.Cells[j].SetObject1(b);
-                        }
-
-                        else
-                        {
-                            MatchObject m = sC.GetRandomObjectPrefab(LcSet, goSet);
-                            m3h.grid.Cells[j].SetObject1(m);
-                        }
-                    }
-                }
-
-                if (p.blocks[i].cnt != 0) p.blocks[i].pottential = m3h.cntPerPottential(p);
-                else p.blocks[i].pottential = 0;
-            }
-
-        }
-
-
-
-        public void setGridOnlyOne(DNA<char> p, SpawnController sC, int idx)
-        {
-            BlockedObject b = sC.GetObstacleObjectPrefab(LcSet, goSet);
-            BlockedObject b0 = sC.GetSelectBreakableBlockedObjectPrefab(LcSet, goSet);
-            OverlayObject o = sC.GetSelectOverlayObjectPrefab(LcSet, goSet);
-
-            for (int i = 0; i < m3h.grid.Cells.Count; i++)
-            {
-                if (p.cellsID[i] == idx)
-                {
-                    switch (idx)
-                    {
-                        case 0:
-                            m3h.grid.Cells[i].SetObject1(b);
-                            break;
-                        case 1:
-                            m3h.grid.Cells[i].SetObject1(b0);
-                            m3h.grid.Cells[i].setProtection = m3h.protections[i];
-                            break;
-                        case 2:
-                            MatchObject m = sC.GetRandomObjectPrefab(LcSet, goSet);
-                            m3h.grid.Cells[i].SetObject1(m);
-                            m3h.grid.Cells[i].SetObject1(o);
-                            m3h.grid.Cells[i].setProtection = m3h.protections[i];
-                            break;
-                    }
-                }
-
-                else
-                {
-                    /////////////////////////////////////////////
-                    if (p.cellsID[i] == 0)
-                    {
-                        m3h.grid.Cells[i].SetObject1(b);
+                        MatchObject m = sC.GetRandomObjectPrefab(LcSet, goSet);
+                        m3h.grid.Cells[i].SetObject1(m);
+                        m3h.grid.Cells[i].SetObject1(o);
                     }
 
                     else
@@ -820,8 +821,79 @@ namespace Mkey
                 }
             }
 
+            else
+            {
+                {
+                    for (int i = 0; i < m3h.grid.Cells.Count; i++)
+                    {
+                        if (isSpawnObstacle && p.gridObjects[i] == 0) m3h.grid.Cells[i].SetObject1(b);
+
+                        else if (isSpawnBlocked && p.gridObjects[i] == 1 && p.objectProtection[i] == protection) m3h.grid.Cells[i].SetObject1(b0);
+
+                        else if (isSpawnOverlay && p.gridObjects[i] == 2 && p.objectProtection[i] == protection)
+                        {
+                            MatchObject m = sC.GetRandomObjectPrefab(LcSet, goSet);
+                            m3h.grid.Cells[i].SetObject1(m);
+                            m3h.grid.Cells[i].SetObject1(o);
+                        }
+
+                        else
+                        {
+                            MatchObject m = sC.GetRandomObjectPrefab(LcSet, goSet);
+                            m3h.grid.Cells[i].SetObject1(m);
+                        }
+                    }
+                }
+            }
         }
 
+
+
+        //public void setGridOnlyOne(DNA<char> p, SpawnController sC, int idx)
+        //{
+        //    BlockedObject b = sC.GetObstacleObjectPrefab(LcSet, goSet);
+        //    BlockedObject b0 = sC.GetSelectBreakableBlockedObjectPrefab(LcSet, goSet);
+        //    OverlayObject o = sC.GetSelectOverlayObjectPrefab(LcSet, goSet);
+
+        //    for (int i = 0; i < m3h.grid.Cells.Count; i++)
+        //    {
+        //        if (p.cellsID[i] == idx)
+        //        {
+        //            switch (idx)
+        //            {
+        //                case 0:
+        //                    m3h.grid.Cells[i].SetObject1(b);
+        //                    break;
+        //                case 1:
+        //                    m3h.grid.Cells[i].SetObject1(b0);
+        //                    m3h.grid.Cells[i].setProtection = m3h.protections[i];
+        //                    break;
+        //                case 2:
+        //                    MatchObject m = sC.GetRandomObjectPrefab(LcSet, goSet);
+        //                    m3h.grid.Cells[i].SetObject1(m);
+        //                    m3h.grid.Cells[i].SetObject1(o);
+        //                    m3h.grid.Cells[i].setProtection = m3h.protections[i];
+        //                    break;
+        //            }
+        //        }
+
+        //        else
+        //        {
+        //            /////////////////////////////////////////////
+        //            if (p.cellsID[i] == 0)
+        //            {
+        //                m3h.grid.Cells[i].SetObject1(b);
+        //            }
+
+        //            else
+        //            {
+        //                MatchObject m = sC.GetRandomObjectPrefab(LcSet, goSet);
+        //                m3h.grid.Cells[i].SetObject1(m);
+        //            }
+        //        }
+        //    }
+
+        //}
 
 
         public void setGridRepeat(DNA<char> p, SpawnController sC)
@@ -834,23 +906,23 @@ namespace Mkey
 
             for (int i = 0; i < m3h.grid.Cells.Count; i++)
             {
-                if (p.cellsID[i] == 0)
+                if (p.gridObjects[i] == 0)
                 {
                     m3h.grid.Cells[i].SetObject1(b);
                 }
 
-                else if (p.cellsID[i] == 1)
+                else if (p.gridObjects[i] == 1)
                 {
                     m3h.grid.Cells[i].SetObject1(b0);
-                    m3h.grid.Cells[i].setProtection = m3h.protections[i];
-                } 
+                    m3h.grid.Cells[i].setProtection = p.objectProtection[i];
+                }
 
-                else if(p.cellsID[i] == 2)
+                else if (p.gridObjects[i] == 2)
                 {
                     MatchObject m = sC.GetRandomObjectPrefab(LcSet, goSet);
                     m3h.grid.Cells[i].SetObject1(m);
                     m3h.grid.Cells[i].SetObject1(o);
-                    m3h.grid.Cells[i].setProtection = m3h.protections[i];
+                    m3h.grid.Cells[i].setProtection = p.objectProtection[i];
                 }
 
                 else
@@ -861,6 +933,45 @@ namespace Mkey
             }
 
         }
+
+
+        //public void setGridRepeat(DNA<char> p, SpawnController sC)
+        //{
+        //    BlockedObject b = sC.GetObstacleObjectPrefab(LcSet, goSet);
+        //    BlockedObject b0 = sC.GetSelectBreakableBlockedObjectPrefab(LcSet, goSet);
+        //    OverlayObject o = sC.GetSelectOverlayObjectPrefab(LcSet, goSet);
+        //    //b0.hitCnt = m3h.blockedObjectHitCnt;
+        //    //o.hitCnt = m3h.overlayObjectHitCnt;
+
+        //    for (int i = 0; i < m3h.grid.Cells.Count; i++)
+        //    {
+        //        if (p.cellsID[i] == 0)
+        //        {
+        //            m3h.grid.Cells[i].SetObject1(b);
+        //        }
+
+        //        else if (p.cellsID[i] == 1)
+        //        {
+        //            m3h.grid.Cells[i].SetObject1(b0);
+        //            m3h.grid.Cells[i].setProtection = m3h.protections[i];
+        //        } 
+
+        //        else if(p.cellsID[i] == 2)
+        //        {
+        //            MatchObject m = sC.GetRandomObjectPrefab(LcSet, goSet);
+        //            m3h.grid.Cells[i].SetObject1(m);
+        //            m3h.grid.Cells[i].SetObject1(o);
+        //            m3h.grid.Cells[i].setProtection = m3h.protections[i];
+        //        }
+
+        //        else
+        //        {
+        //            MatchObject m = sC.GetRandomObjectPrefab(LcSet, goSet);
+        //            m3h.grid.Cells[i].SetObject1(m);
+        //        }
+        //    }
+
+        //}
 
         //public void countOneKindObstacle(DNA<char> p, SpawnController sC)
         //{
@@ -948,92 +1059,253 @@ namespace Mkey
         //    setGridRepeat(p, sC);
         //}
 
-        public void setObstacleFromGene(DNA<char> p, SpawnController sC)
+
+        public void setGrid(DNA<char> p, SpawnController sC)
         {
-            BlockedObject b = sC.GetObstacleObjectPrefab(LcSet, goSet);
-            BlockedObject b0 = sC.GetSelectBreakableBlockedObjectPrefab(LcSet, goSet);
-            OverlayObject o = sC.GetSelectOverlayObjectPrefab(LcSet, goSet);
+            BlockedObject obstacle = sC.GetObstacleObjectPrefab(LcSet, goSet);
+            BlockedObject blocked = sC.GetSelectBreakableBlockedObjectPrefab(LcSet, goSet);
+            OverlayObject overlay = sC.GetSelectOverlayObjectPrefab(LcSet, goSet);
 
-            p.kindsOfObstacle = new List<int>();
+            ////////////////////////
+            //bool isRandomObstacle = true;
+            //bool isRandomProtection = true;
+            //List<int> protections = new List<int>();
 
-            if (m3h.spawnObstacleObject) p.kindsOfObstacle.Add(0);
-            if (m3h.spawnBlockedObject) p.kindsOfObstacle.Add(1);
-            if (m3h.spawnOverlayObject) p.kindsOfObstacle.Add(2);
+            List<int> kindsOfObstacle = new List<int>();
+
+            if (m3h.spawnObstacleObject) kindsOfObstacle.Add(0);
+            if (m3h.spawnBlockedObject) kindsOfObstacle.Add(1);
+            if (m3h.spawnOverlayObject) kindsOfObstacle.Add(2);
 
             for (int i = 0; i < m3h.grid.Cells.Count; i++)
             {
                 if (p.genes[i] == '1')
                 {
-                    int randomIndex = Random.Range(0, p.kindsOfObstacle.Count);
+                    int randomIndex = Random.Range(0, kindsOfObstacle.Count);
+                    int randomProtection = 0;
 
-                    if (p.kindsOfObstacle[randomIndex] == 0)
+                    if (kindsOfObstacle[randomIndex] == 0)
                     {
-                        m3h.grid.Cells[i].SetObject1(b);
-                    }
-
-                    else if (p.kindsOfObstacle[randomIndex] == 1)
-                    {
-                        m3h.grid.Cells[i].SetObject1(b0);
+                        m3h.grid.Cells[i].SetObject1(obstacle);
+                        p.gridObjects.Add(0);
+                        p.objectProtection.Add(0);
                     } 
 
-                    else if (p.kindsOfObstacle[randomIndex] == 2)
+                    else if (kindsOfObstacle[randomIndex] == 1 || kindsOfObstacle[randomIndex] == 2)
                     {
-                        MatchObject m = sC.GetRandomObjectPrefab(LcSet, goSet);
-                        m3h.grid.Cells[i].SetObject1(m);
-                        m3h.grid.Cells[i].SetObject1(o);
+                        if (kindsOfObstacle[randomIndex] == 1)
+                        {
+                            m3h.grid.Cells[i].SetObject1(blocked);
+                            p.gridObjects.Add(1);
+                        } 
+
+                        else
+                        {
+                            MatchObject m = sC.GetRandomObjectPrefab(LcSet, goSet);
+                            m3h.grid.Cells[i].SetObject1(m);
+                            m3h.grid.Cells[i].SetObject1(overlay);
+                            p.gridObjects.Add(2);
+                        }
+
+                        if (m3h.haveRandomProtection)
+                        {
+                            randomProtection = Random.Range(1, m3h.blockProtection + 1);
+                            p.objectProtection.Add(randomProtection);
+                        }
+
+                        else
+                        {
+                            p.objectProtection.Add(m3h.blockProtection);
+                        }
+                        
+
+
+                        //p.gridObjects.Add(kindsOfObstacle[randomIndex]);
+                        //p.objectProtection.Add(randomProtection);
+
                     }
 
-                    p.cellsID.Add(p.kindsOfObstacle[randomIndex]); 
+
+                    else
+                    {
+                        int a = 0;
+                    }
+
                 }
 
                 else
                 {
                     MatchObject m = sC.GetRandomObjectPrefab(LcSet, goSet);
                     m3h.grid.Cells[i].SetObject1(m);
-                    p.cellsID.Add(3);
+                    p.gridObjects.Add(3);
+                    p.objectProtection.Add(0);
                 }
             }
+            
+
+            //if (isRandomObstacle)
+            //{
+            //    List<int> kindsOfObstacle = new List<int>();
+
+            //    for (int i = 0; i < m3h.grid.Cells.Count; i++)
+            //    {
+            //        if (p.genes[i] == '1')
+            //        {
+            //            int randomIndex = Random.Range(0, kindsOfObstacle.Count + 1);
+
+            //            if (kindsOfObstacle[randomIndex] == 0) m3h.grid.Cells[i].SetObject1(obstacle);
+
+            //            else if (kindsOfObstacle[randomIndex] == 1 || kindsOfObstacle[randomIndex] == 2)
+            //            {
+            //                if (kindsOfObstacle[randomIndex] == 1) m3h.grid.Cells[i].SetObject1(blocked);
+
+            //                else
+            //                {
+            //                    MatchObject m = sC.GetRandomObjectPrefab(LcSet, goSet);
+            //                    m3h.grid.Cells[i].SetObject1(m);
+            //                    m3h.grid.Cells[i].SetObject1(overlay);
+            //                }
+
+            //                if (m3h.haveRandomProtection)
+            //                {
+            //                    int randomProtection = Random.Range(1, m3h.blockProtection + 1);
+            //                    protections.Add(randomProtection);
+            //                }
+
+            //                else protections.Add(m3h.blockProtection);
+
+            //            }
+
+            //            p.gridObjects.Add(kindsOfObstacle[randomIndex]);
+            //        }
+
+            //        else
+            //        {
+            //            MatchObject m = sC.GetRandomObjectPrefab(LcSet, goSet);
+            //            m3h.grid.Cells[i].SetObject1(m);
+            //            p.gridObjects.Add(3);
+            //        }
+            //    }
+            //}
+
+            //else
+            //{
+            //    for (int i = 0; i < m3h.grid.Cells.Count; i++)
+            //    {
+            //        if (m3h.difficults[m3h.csvCnt].map[i] == '0')
+            //        {
+            //            m3h.grid.Cells[i].SetObject1(obstacle);
+            //            p.gridObjects.Add(0);
+            //        }
+
+            //        else if (m3h.difficults[m3h.csvCnt].map[i] == '1' || m3h.difficults[m3h.csvCnt].map[i] == '2')
+            //        {
+            //            if (m3h.difficults[m3h.csvCnt].map[i] == '1') m3h.grid.Cells[i].SetObject1(blocked);
+
+            //            else
+            //            {
+            //                MatchObject m = sC.GetRandomObjectPrefab(LcSet, goSet);
+            //                m3h.grid.Cells[i].SetObject1(m);
+            //                m3h.grid.Cells[i].SetObject1(overlay);
+            //            }
+
+            //            protections.Add(m3h.blockProtection);
+            //        }
+
+            //        else if (m3h.difficults[m3h.csvCnt].map[i] == '3')
+            //        {
+            //            MatchObject m = sC.GetRandomObjectPrefab(LcSet, goSet);
+            //            m3h.grid.Cells[i].SetObject1(m);
+            //            p.cellsID.Add(3);
+            //        }
+            //    }
+            //}
+
+
+        }
+
+        //public void setObstacleFromGene(DNA<char> p, SpawnController sC)
+        //{
+        //    BlockedObject b = sC.GetObstacleObjectPrefab(LcSet, goSet);
+        //    BlockedObject b0 = sC.GetSelectBreakableBlockedObjectPrefab(LcSet, goSet);
+        //    OverlayObject o = sC.GetSelectOverlayObjectPrefab(LcSet, goSet);
+
+        //    p.kindsOfObstacle = new List<int>();
+
+        //    if (m3h.spawnObstacleObject) p.kindsOfObstacle.Add(0);
+        //    if (m3h.spawnBlockedObject) p.kindsOfObstacle.Add(1);
+        //    if (m3h.spawnOverlayObject) p.kindsOfObstacle.Add(2);
+
+        //    for (int i = 0; i < m3h.grid.Cells.Count; i++)
+        //    {
+        //        if (m3h.difficults[m3h.csvCnt].map[i] == '0')
+        //        {
+        //            m3h.grid.Cells[i].SetObject1(b);
+        //            p.cellsID.Add(0);
+        //        }
+
+        //        else if (m3h.difficults[m3h.csvCnt].map[i] == '1')
+        //        {
+        //            m3h.grid.Cells[i].SetObject1(b0);
+        //            p.cellsID.Add(1);
+        //        }
+
+        //        else if (m3h.difficults[m3h.csvCnt].map[i] == '2')
+        //        {
+        //            MatchObject m = sC.GetRandomObjectPrefab(LcSet, goSet);
+        //            m3h.grid.Cells[i].SetObject1(m);
+        //            m3h.grid.Cells[i].SetObject1(o);
+        //            p.cellsID.Add(2);
+        //        }
+
+        //        else if (m3h.difficults[m3h.csvCnt].map[i] == '3')
+        //        {
+        //            MatchObject m = sC.GetRandomObjectPrefab(LcSet, goSet);
+        //            m3h.grid.Cells[i].SetObject1(m);
+        //            p.cellsID.Add(3);
+        //        }
+        //    }
            
 
 
 
-            ////b0.hitCnt = m3h.blockedObjectHitCnt;
-            ////o.hitCnt = m3h.overlayObjectHitCnt;
+        //    ////b0.hitCnt = m3h.blockedObjectHitCnt;
+        //    ////o.hitCnt = m3h.overlayObjectHitCnt;
 
-            //for (int i = 0; i < m3h.grid.Cells.Count; i++)
-            //{
-            //    if (p.genes[i] == '1')
-            //    {
-            //        if(m3h.onlySpawnObstacleObject)
-            //        {
-            //            m3h.grid.Cells[i].SetObject1(b);
-            //            p.cellsID.Add(0);
-            //        }
+        //    //for (int i = 0; i < m3h.grid.Cells.Count; i++)
+        //    //{
+        //    //    if (p.genes[i] == '1')
+        //    //    {
+        //    //        if(m3h.onlySpawnObstacleObject)
+        //    //        {
+        //    //            m3h.grid.Cells[i].SetObject1(b);
+        //    //            p.cellsID.Add(0);
+        //    //        }
 
-            //        else if(m3h.onlySpawnBlockedObject)
-            //        {
-            //            m3h.grid.Cells[i].SetObject1(b0);
-            //            p.cellsID.Add(1);
-            //        }
+        //    //        else if(m3h.onlySpawnBlockedObject)
+        //    //        {
+        //    //            m3h.grid.Cells[i].SetObject1(b0);
+        //    //            p.cellsID.Add(1);
+        //    //        }
 
-            //        else if (m3h.onlySpawnOverlayObject) 
-            //        {
-            //            MatchObject m = sC.GetRandomObjectPrefab(LcSet, goSet);
-            //            m3h.grid.Cells[i].SetObject1(m);
-            //            m3h.grid.Cells[i].SetObject1(o);
-            //            p.cellsID.Add(2);
-            //        }
-            //    }
+        //    //        else if (m3h.onlySpawnOverlayObject) 
+        //    //        {
+        //    //            MatchObject m = sC.GetRandomObjectPrefab(LcSet, goSet);
+        //    //            m3h.grid.Cells[i].SetObject1(m);
+        //    //            m3h.grid.Cells[i].SetObject1(o);
+        //    //            p.cellsID.Add(2);
+        //    //        }
+        //    //    }
 
-            //    else
-            //    {
-            //        MatchObject m = sC.GetRandomObjectPrefab(LcSet, goSet);
-            //        m3h.grid.Cells[i].SetObject1(m);
-            //        p.cellsID.Add(3);
-            //    }
+        //    //    else
+        //    //    {
+        //    //        MatchObject m = sC.GetRandomObjectPrefab(LcSet, goSet);
+        //    //        m3h.grid.Cells[i].SetObject1(m);
+        //    //        p.cellsID.Add(3);
+        //    //    }
 
-            //}
-        }
+        //    //}
+        //}
 
         public bool estimateObstacleTarget(int targetID)
         {
@@ -1051,9 +1323,23 @@ namespace Mkey
 
             for (int i = m3h.grid.Columns.Count(); i < m3h.grid.Cells.Count; i++)
             {
-                if (m3h.grid.Cells[i].Blocked == null && m3h.grid.Cells[i].fillPathToSpawner == null && m3h.grid.Cells[i].Overlay == null)
+                //if (m3h.grid.Cells[i].Neighbors.Top.Overlay != null &&
+                //   m3h.grid.Cells[i].Neighbors.Left.Overlay != null &&
+                //   m3h.grid.Cells[i].Neighbors.Right.Overlay != null &&
+                //   m3h.grid.Cells[i].Neighbors.Bottom.Overlay != null)
+                ////if (m3h.grid.Cells[i].Neighbors.Top.Overlay != null)
+                //{
+                //    p.infeasibleCellCnt++;
+                //}
+
+
+                if (m3h.grid.Cells[i].Blocked == null && m3h.grid.Cells[i].fillPathToSpawner == null /*&& m3h.grid.Cells[i].Overlay == null*/)
                 {
-                    if (m3h.grid.Cells[i].Neighbors.Top.Blocked != null || m3h.grid.Cells[i].Neighbors.Top.Overlay != null) p.infeasibleCellCnt++;
+                    if (m3h.grid.Cells[i].Neighbors.Top.Blocked != null /*|| m3h.grid.Cells[i].Neighbors.Top.Overlay != null*/)
+                    {
+                        p.infeasibleCellCnt++;
+                    }
+                    
                 }
             }
 
@@ -1177,208 +1463,318 @@ namespace Mkey
             SpawnController sC = SpawnController.Instance;
             sC.numOfMatchBlock = m3h.numOfMatchBlock;
             CSVFileWriter cs = new CSVFileWriter(m3h);
-
+            bool isObstacleTarget = false;
             Debug.Log("beforefitness");
 
-            bool isObstacleTarget = false;
-            
-            //foreach (var item in m3h.curTargets)
-            //{
-            //    isObstacleTarget = estimateObstacleTarget(item.Value.ID);
-            //    if (isObstacleTarget) break;
-            //}
+            if(m3h.csvCnt ==10)
+            {
+                m3h.wantDifficulty = 600;
+            }
 
-            if(m3h.isActualMeasureSwap) 
+            if (m3h.getSetGenes)
+            {
+                destoryAllCellInGrid();
+
+                BlockedObject obstacle = sC.GetObstacleObjectPrefab(LcSet, goSet);
+                BlockedObject blocked = sC.GetSelectBreakableBlockedObjectPrefab(LcSet, goSet);
+                OverlayObject overlay = sC.GetSelectOverlayObjectPrefab(LcSet, goSet);
+
+                for (int i = 0; i < m3h.grid.Cells.Count; i++)
+                {
+                    if(m3h.divideSpecificBlock)
+                    {
+                        if(ga.population[0].genes[i] == '1' && m3h.spawnObstacleObject)
+                        {
+                            m3h.grid.Cells[i].SetObject1(obstacle);
+                            ga.population[0].gridObjects.Add(0);
+                            ga.population[0].objectProtection.Add(0);
+                        }
+
+                        else if (ga.population[0].genes[i] == '1' && m3h.spawnBlockedObject)
+                        {
+                            m3h.grid.Cells[i].SetObject1(blocked);
+                            ga.population[0].gridObjects.Add(1);
+                            ga.population[0].objectProtection.Add(m3h.blockProtection);
+                        }
+
+                        else if (ga.population[0].genes[i] == '1' && m3h.spawnOverlayObject)
+                        {
+                            MatchObject m = sC.GetRandomObjectPrefab(LcSet, goSet);
+                            m3h.grid.Cells[i].SetObject1(m);
+                            m3h.grid.Cells[i].SetObject1(overlay);
+                            ga.population[0].gridObjects.Add(2);
+                            ga.population[0].objectProtection.Add(m3h.blockProtection);
+                        }
+
+                        else
+                        {
+                            MatchObject m = sC.GetRandomObjectPrefab(LcSet, goSet);
+                            m3h.grid.Cells[i].SetObject1(m);
+                            ga.population[0].gridObjects.Add(3);
+                            ga.population[0].objectProtection.Add(0);
+                        }
+                    }
+
+                    else
+                    {
+                        string protection = m3h.setMaps(m3h.csvCnt, false);
+
+                        if (ga.population[0].genes[i] == '0')
+                        {
+                            m3h.grid.Cells[i].SetObject1(obstacle);
+                            ga.population[0].gridObjects.Add(0);
+                            ga.population[0].objectProtection.Add(0);
+                        }
+
+                        else if (ga.population[0].genes[i] == '1')
+                        {
+                            m3h.grid.Cells[i].SetObject1(blocked);
+                            ga.population[0].gridObjects.Add(1);
+
+                            if (protection[i] == '1') ga.population[0].objectProtection.Add(1);
+                            else if (protection[i] == '2') ga.population[0].objectProtection.Add(2);
+                            else if (protection[i] == '3') ga.population[0].objectProtection.Add(3);
+
+                            else
+                            {
+                                Debug.Log("can'tFindBlockedProtection");
+                                ga.population[555].fitness = 33333;
+                            }
+
+                        }
+
+                        else if (ga.population[0].genes[i] == '2')
+                        {
+                            MatchObject m = sC.GetRandomObjectPrefab(LcSet, goSet);
+                            m3h.grid.Cells[i].SetObject1(m);
+                            m3h.grid.Cells[i].SetObject1(overlay);
+                            ga.population[0].gridObjects.Add(2);
+
+                            if (protection[i] == '1') ga.population[0].objectProtection.Add(1);
+                            else if (protection[i] == '2') ga.population[0].objectProtection.Add(2);
+                            else if (protection[i] == '3') ga.population[0].objectProtection.Add(3);
+
+                            else
+                            {
+                                Debug.Log("can'tFindOverlayProtection");
+                                ga.population[555].fitness = 33333;
+                            }
+                        }
+
+                        else if (ga.population[0].genes[i] == '3')
+                        {
+                            MatchObject m = sC.GetRandomObjectPrefab(LcSet, goSet);
+                            m3h.grid.Cells[i].SetObject1(m);
+                            ga.population[0].gridObjects.Add(3);
+                            ga.population[0].objectProtection.Add(0);
+                        }
+
+                        else
+                        {
+                            Debug.Log("can'tFindObject");
+                            ga.population[555].fitness = 33333;
+                        }
+                    }
+
+
+                }
+
+                estimateIsFeasible(ga.population[0]);
+
+                if (ga.population[0].isFeasible)
+                {
+                    setGridRepeat(ga.population[0], sC);
+                    m3h.cntPerPottentials(ga.population[0]);
+                }
+                
+
+
+                //if (ga.population[0].isFeasible) m3h.cntMapmatchPottential(ga.population[0]);
+                calculateFitness(ga.population[0], sC, trans);
+
+                /////////////////////////////////////////
+                //setGridEachKind(ga.population[0], sC, false, false, false, false, 0);
+                //ga.population[0].swapablePottential.notObstacle = m3h.cntPottentials(ga.population[0]);
+
+
+                //setGridRepeat(ga.population[0], sC);
+                //m3h.cntPerPottentials(ga.population[0]);
+                //m3h.cntMapPottentials(ga.population[0]);
+
+                calculateFitnessThroughPlay(ga.population[0], sC, trans, isObstacleTarget, cs);
+                
+            }
+
+            else
             {
                 for (int i = 0; i < m3h.limits.geneticGeneration; i++)
                 {
                     for (int j = 0; j < ga.population.Count; j++)
                     {
-                        destoryAllCellInGrid();
-                        setObstacleFromGene(ga.population[j], sC);
-                        estimateIsFeasible(ga.population[j]);
-
-                        if (ga.population[j].isFeasible) m3h.countObstacle(ga.population[j]);
-       
-                        calculateFitness(ga.population[j], sC, trans);
-
-                        if (ga.bestFitness < ga.population[j].fitness && ga.population[j].isFeasible)
+                        if (ga.population[j].fitness == 0)
                         {
-                            ga.bestFitness = ga.population[j].fitness;
+                            destoryAllCellInGrid();
+                            setGrid(ga.population[j], sC);
+                            estimateIsFeasible(ga.population[j]);
+
+                            if (ga.population[j].isFeasible)
+                            {
+                                setGridRepeat(ga.population[j], sC);
+                                m3h.cntPerPottentials(ga.population[j]);
+                                //m3h.cntMapmatchPottential(ga.population[j]);
+                            }
+
+                            calculateFitness(ga.population[j], sC, trans);
+
+                            if (ga.bestFitness < ga.population[j].fitness && ga.population[j].isFeasible)
+                            {
+                                ga.bestFitness = ga.population[j].fitness;
+                                ga.bestPottential = (int)ga.population[j].allPottential.map;
+                            }
+
+                            if (ga.bestFitness >= ga.targetFitness)
+                            {
+                                ga.population[0] = ga.population[j];
+                                break;
+                            }
                         }
 
-                        if (ga.bestFitness >= ga.targetFitness)
+                        else
                         {
-                            ga.population[0] = ga.population[j];
-                            break;
+                            if (ga.population[j].isFeasible)
+                            {
+                                ga.feasiblePopulation.Add(ga.population[j]);
+                                ga.feasibleFitnessSum += ga.population[j].fitness;
+                            }
+
+                            else
+                            {
+                                ga.infeasiblePopulation.Add(ga.population[j]);
+                                ga.infeasibleFitnessSum += ga.population[j].fitness;
+                            }
                         }
-                        
                     }
 
                     if (ga.bestFitness >= ga.targetFitness) break;
                     else ga.newGeneration();
+
                 }
 
                 if (ga.bestFitness >= ga.targetFitness)
                 {
-                    m3h.setProtection(ga.population[0]);
+                    //setGridEachKind(ga.population[0], sC, isSpawnObstacle,isSpawnBlocked,isSpawnOverlay,isEachProtection,protection)
 
-                    //흐음
-                    m3h.cntMatchPottentials(ga.population[0]);
+                    //setGridEachKind(ga.population[0], sC, false, false, false, false, 0);
+                    //ga.population[0].pottential.notObstacle = m3h.cntPottentials(ga.population[0]);
 
-                    destoryAllCellInGrid();
-                    for (int i = 0; i < m3h.grid.Cells.Count; i++)
-                    {
-                        MatchObject m = sC.GetRandomObjectPrefab(LcSet, goSet);
-                        m3h.grid.Cells[i].SetObject1(m);
-                    }
-                    //필요없는게 있긴한데 뭐 크게 지장없는듯
-                    ga.population[0].notObstacleCnt = m3h.cntPerPottential(ga.population[0]);
+                    //if (m3h.spawnObstacleObject)
+                    //{
+                    //    setGridEachKind(ga.population[0], sC, true, false, false, false, 0);
+                    //    ga.population[0].pottential.onlyObstacle = m3h.cntPottentials(ga.population[0]);
+                    //}
 
-                    //destoryAllCellInGrid();
+                    //if (m3h.spawnBlockedObject)
+                    //{
+                    //    setGridEachKind(ga.population[0], sC, false, true, false, false, 0);
+                    //    ga.population[0].pottential.onlyAllBlocked = m3h.cntPottentials(ga.population[0]);
+
+                    //    setGridEachKind(ga.population[0], sC, false, true, false, true, 1);
+                    //    ga.population[0].pottential.onlyBlocked1 = m3h.cntPottentials(ga.population[0]);
+
+                    //    setGridEachKind(ga.population[0], sC, false, true, false, true, 2);
+                    //    ga.population[0].pottential.onlyBlocked2 = m3h.cntPottentials(ga.population[0]);
+
+                    //    setGridEachKind(ga.population[0], sC, false, true, false, true, 3);
+                    //    ga.population[0].pottential.onlyBlocked3 = m3h.cntPottentials(ga.population[0]);
+                    //}
+
+                    //if (m3h.spawnOverlayObject)
+                    //{
+                    //    setGridEachKind(ga.population[0], sC, false, false, true, false, 0);
+                    //    ga.population[0].pottential.onlyAllOverlay = m3h.cntPottentials(ga.population[0]);
+
+                    //    setGridEachKind(ga.population[0], sC, false, false, true, true, 1);
+                    //    ga.population[0].pottential.onlyOverlay1 = m3h.cntPottentials(ga.population[0]);
+
+                    //    setGridEachKind(ga.population[0], sC, false, false, true, true, 2);
+                    //    ga.population[0].pottential.onlyOverlay2 = m3h.cntPottentials(ga.population[0]);
+
+                    //    setGridEachKind(ga.population[0], sC, false, false, true, true, 3);
+                    //    ga.population[0].pottential.onlyOverlay3 = m3h.cntPottentials(ga.population[0]);
+                    //}
+
+                    //if (m3h.spawnObstacleObject && m3h.spawnBlockedObject)
+                    //{
+                    //    setGridEachKind(ga.population[0], sC, true, true, false, false, 0);
+                    //    ga.population[0].pottential.obstacleAndAllBlocked = m3h.cntPottentials(ga.population[0]);
+
+                    //    setGridEachKind(ga.population[0], sC, true, true, false, true, 1);
+                    //    ga.population[0].pottential.obstacleAndBlocked1 = m3h.cntPottentials(ga.population[0]);
+
+                    //    setGridEachKind(ga.population[0], sC, true, true, false, true, 2);
+                    //    ga.population[0].pottential.obstacleAndBlocked2 = m3h.cntPottentials(ga.population[0]);
+
+                    //    setGridEachKind(ga.population[0], sC, true, true, false, true, 3);
+                    //    ga.population[0].pottential.obstacleAndBlocked3 = m3h.cntPottentials(ga.population[0]);
+                    //}
+
+                    //if (m3h.spawnObstacleObject && m3h.spawnOverlayObject)
+                    //{
+                    //    setGridEachKind(ga.population[0], sC, true, false, true, false, 0);
+                    //    ga.population[0].pottential.obstacleAndAllOverlay = m3h.cntPottentials(ga.population[0]);
+
+                    //    setGridEachKind(ga.population[0], sC, true, false, true, true, 1);
+                    //    ga.population[0].pottential.obstacleAndOverlay1 = m3h.cntPottentials(ga.population[0]);
+
+                    //    setGridEachKind(ga.population[0], sC, true, false, true, true, 2);
+                    //    ga.population[0].pottential.obstacleAndOverlay2 = m3h.cntPottentials(ga.population[0]);
+
+                    //    setGridEachKind(ga.population[0], sC, true, false, true, true, 3);
+                    //    ga.population[0].pottential.obstacleAndOverlay3 = m3h.cntPottentials(ga.population[0]);
+                    //}
+
+
                     //setGridRepeat(ga.population[0], sC);
-
-                    for(int i = 0;i< ga.population[0].kindsOfObstacle.Count;i++)
-                    {
-                        destoryAllCellInGrid();
-                        setGridOnlyOne(ga.population[0], sC, ga.population[0].kindsOfObstacle[i]);
-
-                        switch (ga.population[0].kindsOfObstacle[i])
-                        {
-                            case 0:
-                                ga.population[0].obstaclePottentialCnt = m3h.cntPerPottential(ga.population[0]);
-                                break;
-                            case 1:
-                                ga.population[0].blockedPottentialCnt = m3h.cntPerPottential(ga.population[0]);
-                                break;
-                            case 2:
-                                ga.population[0].overlayPottentialCnt = m3h.cntPerPottential(ga.population[0]);
-                                break;
-                        }
-                    }
-
-                    setGridPerProtection(ga.population[0], sC);
+                    //m3h.cntPerPottentials(ga.population[0]);
+                    //m3h.cntMapPottentials(ga.population[0]);
+                    
 
                     for (int i = 0; i < m3h.limits.generation; i++)
                     {
                         calculateFitnessThroughPlay(ga.population[0], sC, trans, isObstacleTarget, cs);
                     }
-
-                    //if (m3h.onlySpawnObstacleObject || m3h.onlySpawnBlockedObject || m3h.onlySpawnOverlayObject)
-                    //{
-                    //    countOneKindObstacle(ga.population[0], sC);
-                    //    m3h.cntMatchPottentials(ga.population[0]);
-                    //} 
-                    //else countPerObstacle(ga.population[0], sC);
-                }
-                
-
-            }
-
-            else if(m3h.getSetGenes)
-            {
-
-                for (int i = 0; i < ga.population.Count; i++)
-                {
-                    destoryAllCellInGrid();
-                    setObstacleFromGene(ga.population[i], sC);
-                }
-
-                for (int i = 0; i < m3h.limits.geneticGeneration; i++)
-                {
-                    for (int j = 0; j < ga.population.Count; j++)
-                    {
-                        destoryAllCellInGrid();
-
-                        estimateIsFeasible(ga.population[j]);
-
-                        if (ga.population[j].isFeasible)
-                        {
-                            m3h.countObstacle(ga.population[j]);
-                            m3h.setProtection(ga.population[j]);
-                            m3h.cntMatchPottentials(ga.population[j]);
-
-                            destoryAllCellInGrid();
-
-                            for (int k = 0; k < m3h.grid.Cells.Count; k++)
-                            {
-                                MatchObject m = sC.GetRandomObjectPrefab(LcSet, goSet);
-                                m3h.grid.Cells[k].SetObject1(m);
-                            }
-
-                            ga.population[j].notObstacleCnt = m3h.cntPerPottential(ga.population[0]);
-
-                            for (int k = 0; k < ga.population[j].kindsOfObstacle.Count; k++)
-                            {
-                                destoryAllCellInGrid();
-                                setGridOnlyOne(ga.population[j], sC, ga.population[j].kindsOfObstacle[k]);
-
-                                switch (ga.population[j].kindsOfObstacle[k])
-                                {
-                                    case 0:
-                                        ga.population[j].obstaclePottentialCnt = m3h.cntPerPottential(ga.population[k]);
-                                        break;
-                                    case 1:
-                                        ga.population[j].blockedPottentialCnt = m3h.cntPerPottential(ga.population[k]);
-                                        break;
-                                    case 2:
-                                        ga.population[j].overlayPottentialCnt = m3h.cntPerPottential(ga.population[k]);
-                                        break;
-                                }
-                            }
-
-                            setGridPerProtection(ga.population[j], sC);
-                        }
-
-                        calculateNewFitness(ga.population[j], sC, trans);
-
-                        if (ga.bestFitness < ga.population[j].fitness && ga.population[j].isFeasible)
-                        {
-                            ga.bestFitness = ga.population[j].fitness;
-                        }
-
-                        if (ga.bestFitness >= ga.targetFitness)
-                        {
-                            ga.population[0] = ga.population[j];
-                            break;
-                        }
-
-                    }
-
-                    if (ga.bestFitness >= ga.targetFitness) break;
-                    else ga.newNEWEWEWEWEGeneration();
-                }
-
-                calculateFitnessThroughPlay(ga.population[0], sC, trans, isObstacleTarget, cs);
-            }
-
-            else
-            {
-                for (int i = 0; i < m3h.limits.generation; i++) //유전알고리즘을 통해 예측한 swap횟수에 따른 맵 생성
-                {
-                    for (int j = 0; j < ga.population.Count; j++)
-                    {
-                        destoryAllCellInGrid(); // destory all cells info
-                        setObstacleFromGene(ga.population[j], sC);
-                        estimateIsFeasible(ga.population[j]);
-                        calculateFitness(ga.population[j], sC, trans);
-
-                        if (ga.bestFitness < ga.population[j].fitness) ga.bestFitness = ga.population[j].fitness;
-
-                        if (ga.bestFitness >= ga.targetFitness) break;
-                    }
-
-                    if (ga.bestFitness >= ga.targetFitness) break;
-                    else ga.newGeneration();
                 }
             }
+
+            
+
+            //else
+            //{
+            //    for (int i = 0; i < m3h.limits.generation; i++) //유전알고리즘을 통해 예측한 swap횟수에 따른 맵 생성
+            //    {
+            //        for (int j = 0; j < ga.population.Count; j++)
+            //        {
+            //            destoryAllCellInGrid(); // destory all cells info
+            //            setObstacleFromGene(ga.population[j], sC);
+            //            estimateIsFeasible(ga.population[j]);
+            //            calculateFitness(ga.population[j], sC, trans);
+
+            //            if (ga.bestFitness < ga.population[j].fitness) ga.bestFitness = ga.population[j].fitness;
+
+            //            if (ga.bestFitness >= ga.targetFitness) break;
+            //        }
+
+            //        if (ga.bestFitness >= ga.targetFitness) break;
+            //        else ga.newGeneration();
+            //    }
+            //}
 
 
             //if (m3h.getSetGenes) ga.population[555].fitness = 33333;
 
             Debug.Log("ENDcalculate");
 
-            if(m3h.csvCnt >= 9)
+            if (m3h.csvCnt == m3h.limits.csvCnt)
             {
                 destoryAllCellInGrid();
                 setGridRepeat(ga.population[0], sC);
@@ -1394,6 +1790,229 @@ namespace Mkey
             else Debug.Log("isNotFeasible");
 
         }
+
+        //void getMatch3Level(Transform trans)
+        //{
+        //    SpawnController sC = SpawnController.Instance;
+        //    sC.numOfMatchBlock = m3h.numOfMatchBlock;
+        //    CSVFileWriter cs = new CSVFileWriter(m3h);
+
+        //    Debug.Log("beforefitness");
+
+        //    bool isObstacleTarget = false;
+
+        //    //foreach (var item in m3h.curTargets)
+        //    //{
+        //    //    isObstacleTarget = estimateObstacleTarget(item.Value.ID);
+        //    //    if (isObstacleTarget) break;
+        //    //}
+
+        //    if(m3h.isActualMeasureSwap) 
+        //    {
+        //        for (int i = 0; i < m3h.limits.geneticGeneration; i++)
+        //        {
+        //            for (int j = 0; j < ga.population.Count; j++)
+        //            {
+        //                destoryAllCellInGrid();
+        //                setObstacleFromGene(ga.population[j], sC);
+        //                estimateIsFeasible(ga.population[j]);
+
+        //                if (ga.population[j].isFeasible) m3h.countObstacle(ga.population[j]);
+
+        //                calculateFitness(ga.population[j], sC, trans);
+
+        //                if (ga.bestFitness < ga.population[j].fitness && ga.population[j].isFeasible)
+        //                {
+        //                    ga.bestFitness = ga.population[j].fitness;
+        //                }
+
+        //                if (ga.bestFitness >= ga.targetFitness)
+        //                {
+        //                    ga.population[0] = ga.population[j];
+        //                    break;
+        //                }
+
+        //            }
+
+        //            if (ga.bestFitness >= ga.targetFitness) break;
+        //            else ga.newGeneration();
+        //        }
+
+        //        if (ga.bestFitness >= ga.targetFitness)
+        //        {
+        //            m3h.setProtection(ga.population[0]);
+
+        //            //흐음
+        //            m3h.cntMatchPottentials(ga.population[0]);
+
+        //            destoryAllCellInGrid();
+        //            for (int i = 0; i < m3h.grid.Cells.Count; i++)
+        //            {
+        //                MatchObject m = sC.GetRandomObjectPrefab(LcSet, goSet);
+        //                m3h.grid.Cells[i].SetObject1(m);
+        //            }
+        //            //필요없는게 있긴한데 뭐 크게 지장없는듯
+        //            ga.population[0].notObstacleCnt = m3h.cntPerPottential(ga.population[0]);
+
+        //            //destoryAllCellInGrid();
+        //            //setGridRepeat(ga.population[0], sC);
+
+        //            for(int i = 0;i< ga.population[0].kindsOfObstacle.Count;i++)
+        //            {
+        //                destoryAllCellInGrid();
+        //                setGridOnlyOne(ga.population[0], sC, ga.population[0].kindsOfObstacle[i]);
+
+        //                switch (ga.population[0].kindsOfObstacle[i])
+        //                {
+        //                    case 0:
+        //                        ga.population[0].obstaclePottentialCnt = m3h.cntPerPottential(ga.population[0]);
+        //                        break;
+        //                    case 1:
+        //                        ga.population[0].blockedPottentialCnt = m3h.cntPerPottential(ga.population[0]);
+        //                        break;
+        //                    case 2:
+        //                        ga.population[0].overlayPottentialCnt = m3h.cntPerPottential(ga.population[0]);
+        //                        break;
+        //                }
+        //            }
+
+        //            setGridPerProtection(ga.population[0], sC);
+
+        //            for (int i = 0; i < m3h.limits.generation; i++)
+        //            {
+        //                calculateFitnessThroughPlay(ga.population[0], sC, trans, isObstacleTarget, cs);
+        //            }
+
+        //            //if (m3h.onlySpawnObstacleObject || m3h.onlySpawnBlockedObject || m3h.onlySpawnOverlayObject)
+        //            //{
+        //            //    countOneKindObstacle(ga.population[0], sC);
+        //            //    m3h.cntMatchPottentials(ga.population[0]);
+        //            //} 
+        //            //else countPerObstacle(ga.population[0], sC);
+        //        }
+
+
+        //    }
+
+        //    else if(m3h.getSetGenes)
+        //    {
+
+        //        for (int i = 0; i < ga.population.Count; i++)
+        //        {
+        //            destoryAllCellInGrid();
+        //            setObstacleFromGene(ga.population[i], sC);
+        //        }
+
+        //        for (int i = 0; i < m3h.limits.geneticGeneration; i++)
+        //        {
+        //            for (int j = 0; j < ga.population.Count; j++)
+        //            {
+        //                destoryAllCellInGrid();
+
+        //                estimateIsFeasible(ga.population[j]);
+
+        //                if (ga.population[j].isFeasible)
+        //                {
+        //                    m3h.countObstacle(ga.population[j]);
+        //                    m3h.setProtection(ga.population[j]);
+        //                    m3h.cntMatchPottentials(ga.population[j]);
+
+        //                    destoryAllCellInGrid();
+
+        //                    for (int k = 0; k < m3h.grid.Cells.Count; k++)
+        //                    {
+        //                        MatchObject m = sC.GetRandomObjectPrefab(LcSet, goSet);
+        //                        m3h.grid.Cells[k].SetObject1(m);
+        //                    }
+
+        //                    ga.population[j].notObstacleCnt = m3h.cntPerPottential(ga.population[0]);
+
+        //                    for (int k = 0; k < ga.population[j].kindsOfObstacle.Count; k++)
+        //                    {
+        //                        destoryAllCellInGrid();
+        //                        setGridOnlyOne(ga.population[j], sC, ga.population[j].kindsOfObstacle[k]);
+
+        //                        switch (ga.population[j].kindsOfObstacle[k])
+        //                        {
+        //                            case 0:
+        //                                ga.population[j].obstaclePottentialCnt = m3h.cntPerPottential(ga.population[k]);
+        //                                break;
+        //                            case 1:
+        //                                ga.population[j].blockedPottentialCnt = m3h.cntPerPottential(ga.population[k]);
+        //                                break;
+        //                            case 2:
+        //                                ga.population[j].overlayPottentialCnt = m3h.cntPerPottential(ga.population[k]);
+        //                                break;
+        //                        }
+        //                    }
+
+        //                    setGridPerProtection(ga.population[j], sC);
+        //                }
+
+        //                calculateNewFitness(ga.population[j], sC, trans);
+
+        //                if (ga.bestFitness < ga.population[j].fitness && ga.population[j].isFeasible)
+        //                {
+        //                    ga.bestFitness = ga.population[j].fitness;
+        //                }
+
+        //                if (ga.bestFitness >= ga.targetFitness)
+        //                {
+        //                    ga.population[0] = ga.population[j];
+        //                    break;
+        //                }
+
+        //            }
+
+        //            if (ga.bestFitness >= ga.targetFitness) break;
+        //            else ga.newNEWEWEWEWEGeneration();
+        //        }
+
+        //        calculateFitnessThroughPlay(ga.population[0], sC, trans, isObstacleTarget, cs);
+        //    }
+
+        //    else
+        //    {
+        //        for (int i = 0; i < m3h.limits.generation; i++) //유전알고리즘을 통해 예측한 swap횟수에 따른 맵 생성
+        //        {
+        //            for (int j = 0; j < ga.population.Count; j++)
+        //            {
+        //                destoryAllCellInGrid(); // destory all cells info
+        //                setObstacleFromGene(ga.population[j], sC);
+        //                estimateIsFeasible(ga.population[j]);
+        //                calculateFitness(ga.population[j], sC, trans);
+
+        //                if (ga.bestFitness < ga.population[j].fitness) ga.bestFitness = ga.population[j].fitness;
+
+        //                if (ga.bestFitness >= ga.targetFitness) break;
+        //            }
+
+        //            if (ga.bestFitness >= ga.targetFitness) break;
+        //            else ga.newGeneration();
+        //        }
+        //    }
+
+
+        //    //if (m3h.getSetGenes) ga.population[555].fitness = 33333;
+
+        //    Debug.Log("ENDcalculate");
+
+        //    if(m3h.csvCnt >= 9)
+        //    {
+        //        destoryAllCellInGrid();
+        //        setGridRepeat(ga.population[0], sC);
+        //    }
+
+        //    if (ga.population[0].isFeasible)
+        //    {
+        //        cs.write(ga, m3h);
+        //        Debug.Log("writedCSV");
+        //        m3h.wantDifficulty -= 50;
+        //    }
+
+        //    else Debug.Log("isNotFeasible");
+
+        //}
 
         public List<MatchGroup> mgList;
         public Match3Helper m3h;
@@ -1463,12 +2082,9 @@ namespace Mkey
 
             //SpawnController sC = SpawnController.Instance;
 
-            //sC.numOfMatchBlock = 7;
-
             //Debug.Log("fill grid, remove matches: " + noMatches);
             //for (int i = 0; i < Cells.Count; i++)
             //{
-
             //    //if (!Cells[i].Blocked && !Cells[i].IsDisabled && !Cells[i].DynamicObject)
             //    {
             //        MatchObject m = sC.GetMainRandomObjectPrefab(LcSet, goSet);

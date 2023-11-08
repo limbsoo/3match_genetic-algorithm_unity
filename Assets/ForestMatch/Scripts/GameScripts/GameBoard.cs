@@ -10,6 +10,7 @@ using System.Linq.Expressions;
 
 using Random = UnityEngine.Random;
 using static UnityEngine.GraphicsBuffer;
+using static Mkey.GameBoard;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -97,6 +98,129 @@ namespace Mkey
 
 
         public bool isGenetic = false;
+
+        public class InterferenceRate
+        {
+            public double obstacle;
+            public double blocked1;
+            public double blocked2;
+            public double blocked3;
+            public double overlay1;
+            public double overlay2;
+            public double overlay3;
+            public double somethingWrong;
+
+            public InterferenceRate()
+            {
+                obstacle = 0;
+                blocked1 = 0;
+                blocked2 = 0;
+                blocked3 = 0;
+                overlay1 = 0;
+                overlay2 = 0;
+                overlay3 = 0;
+                somethingWrong = 0;
+            }
+
+
+            public void calculatePerInterferenceRate(GridCell c)
+            {
+                double sum = 0;
+
+                if (obstacle > 0) sum += obstacle;
+
+                if (blocked1 > 0) sum += blocked1;
+
+                if (blocked2 > 0) sum += blocked2;
+
+                if (blocked3 > 0) sum += blocked3;
+
+                if (overlay1 > 0) sum += overlay1;
+
+                if (overlay2 > 0) sum += overlay2;
+
+                if (overlay3 > 0) sum += overlay3;
+
+                if (somethingWrong > 0) sum += 999999999;
+ 
+
+
+                if (obstacle > 0) c.cellPottential.obstacle += (obstacle / sum);
+                if (blocked1 > 0) c.cellPottential.blocked1 += (blocked1 / sum);
+                if (blocked2 > 0) c.cellPottential.blocked2 += (blocked2 / sum);
+                if (blocked3 > 0) c.cellPottential.blocked3 += (blocked3 / sum);
+                if (overlay1 > 0) c.cellPottential.overlay1 += (overlay1 / sum);
+                if (overlay2 > 0) c.cellPottential.overlay2 += (overlay2 / sum);
+                if (overlay3 > 0) c.cellPottential.overlay3 += (overlay3 / sum);
+                if (somethingWrong > 0) c.cellPottential.somethingWrong += (somethingWrong / sum);
+            }
+
+
+
+
+
+            public void calculateBlocked(GridCell c)
+            {
+                if (c.Blocked != null)
+                {
+                    if (!c.Blocked.Destroyable) obstacle++;
+
+                    else
+                    {
+                        if (c.setProtection == 1) blocked1++;
+                        else if (c.setProtection == 2) blocked2++;
+                        else if (c.setProtection == 3) blocked3++;
+                        else somethingWrong++;
+                    }
+                }
+
+                else somethingWrong++;
+            }
+
+            public void calculateBlockedAndOverlay(GridCell c)
+            {
+                if (c.Blocked != null)
+                {
+                    if (!c.Blocked.Destroyable) obstacle++;
+
+                    else
+                    {
+                        if (c.setProtection == 1) blocked1++;
+                        else if (c.setProtection == 2) blocked2++;
+                        else if (c.setProtection == 3) blocked3++;
+                        else somethingWrong++;
+                    }
+
+                }
+
+                else if (c.Overlay != null)
+                {
+                    if (c.setProtection == 1) overlay1++;
+                    else if (c.setProtection == 2) overlay2++;
+                    else if (c.setProtection == 3) overlay3++;
+                    else somethingWrong++;
+                }
+
+                else somethingWrong++;
+            }
+            
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
         #endregion grids
@@ -544,7 +668,7 @@ namespace Mkey
                     else
                     {
 
-                        Match3Helper m3h = new Match3Helper(g, CurTargets);
+                        //Match3Helper m3h = new Match3Helper(g, CurTargets);
 
                         g.FillGrid(true);
 
@@ -610,6 +734,24 @@ namespace Mkey
                             AdditionalGrids.Add(item, mG);
                         }
                     }
+
+
+
+
+                /////////////////////////////////////////////
+                //for(int i=0;i< MainGrid.Cells.Count;i++)
+                //{
+                //    if (MainGrid.Cells[i].Overlay != null || MainGrid.Cells[i].Blocked != null)
+                //    {
+                //        MainGrid.Cells[i].BlockMovement = false;
+                //    }
+                //}
+
+
+
+
+
+
             }
 
 //-----------------------------------------------------------------------------------//
@@ -716,7 +858,8 @@ namespace Mkey
 
                 g.Cells.ForEach((c) =>
                 {
-                    if (!c.Blocked && !c.IsDisabled && !c.MovementBlocked)
+                    //if (!c.Blocked && !c.IsDisabled && !c.MovementBlocked && !c.Overlay)
+                    if (!c.Blocked && !c.IsDisabled && !c.MovementBlocked && !c.MovementBlocked)
                     {
                         int length = int.MaxValue;
                         List<GridCell> path = null;
@@ -1990,6 +2133,11 @@ namespace Mkey
 
             for (int i = 0; i < mgList.Count; i++)
             {
+
+
+
+
+
                 if (mgList[i] != null)
                 {
                     MatchGroup m = mgList[i];
@@ -2168,6 +2316,1178 @@ namespace Mkey
             if (ishave) return true;
             else return false;
         }
+
+        public void estimateBlocked(GridCell gc, GridCell c)
+        {
+            if (gc.Blocked != null)
+            {
+                if (!gc.Blocked.Destroyable) c.cellPottential.obstacle++;
+
+                else
+                {
+                    if (gc.setProtection == 1) c.cellPottential.blocked1++;
+                    else if (gc.setProtection == 2) c.cellPottential.blocked2++;
+                    else if (gc.setProtection == 3) c.cellPottential.blocked3++;
+                    else c.cellPottential.somethingWrong++;
+                }
+
+            }
+            else c.cellPottential.somethingWrong++;
+        }
+
+
+
+
+        public void cntBlocked(GridCell gc, GridCell c)
+        {
+            if (gc.Blocked != null)
+            {
+                if (!gc.Blocked.Destroyable) c.obstacle++;
+
+                else
+                {
+                    if (gc.setProtection == 1) c.blocked1++;
+                    else if (gc.setProtection == 2) c.blocked2++;
+                    else if (gc.setProtection == 3) c.blocked3++;
+                    else c.somethingWrong++;
+                }
+
+            }
+            else c.somethingWrong++;
+        }
+
+        public void cntHindrance11s(GridCell c, GridCell c0)
+        {
+            if (c.Blocked != null)
+            {
+                if (!c.Blocked.Destroyable) c0.obstacle++;
+
+                else
+                {
+                    if (c.setProtection == 1) c0.blocked1++;
+                    else if (c.setProtection == 2) c0.blocked2++;
+                    else if (c.setProtection == 3) c0.blocked3++;
+                    else c0.somethingWrong++;
+                }
+
+            }
+
+            else if (c.Overlay != null)
+            {
+                if (c.setProtection == 1) c0.overlay1++;
+                else if (c.setProtection == 2) c0.overlay2++;
+                else if (c.setProtection == 3) c0.overlay3++;
+                else c0.somethingWrong++;
+            }
+
+            else c0.somethingWrong++;
+        }
+
+        public void cntHindrances(GridCell c)
+        {
+            if (c.Blocked != null)
+            {
+                if (!c.Blocked.Destroyable) c.obstacle++;
+
+                else
+                {
+                    if (c.setProtection == 1) c.blocked1++;
+                    else if (c.setProtection == 2) c.blocked2++;
+                    else if (c.setProtection == 3) c.blocked3++;
+                    else c.somethingWrong++;
+                }
+
+            }
+
+            else if (c.Overlay != null)
+            {
+                if (c.setProtection == 1) c.overlay1++;
+                else if (c.setProtection == 2) c.overlay2++;
+                else if (c.setProtection == 3) c.overlay3++;
+                else c.somethingWrong++;
+            }
+
+            else c.somethingWrong++;
+        }
+
+
+        public void countHindrance(GridCell c)
+        {
+            if (c.Blocked != null)
+            {
+                if (!c.Blocked.Destroyable) c.cellPottential.obstacle++;
+
+                else
+                {
+                    if (c.setProtection == 1) c.cellPottential.blocked1++;
+                    else if (c.setProtection == 2) c.cellPottential.blocked2++;
+                    else if (c.setProtection == 3) c.cellPottential.blocked3++;
+                    else c.cellPottential.somethingWrong++;
+                }
+
+            }
+
+            else if (c.Overlay != null)
+            {
+                if (c.setProtection == 1) c.cellPottential.overlay1++;
+                else if (c.setProtection == 2) c.cellPottential.overlay2++;
+                else if (c.setProtection == 3) c.cellPottential.overlay3++;
+                else c.cellPottential.somethingWrong++;
+            }
+
+            else c.cellPottential.somethingWrong++;
+        }
+
+
+        public void checkMapHindrance(GridCell L, GridCell T, GridCell C, GridCell c0)
+        {
+            if (!L.IsMatchableBlock()) cntBlocked(L, c0);
+            if (!T.IsMatchableBlock()) cntBlocked(T, c0);
+            if (!C.IsDraggable()) cntHindrance11s(C, c0);
+            if (!c0.IsDraggable()) cntHindrances(c0);
+        }
+
+        public void checkHindrance(GridCell L, GridCell T, GridCell C)
+        {
+            if (!L.IsMatchableBlock()) cntBlocked(L,C);
+            if (!T.IsMatchableBlock()) cntBlocked(T, C);
+            if (!C.IsDraggable()) cntHindrances(C);
+        }
+
+        public void checkPerHindrance(GridCell L, GridCell T, GridCell C)
+        {
+            if (!L.IsMatchableBlock()) estimateBlocked(L, C);
+            if (!T.IsMatchableBlock()) estimateBlocked(T, C);
+            if (!C.IsDraggable()) cntHindrances(C);
+        }
+
+
+
+
+        public void countPottential(MatchGrid grid, int idx)
+        {
+            InterferenceRate interferenceRate = new InterferenceRate();
+
+
+            GridCell c0 = grid.Cells[idx];
+            int X0 = c0.Column;
+            int Y0 = c0.Row;
+
+            GridCell L = null;
+            GridCell T = null;
+
+            //   1 X X
+            // 3 0 L T X
+            //   2 X X
+            L = grid[Y0, X0 + 1];
+            T = grid[Y0, X0 + 2];
+
+            if (L != null && T != null)
+            {
+                int X1 = X0; int Y1 = Y0 - 1;
+                GridCell c1 = grid[Y1, X1];
+                if (c1 != null)
+                {
+                    if (c0.IsDraggable() && L.IsMatchableBlock() && T.IsMatchableBlock() && c1.IsDraggable()) grid[Y0, X0].cellPottential.map++;
+
+                    else
+                    {
+                        interferenceRate = new InterferenceRate();
+
+                        if (!c0.IsDraggable()) interferenceRate.calculateBlockedAndOverlay(c0);
+                        if (!L.IsMatchableBlock()) interferenceRate.calculateBlocked(L);
+                        if (!T.IsMatchableBlock()) interferenceRate.calculateBlocked(T);
+                        if (!c1.IsDraggable()) interferenceRate.calculateBlockedAndOverlay(c1);
+
+                        interferenceRate.calculatePerInterferenceRate(c0);
+                    }
+                }
+
+                int X2 = X0; int Y2 = Y0 + 1;
+                GridCell c2 = grid[Y2, X2];
+                if (c2 != null)
+                {
+                    if (c0.IsDraggable() && L.IsMatchableBlock() && T.IsMatchableBlock() && c2.IsDraggable()) grid[Y0, X0].cellPottential.map++;
+
+                    else
+                    {
+                        interferenceRate = new InterferenceRate();
+
+                        if (!c0.IsDraggable()) interferenceRate.calculateBlockedAndOverlay(c0);
+                        if (!L.IsMatchableBlock()) interferenceRate.calculateBlocked(L);
+                        if (!T.IsMatchableBlock()) interferenceRate.calculateBlocked(T);
+                        if (!c2.IsDraggable()) interferenceRate.calculateBlockedAndOverlay(c2);
+
+                        interferenceRate.calculatePerInterferenceRate(c0);
+                    }
+                }
+
+                int X3 = X0 - 1; int Y3 = Y0;
+                GridCell c3 = grid[Y3, X3];
+                if (c3 != null)
+                {
+                    if (c0.IsDraggable() && L.IsMatchableBlock() && T.IsMatchableBlock() && c3.IsDraggable()) grid[Y0, X0].cellPottential.map++;
+
+                    else
+                    {
+                        interferenceRate = new InterferenceRate();
+
+                        if (!c0.IsDraggable()) interferenceRate.calculateBlockedAndOverlay(c0);
+                        if (!L.IsMatchableBlock()) interferenceRate.calculateBlocked(L);
+                        if (!T.IsMatchableBlock()) interferenceRate.calculateBlocked(T);
+                        if (!c3.IsDraggable()) interferenceRate.calculateBlockedAndOverlay(c3);
+
+                        interferenceRate.calculatePerInterferenceRate(c0);
+                    }
+                }
+            }
+
+            //    X X 4
+            //  X L T 0 6
+            //    X X 5
+            L = grid[Y0, X0 - 1];
+            T = grid[Y0, X0 - 2];
+
+            if (L != null && T != null)
+            {
+                int X4 = X0; int Y4 = Y0 - 1;
+                GridCell c4 = grid[Y4, X4];
+                if (c4 != null)
+                {
+                    if (c0.IsDraggable() && L.IsMatchableBlock() && T.IsMatchableBlock() && c4.IsDraggable()) grid[Y0, X0].cellPottential.map++;
+
+                    else
+                    {
+                        interferenceRate = new InterferenceRate();
+
+                        if (!c0.IsDraggable()) interferenceRate.calculateBlockedAndOverlay(c0);
+                        if (!L.IsMatchableBlock()) interferenceRate.calculateBlocked(L);
+                        if (!T.IsMatchableBlock()) interferenceRate.calculateBlocked(T);
+                        if (!c4.IsDraggable()) interferenceRate.calculateBlockedAndOverlay(c4);
+
+                        interferenceRate.calculatePerInterferenceRate(c0);
+                    }
+                }
+
+                int X5 = X0; int Y5 = Y0 + 1;
+                GridCell c5 = grid[Y5, X5];
+                if (c5 != null)
+                {
+                    if (c0.IsDraggable() && L.IsMatchableBlock() && T.IsMatchableBlock() && c5.IsDraggable()) grid[Y0, X0].cellPottential.map++;
+
+                    else
+                    {
+                        interferenceRate = new InterferenceRate();
+
+                        if (!c0.IsDraggable()) interferenceRate.calculateBlockedAndOverlay(c0);
+                        if (!L.IsMatchableBlock()) interferenceRate.calculateBlocked(L);
+                        if (!T.IsMatchableBlock()) interferenceRate.calculateBlocked(T);
+                        if (!c5.IsDraggable()) interferenceRate.calculateBlockedAndOverlay(c5);
+
+                        interferenceRate.calculatePerInterferenceRate(c0);
+                    }
+                }
+
+                int X6 = X0 + 1; int Y6 = Y0;
+                GridCell c6 = grid[Y6, X6];
+                if (c6 != null)
+                {
+                    if (c0.IsDraggable() && L.IsMatchableBlock() && T.IsMatchableBlock() && c6.IsDraggable()) grid[Y0, X0].cellPottential.map++;
+
+                    else
+                    {
+                        interferenceRate = new InterferenceRate();
+
+                        if (!c0.IsDraggable()) interferenceRate.calculateBlockedAndOverlay(c0);
+                        if (!L.IsMatchableBlock()) interferenceRate.calculateBlocked(L);
+                        if (!T.IsMatchableBlock()) interferenceRate.calculateBlocked(T);
+                        if (!c6.IsDraggable()) interferenceRate.calculateBlockedAndOverlay(c6);
+
+                        interferenceRate.calculatePerInterferenceRate(c0);
+                    }
+                }
+            }
+
+            //    X 7 X
+            //  X L 0 T X
+            //    X 8 X
+            L = grid[Y0, X0 - 1];
+            T = grid[Y0, X0 + 1];
+            if (L != null && T != null)
+            {
+                int X7 = L.Column + 1; int Y7 = L.Row - 1;
+                GridCell c7 = grid[Y7, X7];
+                if (c7 != null)
+                {
+                    if (c0.IsDraggable() && L.IsMatchableBlock() && T.IsMatchableBlock() && c7.IsDraggable()) grid[Y0, X0].cellPottential.map++;
+
+                    else
+                    {
+                        interferenceRate = new InterferenceRate();
+
+                        if (!c0.IsDraggable()) interferenceRate.calculateBlockedAndOverlay(c0);
+                        if (!L.IsMatchableBlock()) interferenceRate.calculateBlocked(L);
+                        if (!T.IsMatchableBlock()) interferenceRate.calculateBlocked(T);
+                        if (!c7.IsDraggable()) interferenceRate.calculateBlockedAndOverlay(c7);
+
+                        interferenceRate.calculatePerInterferenceRate(c0);
+                    }
+                }
+
+                int X8 = L.Column + 1; int Y8 = L.Row + 1;
+                GridCell c8 = grid[Y8, X8];
+                if (c8 != null)
+                {
+                    if (c0.IsDraggable() && L.IsMatchableBlock() && T.IsMatchableBlock() && c8.IsDraggable()) grid[Y0, X0].cellPottential.map++;
+
+                    else
+                    {
+                        interferenceRate = new InterferenceRate();
+
+                        if (!c0.IsDraggable()) interferenceRate.calculateBlockedAndOverlay(c0);
+                        if (!L.IsMatchableBlock()) interferenceRate.calculateBlocked(L);
+                        if (!T.IsMatchableBlock()) interferenceRate.calculateBlocked(T);
+                        if (!c8.IsDraggable()) interferenceRate.calculateBlockedAndOverlay(c8);
+
+                        interferenceRate.calculatePerInterferenceRate(c8);
+                    }
+                }
+            }
+
+
+            //     X 
+            //   X T X 
+            //   X L X
+            //   1 0 2
+            //     3
+            L = grid[Y0 - 1, X0];
+            T = grid[Y0 - 2, X0];
+
+            if (L != null && T != null)
+            {
+                int X1 = X0 - 1; int Y1 = Y0;
+                GridCell c1 = grid[Y1, X1];
+                if (c1 != null)
+                {
+                    if (c0.IsDraggable() && L.IsMatchableBlock() && T.IsMatchableBlock() && c1.IsDraggable()) grid[Y0, X0].cellPottential.map++;
+
+                    else
+                    {
+                        interferenceRate = new InterferenceRate();
+
+                        if (!c0.IsDraggable()) interferenceRate.calculateBlockedAndOverlay(c0);
+                        if (!L.IsMatchableBlock()) interferenceRate.calculateBlocked(L);
+                        if (!T.IsMatchableBlock()) interferenceRate.calculateBlocked(T);
+                        if (!c1.IsDraggable()) interferenceRate.calculateBlockedAndOverlay(c1);
+
+                        interferenceRate.calculatePerInterferenceRate(c0);
+                    }
+                }
+
+                int X2 = X0 + 1; int Y2 = Y0;
+                GridCell c2 = grid[Y2, X2];
+                if (c2 != null)
+                {
+                    if (c0.IsDraggable() && L.IsMatchableBlock() && T.IsMatchableBlock() && c2.IsDraggable()) grid[Y0, X0].cellPottential.map++;
+
+                    else
+                    {
+                        interferenceRate = new InterferenceRate();
+
+                        if (!c0.IsDraggable()) interferenceRate.calculateBlockedAndOverlay(c0);
+                        if (!L.IsMatchableBlock()) interferenceRate.calculateBlocked(L);
+                        if (!T.IsMatchableBlock()) interferenceRate.calculateBlocked(T);
+                        if (!c2.IsDraggable()) interferenceRate.calculateBlockedAndOverlay(c2);
+
+                        interferenceRate.calculatePerInterferenceRate(c0);
+                    }
+                }
+
+                int X3 = X0; int Y3 = Y0 + 1;
+                GridCell c3 = grid[Y3, X3];
+                if (c3 != null)
+                {
+                    if (c0.IsDraggable() && L.IsMatchableBlock() && T.IsMatchableBlock() && c3.IsDraggable()) grid[Y0, X0].cellPottential.map++;
+
+                    else
+                    {
+                        interferenceRate = new InterferenceRate();
+
+                        if (!c0.IsDraggable()) interferenceRate.calculateBlockedAndOverlay(c0);
+                        if (!L.IsMatchableBlock()) interferenceRate.calculateBlocked(L);
+                        if (!T.IsMatchableBlock()) interferenceRate.calculateBlocked(T);
+                        if (!c3.IsDraggable()) interferenceRate.calculateBlockedAndOverlay(c3);
+
+                        interferenceRate.calculatePerInterferenceRate(c0);
+                    }
+                }
+            }
+
+            //     6
+            //   4 0 5
+            //   X T X 
+            //   X L X
+            //     X 
+            L = grid[Y0 + 2, X0];
+            T = grid[Y0 + 1, X0];
+            if (L != null && T != null)
+            {
+                int X4 = T.Column - 1; int Y4 = T.Row - 1;
+                GridCell c4 = grid[Y4, X4];
+                if (c4 != null)
+                {
+                    if (c0.IsDraggable() && L.IsMatchableBlock() && T.IsMatchableBlock() && c4.IsDraggable()) grid[Y0, X0].cellPottential.map++;
+
+                    else
+                    {
+                        interferenceRate = new InterferenceRate();
+
+                        if (!c0.IsDraggable()) interferenceRate.calculateBlockedAndOverlay(c0);
+                        if (!L.IsMatchableBlock()) interferenceRate.calculateBlocked(L);
+                        if (!T.IsMatchableBlock()) interferenceRate.calculateBlocked(T);
+                        if (!c4.IsDraggable()) interferenceRate.calculateBlockedAndOverlay(c4);
+
+                        interferenceRate.calculatePerInterferenceRate(c0);
+                    }
+                }
+                int X5 = T.Column + 1; int Y5 = T.Row - 1;
+                GridCell c5 = grid[Y5, X5];
+                if (c5 != null)
+                {
+                    if (c0.IsDraggable() && L.IsMatchableBlock() && T.IsMatchableBlock() && c5.IsDraggable()) grid[Y0, X0].cellPottential.map++;
+
+                    else
+                    {
+                        interferenceRate = new InterferenceRate();
+
+                        if (!c0.IsDraggable()) interferenceRate.calculateBlockedAndOverlay(c0);
+                        if (!L.IsMatchableBlock()) interferenceRate.calculateBlocked(L);
+                        if (!T.IsMatchableBlock()) interferenceRate.calculateBlocked(T);
+                        if (!c5.IsDraggable()) interferenceRate.calculateBlockedAndOverlay(c5);
+
+                        interferenceRate.calculatePerInterferenceRate(c0);
+                    }
+                }
+
+                int X6 = T.Column; int Y6 = T.Row - 2;
+                GridCell c6 = grid[Y6, X6];
+                if (c6 != null)
+                {
+                    if (c0.IsDraggable() && L.IsMatchableBlock() && T.IsMatchableBlock() && c6.IsDraggable()) grid[Y0, X0].cellPottential.map++;
+
+                    else
+                    {
+                        interferenceRate = new InterferenceRate();
+
+                        if (!c0.IsDraggable()) interferenceRate.calculateBlockedAndOverlay(c0);
+                        if (!L.IsMatchableBlock()) interferenceRate.calculateBlocked(L);
+                        if (!T.IsMatchableBlock()) interferenceRate.calculateBlocked(T);
+                        if (!c6.IsDraggable()) interferenceRate.calculateBlockedAndOverlay(c6);
+
+                        interferenceRate.calculatePerInterferenceRate(c0);
+                    }
+                }
+            }
+
+            //      X
+            //    X T X
+            //    7 0 8 
+            //    X L X
+            //      X
+            L = grid[Y0 + 1, X0];
+            T = grid[Y0 - 1, X0];
+
+            if (L != null && T != null)
+            {
+                int X7 = X0 - 1; int Y7 = Y0;
+                GridCell c7 = grid[Y7, X7];
+                if (c7 != null)
+                {
+                    if (c0.IsDraggable() && L.IsMatchableBlock() && T.IsMatchableBlock() && c7.IsDraggable()) grid[Y0, X0].cellPottential.map++;
+
+                    else
+                    {
+                        interferenceRate = new InterferenceRate();
+
+                        if (!c0.IsDraggable()) interferenceRate.calculateBlockedAndOverlay(c0);
+                        if (!L.IsMatchableBlock()) interferenceRate.calculateBlocked(L);
+                        if (!T.IsMatchableBlock()) interferenceRate.calculateBlocked(T);
+                        if (!c7.IsDraggable()) interferenceRate.calculateBlockedAndOverlay(c7);
+
+                        interferenceRate.calculatePerInterferenceRate(c0);
+                    }
+                }
+
+                int X8 = X0 + 1; int Y8 = Y0;
+                GridCell c8 = grid[Y8, X8];
+                if (c8 != null)
+                {
+                    if (c0.IsDraggable() && L.IsMatchableBlock() && T.IsMatchableBlock() && c8.IsDraggable()) grid[Y0, X0].cellPottential.map++;
+
+                    else
+                    {
+                        interferenceRate = new InterferenceRate();
+
+                        if (!c0.IsDraggable()) interferenceRate.calculateBlockedAndOverlay(c0);
+                        if (!L.IsMatchableBlock()) interferenceRate.calculateBlocked(L);
+                        if (!T.IsMatchableBlock()) interferenceRate.calculateBlocked(T);
+                        if (!c8.IsDraggable()) interferenceRate.calculateBlockedAndOverlay(c8);
+
+                        interferenceRate.calculatePerInterferenceRate(c8);
+                    }
+                }
+            }
+            
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        public void cntMapPerPottentials(MatchGrid grid, int idx)
+        {
+            //bool haveNeigborBreakableObstacle = false;
+            //bool includeMatchObstacle = false;
+
+            GridCell c0 = grid.Cells[idx];
+            int X0 = c0.Column;
+            int Y0 = c0.Row;
+
+            GridCell L = null;
+            GridCell T = null;
+
+            //   1 X X
+            // 3 0 L T X
+            //   2 X X
+            L = grid[Y0, X0 + 1];
+            T = grid[Y0, X0 + 2];
+
+            if (L != null && T != null)
+            {
+                int X1 = X0; int Y1 = Y0 - 1;
+                GridCell c1 = grid[Y1, X1];
+                if (c1 != null)
+                {
+                    if (c0.IsDraggable() && L.IsMatchableBlock() && T.IsMatchableBlock() && c1.IsDraggable()) grid[Y0, X0].matchFromSwapPotential++;
+                    else checkMapHindrance(L, T, c1, c0);
+
+                }
+
+                int X2 = X0; int Y2 = Y0 + 1;
+                GridCell c2 = grid[Y2, X2];
+                if (c2 != null)
+                {
+                    if (c0.IsDraggable() && L.IsMatchableBlock() && T.IsMatchableBlock() && c2.IsDraggable()) grid[Y0, X0].matchFromSwapPotential++;
+
+                    else checkMapHindrance(L, T, c2, c0);
+                }
+
+                int X3 = X0 - 1; int Y3 = Y0;
+                GridCell c3 = grid[Y3, X3];
+                if (c3 != null)
+                {
+                    if (c0.IsDraggable() && L.IsMatchableBlock() && T.IsMatchableBlock() && c3.IsDraggable()) grid[Y0, X0].matchFromSwapPotential++;
+
+                    else checkMapHindrance(L, T, c3, c0);
+                }
+            }
+
+            //    X X 4
+            //  X L T 0 6
+            //    X X 5
+            L = grid[Y0, X0 - 1];
+            T = grid[Y0, X0 - 2];
+
+            if (L != null && T != null)
+            {
+                int X4 = X0; int Y4 = Y0 - 1;
+                GridCell c4 = grid[Y4, X4];
+                if (c4 != null)
+                {
+                    if (c0.IsDraggable() && L.IsMatchableBlock() && T.IsMatchableBlock() && c4.IsDraggable()) grid[Y0, X0].matchFromSwapPotential++;
+
+                    else checkMapHindrance(L, T, c4, c0);
+                }
+
+                int X5 = X0; int Y5 = Y0 + 1;
+                GridCell c5 = grid[Y5, X5];
+                if (c5 != null)
+                {
+                    if (c0.IsDraggable() && L.IsMatchableBlock() && T.IsMatchableBlock() && c5.IsDraggable()) grid[Y0, X0].matchFromSwapPotential++;
+
+                    else checkMapHindrance(L, T, c5, c0);
+                }
+
+                int X6 = X0 + 1; int Y6 = Y0;
+                GridCell c6 = grid[Y6, X6];
+                if (c6 != null)
+                {
+                    if (c0.IsDraggable() && L.IsMatchableBlock() && T.IsMatchableBlock() && c6.IsDraggable()) grid[Y0, X0].matchFromSwapPotential++;
+
+                    else checkMapHindrance(L, T, c6, c0);
+                }
+            }
+
+            //    X 7 X
+            //  X L 0 T X
+            //    X 8 X
+            L = grid[Y0, X0 - 1];
+            T = grid[Y0, X0 + 1];
+            if (L != null && T != null)
+            {
+                int X7 = L.Column + 1; int Y7 = L.Row - 1;
+                GridCell c7 = grid[Y7, X7];
+                if (c7 != null)
+                {
+                    if (c0.IsDraggable() && L.IsMatchableBlock() && T.IsMatchableBlock() && c7.IsDraggable()) grid[Y0, X0].matchFromSwapPotential++;
+
+                    else checkMapHindrance(L, T, c7, c0);
+                }
+
+                int X8 = L.Column + 1; int Y8 = L.Row + 1;
+                GridCell c8 = grid[Y8, X8];
+                if (c8 != null)
+                {
+                    if (c0.IsDraggable() && L.IsMatchableBlock() && T.IsMatchableBlock() && c8.IsDraggable()) grid[Y0, X0].matchFromSwapPotential++;
+
+                    else checkMapHindrance(L, T, c8, c0);
+                }
+            }
+
+
+            //     X 
+            //   X T X 
+            //   X L X
+            //   1 0 2
+            //     3
+            L = grid[Y0 - 1, X0];
+            T = grid[Y0 - 2, X0];
+
+            if (L != null && T != null)
+            {
+                int X1 = X0 - 1; int Y1 = Y0;
+                GridCell c1 = grid[Y1, X1];
+                if (c1 != null)
+                {
+                    if (c0.IsDraggable() && L.IsMatchableBlock() && T.IsMatchableBlock() && c1.IsDraggable()) grid[Y0, X0].matchFromSwapPotential++;
+                    else checkMapHindrance(L, T, c1, c0);
+                }
+
+                int X2 = X0 + 1; int Y2 = Y0;
+                GridCell c2 = grid[Y2, X2];
+                if (c2 != null)
+                {
+                    if (c0.IsDraggable() && L.IsMatchableBlock() && T.IsMatchableBlock() && c2.IsDraggable()) grid[Y0, X0].matchFromSwapPotential++;
+                    else checkMapHindrance(L, T, c2, c0);
+                }
+
+                int X3 = X0; int Y3 = Y0 + 1;
+                GridCell c3 = grid[Y3, X3];
+                if (c3 != null)
+                {
+                    if (c0.IsDraggable() && L.IsMatchableBlock() && T.IsMatchableBlock() && c3.IsDraggable()) grid[Y0, X0].matchFromSwapPotential++;
+                    else checkMapHindrance(L, T, c3, c0);
+                }
+            }
+
+            //     6
+            //   4 0 5
+            //   X T X 
+            //   X L X
+            //     X 
+            L = grid[Y0 + 2, X0];
+            T = grid[Y0 + 1, X0];
+            if (L != null && T != null)
+            {
+                int X4 = T.Column - 1; int Y4 = T.Row - 1;
+                GridCell c4 = grid[Y4, X4];
+                if (c4 != null)
+                {
+                    if (c0.IsDraggable() && L.IsMatchableBlock() && T.IsDraggable() && c4.IsDraggable()) grid[Y0, X0].matchFromSwapPotential++;
+                    else checkMapHindrance(L, T, c4, c0);
+                }
+
+                int X5 = T.Column + 1; int Y5 = T.Row - 1;
+                GridCell c5 = grid[Y5, X5];
+                if (c5 != null)
+                {
+                    if (c0.IsDraggable() && L.IsMatchableBlock() && T.IsMatchableBlock() && c5.IsDraggable()) grid[Y0, X0].matchFromSwapPotential++;
+                    else checkMapHindrance(L, T, c5, c0);
+                }
+
+                int X6 = T.Column; int Y6 = T.Row - 2;
+                GridCell c6 = grid[Y6, X6];
+                if (c6 != null)
+                {
+                    if (c0.IsDraggable() && L.IsMatchableBlock() && T.IsMatchableBlock() && c6.IsDraggable()) grid[Y0, X0].matchFromSwapPotential++;
+                    else checkMapHindrance(L, T, c6, c0);
+                }
+            }
+
+            //      X
+            //    X T X
+            //    7 0 8 
+            //    X L X
+            //      X
+            L = grid[Y0 + 1, X0];
+            T = grid[Y0 - 1, X0];
+
+            if (L != null && T != null)
+            {
+                int X7 = X0 - 1; int Y7 = Y0;
+                GridCell c7 = grid[Y7, X7];
+                if (c7 != null)
+                {
+                    if (c0.IsDraggable() && L.IsMatchableBlock() && T.IsMatchableBlock() && c7.IsDraggable()) grid[Y0, X0].matchFromSwapPotential++;
+                    else checkMapHindrance(L, T, c7, c0);
+                }
+
+                int X8 = X0 + 1; int Y8 = Y0;
+                GridCell c8 = grid[Y8, X8];
+                if (c8 != null)
+                {
+                    if (c0.IsDraggable() && L.IsMatchableBlock() && T.IsMatchableBlock() && c8.IsDraggable()) grid[Y0, X0].matchFromSwapPotential++;
+                    else checkMapHindrance(L, T, c8, c0);
+                }
+            }
+            
+        }
+
+
+
+        public void cntPerPottentials(MatchGrid grid, int idx)
+        {
+            //bool haveNeigborBreakableObstacle = false;
+            //bool includeMatchObstacle = false;
+
+            GridCell c0 = grid.Cells[idx];
+            int X0 = c0.Column;
+            int Y0 = c0.Row;
+
+            GridCell L = null;
+            GridCell T = null;
+
+            if (c0.DynamicObject != null && c0.IsDraggable())
+            {
+                //   1 X X
+                // 3 0 L T X
+                //   2 X X
+                L = grid[Y0, X0 + 1];
+                T = grid[Y0, X0 + 2];
+
+                if(L != null && T != null)
+                {
+                    int X1 = X0; int Y1 = Y0 - 1;
+                    GridCell c1 = grid[Y1, X1];
+                    if(c1 != null)
+                    {
+                        if (L.IsMatchableBlock() && T.IsMatchableBlock() && c1.IsDraggable()) grid[Y0, X0].matchFromSwapPotential++;
+                        else checkHindrance(L, T, c1);
+                    }
+
+                    int X2 = X0; int Y2 = Y0 + 1;
+                    GridCell c2 = grid[Y2, X2];
+                    if (c2 != null)
+                    {
+                        if (L.IsMatchableBlock() && T.IsMatchableBlock() && c2.IsDraggable()) grid[Y0, X0].matchFromSwapPotential++;
+                        else checkHindrance(L, T, c2);
+                    }
+
+                    int X3 = X0 - 1; int Y3 = Y0;
+                    GridCell c3 = grid[Y3, X3];
+                    if (c3 != null)
+                    {
+                        if (L.IsMatchableBlock() && T.IsMatchableBlock() && c3.IsDraggable()) grid[Y0, X0].matchFromSwapPotential++;
+                        else checkHindrance(L, T, c3);
+                    }
+                }
+
+                //    X X 4
+                //  X L T 0 6
+                //    X X 5
+                L = grid[Y0, X0 - 1];
+                T = grid[Y0, X0 - 2];
+
+                if (L != null && T != null)
+                {
+                    int X4 = X0; int Y4 = Y0 - 1;
+                    GridCell c4 = grid[Y4, X4];
+                    if (c4 != null)
+                    {
+                        if (L.IsMatchableBlock() && T.IsMatchableBlock() && c4.IsDraggable()) grid[Y0, X0].matchFromSwapPotential++;
+                        else checkHindrance(L, T, c4);
+                    }
+
+                    int X5 = X0; int Y5 = Y0 + 1;
+                    GridCell c5 = grid[Y5, X5];
+                    if (c5 != null)
+                    {
+                        if (L.IsMatchableBlock() && T.IsMatchableBlock() && c5.IsDraggable()) grid[Y0, X0].matchFromSwapPotential++;
+                        else checkHindrance(L, T, c5);
+                    }
+
+                    int X6 = X0 + 1; int Y6 = Y0;
+                    GridCell c6 = grid[Y6, X6];
+                    if (c6 != null)
+                    {
+                        if (L.IsMatchableBlock() && T.IsMatchableBlock() && c6.IsDraggable()) grid[Y0, X0].matchFromSwapPotential++;
+                        else checkHindrance(L, T, c6);
+                    }
+                }
+
+                //    X 7 X
+                //  X L 0 T X
+                //    X 8 X
+                L = grid[Y0, X0 - 1];
+                T = grid[Y0, X0 + 1];
+                if (L != null && T != null)
+                {
+                    int X7 = L.Column + 1; int Y7 = L.Row - 1;
+                    GridCell c7 = grid[Y7, X7];
+                    if (c7 != null)
+                    {
+                        if (L.IsMatchableBlock() && T.IsMatchableBlock() && c7.IsDraggable()) grid[Y0, X0].matchFromSwapPotential++;
+                        else checkHindrance(L, T, c7);
+                    }
+
+                    int X8 = L.Column + 1; int Y8 = L.Row + 1;
+                    GridCell c8 = grid[Y8, X8];
+                    if (c8 != null)
+                    {
+                        if (L.IsMatchableBlock() && T.IsMatchableBlock() && c8.IsDraggable()) grid[Y0, X0].matchFromSwapPotential++;
+                        else checkHindrance(L, T, c8);
+                    }
+                }
+
+
+                //     X 
+                //   X T X 
+                //   X L X
+                //   1 0 2
+                //     3
+                L = grid[Y0 - 1, X0];
+                T = grid[Y0 - 2, X0];
+
+                if (L != null && T != null)
+                {
+                    int X1 = X0 - 1; int Y1 = Y0;
+                    GridCell c1 = grid[Y1, X1];
+                    if (c1 != null)
+                    {
+                        if (L.IsMatchableBlock() && T.IsMatchableBlock() && c1.IsDraggable()) grid[Y0, X0].matchFromSwapPotential++;
+                        else checkHindrance(L, T, c1);
+                    }
+
+                    int X2 = X0 + 1; int Y2 = Y0;
+                    GridCell c2 = grid[Y2, X2];
+                    if (c2 != null)
+                    {
+                        if (L.IsMatchableBlock() && T.IsMatchableBlock() && c2.IsDraggable()) grid[Y0, X0].matchFromSwapPotential++;
+                        else checkHindrance(L, T, c2);
+                    }
+
+                    int X3 = X0; int Y3 = Y0 + 1;
+                    GridCell c3 = grid[Y3, X3];
+                    if (c3 != null)
+                    {
+                        if (L.IsMatchableBlock() && T.IsMatchableBlock() && c3.IsDraggable()) grid[Y0, X0].matchFromSwapPotential++;
+                        else checkHindrance(L, T, c3);
+                    }
+                }
+
+                //     6
+                //   4 0 5
+                //   X T X 
+                //   X L X
+                //     X 
+                L = grid[Y0 + 2, X0];
+                T = grid[Y0 + 1, X0];
+                if (L != null && T != null)
+                {
+                    int X4 = T.Column - 1; int Y4 = T.Row - 1;
+                    GridCell c4 = grid[Y4, X4];
+                    if (c4 != null)
+                    {
+                        if (L.IsMatchableBlock() && T.IsDraggable() && c4.IsDraggable()) grid[Y0, X0].matchFromSwapPotential++;
+                        else checkHindrance(L, T, c4);
+                    }
+
+                    int X5 = T.Column + 1; int Y5 = T.Row - 1;
+                    GridCell c5 = grid[Y5, X5];
+                    if (c5 != null)
+                    {
+                        if (L.IsMatchableBlock() && T.IsMatchableBlock() && c5.IsDraggable()) grid[Y0, X0].matchFromSwapPotential++;
+                        else checkHindrance(L, T, c5);
+                    }
+
+                    int X6 = T.Column; int Y6 = T.Row - 2;
+                    GridCell c6 = grid[Y6, X6];
+                    if (c6 != null)
+                    {
+                        if (L.IsMatchableBlock() && T.IsMatchableBlock() && c6.IsDraggable()) grid[Y0, X0].matchFromSwapPotential++;
+                        else checkHindrance(L, T, c6);
+                    }
+                }
+
+                //      X
+                //    X T X
+                //    7 0 8 
+                //    X L X
+                //      X
+                L = grid[Y0 + 1, X0];
+                T = grid[Y0 - 1, X0];
+
+                if (L != null && T != null)
+                {
+                    int X7 = X0 - 1; int Y7 = Y0;
+                    GridCell c7 = grid[Y7, X7];
+                    if (c7 != null)
+                    {
+                        if (L.IsMatchableBlock() && T.IsMatchableBlock() && c7.IsDraggable()) grid[Y0, X0].matchFromSwapPotential++;
+                        else checkHindrance(L, T, c7);
+                    }
+
+                    int X8 = X0 + 1; int Y8 = Y0;
+                    GridCell c8 = grid[Y8, X8];
+                    if (c8 != null)
+                    {
+                        if (L.IsMatchableBlock() && T.IsMatchableBlock() && c8.IsDraggable()) grid[Y0, X0].matchFromSwapPotential++;
+                        else checkHindrance(L, T, c8);
+                    }
+                }
+            }
+        }
+
+
+
+
+
+        public void cntPottential(MatchGrid grid, int idx)
+        {
+            //bool haveNeigborBreakableObstacle = false;
+            //bool includeMatchObstacle = false;
+
+            GridCell c0 = grid.Cells[idx];
+            int X0 = c0.Column;
+            int Y0 = c0.Row;
+
+            GridCell L = null;
+            GridCell T = null;
+
+            if (c0.DynamicObject != null)
+            {
+
+                //   1 X X
+                // 3 0 L T X
+                //   2 X X
+                L = grid[Y0, X0 + 1];
+                T = grid[Y0, X0 + 2];
+
+                if (L != null && L.IsDraggable() && T != null && T.IsDraggable())
+                {
+                    int X1 = X0; int Y1 = Y0 - 1;
+                    GridCell c1 = grid[Y1, X1];
+                    if ((c1 != null) && c1.IsDraggable())
+                    {
+                        grid[Y0, X0].matchFromSwapPotential++;
+                    }
+
+                    int X2 = X0; int Y2 = Y0 + 1;
+                    GridCell c2 = grid[Y2, X2];
+                    if ((c2 != null) && c2.IsDraggable())
+                    {
+                        grid[Y0, X0].matchFromSwapPotential++;
+                    }
+
+                    int X3 = X0 - 1; int Y3 = Y0;
+                    GridCell c3 = grid[Y3, X3];
+                    if ((c3 != null) && c3.IsDraggable())
+                    {
+                        grid[Y0, X0].matchFromSwapPotential++;
+                    }
+                }
+
+                //    X X 4
+                //  X L T 0 6
+                //    X X 5
+                L = grid[Y0, X0 - 1];
+                T = grid[Y0, X0 - 2];
+
+                if (L != null && L.IsDraggable() && T != null && T.IsDraggable())
+                {
+                    int X4 = X0; int Y4 = Y0 - 1;
+                    GridCell c4 = grid[Y4, X4];
+                    if ((c4 != null) && c4.IsDraggable())
+                    {
+                        grid[Y0, X0].matchFromSwapPotential++;
+                    }
+
+                    int X5 = X0; int Y5 = Y0 + 1;
+                    GridCell c5 = grid[Y5, X5];
+                    if ((c5 != null) && c5.IsDraggable())
+                    {
+                        grid[Y0, X0].matchFromSwapPotential++;
+                    }
+
+                    int X6 = X0 + 1; int Y6 = Y0;
+                    GridCell c6 = grid[Y6, X6];
+                    if ((c6 != null) && c6.IsDraggable())
+                    {
+                        grid[Y0, X0].matchFromSwapPotential++;
+                    }
+                }
+
+                //    X 7 X
+                //  X L 0 T X
+                //    X 8 X
+                L = grid[Y0, X0 - 1];
+                T = grid[Y0, X0 + 1];
+
+                if (L != null && L.IsDraggable() && T != null && T.IsDraggable())
+                {
+                    int X7 = L.Column + 1; int Y7 = L.Row - 1;
+                    GridCell c7 = grid[Y7, X7];
+                    if (c7 != null && c7.IsDraggable())
+                    {
+                        grid[Y0, X0].matchFromSwapPotential++;
+                    }
+
+
+                    int X8 = L.Column + 1; int Y8 = L.Row + 1;
+                    GridCell c8 = grid[Y8, X8];
+                    if (c8 != null && c8.IsDraggable())
+                    {
+                        grid[Y0, X0].matchFromSwapPotential++;
+                    }
+                }
+
+                //     X 
+                //   X T X 
+                //   X L X
+                //   1 0 2
+                //     3
+                L = grid[Y0 - 1, X0];
+                T = grid[Y0 - 2, X0];
+
+                if (L != null && L.IsDraggable() && T != null && T.IsDraggable())
+                {
+                    int X1 = X0 - 1; int Y1 = Y0;
+                    GridCell c1 = grid[Y1, X1];
+                    if ((c1 != null) && c1.IsDraggable())
+                    {
+                        grid[Y0, X0].matchFromSwapPotential++;
+                    }
+                    int X2 = X0 + 1; int Y2 = Y0;
+                    GridCell c2 = grid[Y2, X2];
+                    if ((c2 != null) && c2.IsDraggable())
+                    {
+                        grid[Y0, X0].matchFromSwapPotential++;
+                    }
+                    int X3 = X0; int Y3 = Y0 + 1;
+                    GridCell c3 = grid[Y3, X3];
+                    if ((c3 != null) && c3.IsDraggable())
+                    {
+                        grid[Y0, X0].matchFromSwapPotential++;
+                    }
+                }
+
+                //     6
+                //   4 0 5
+                //   X T X 
+                //   X L X
+                //     X 
+                L = grid[Y0 + 2, X0];
+                T = grid[Y0 + 1, X0];
+
+                if (L != null && L.IsDraggable() && T != null && T.IsDraggable())
+                {
+                    int X4 = T.Column - 1; int Y4 = T.Row - 1;
+                    GridCell c4 = grid[Y4, X4];
+                    if ((c4 != null) && c4.IsDraggable())
+                    {
+                        grid[Y0, X0].matchFromSwapPotential++;
+                    }
+                    int X5 = T.Column + 1; int Y5 = T.Row - 1;
+                    GridCell c5 = grid[Y5, X5];
+                    if ((c5 != null) && c5.IsDraggable())
+                    {
+                        grid[Y0, X0].matchFromSwapPotential++;
+                    }
+                    int X6 = T.Column; int Y6 = T.Row - 2;
+                    GridCell c6 = grid[Y6, X6];
+                    if ((c6 != null) && c6.IsDraggable())
+                    {
+                        grid[Y0, X0].matchFromSwapPotential++;
+                    }
+                }
+
+                //      X
+                //    X T X
+                //    7 0 8 
+                //    X L X
+                //      X
+                L = grid[Y0 + 1, X0];
+                T = grid[Y0 - 1, X0];
+
+                if (L != null && L.IsDraggable() && T != null && T.IsDraggable())
+                {
+                    int X7 = X0 - 1; int Y7 = Y0;
+                    GridCell c7 = grid[Y7, X7];
+                    if (c7 != null && c7.IsDraggable())
+                    {
+                        grid[Y0, X0].matchFromSwapPotential++;
+                    }
+
+                    int X8 = X0 + 1; int Y8 = Y0;
+                    GridCell c8 = grid[Y8, X8];
+                    if (c8 != null && c8.IsDraggable())
+                    {
+                        grid[Y0, X0].matchFromSwapPotential++;
+                    }
+                }
+            }
+        }
+
+
 
 
         public void cntMatchPottential(MatchGrid grid, int idx)

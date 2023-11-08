@@ -21,6 +21,162 @@ public class Block
     }
 
 }
+
+public class Pottential
+{
+    public int map;
+    public int notObstacle;
+
+    public int onlyObstacle;
+
+    public int onlyAllBlocked;
+    public int onlyBlocked1;
+    public int onlyBlocked2;
+    public int onlyBlocked3;
+
+    public int onlyAllOverlay;
+    public int onlyOverlay1;
+    public int onlyOverlay2;
+    public int onlyOverlay3;
+
+    public int obstacleAndAllBlocked;
+    public int obstacleAndBlocked1;
+    public int obstacleAndBlocked2;
+    public int obstacleAndBlocked3;
+
+    public int obstacleAndAllOverlay;
+    public int obstacleAndOverlay1;
+    public int obstacleAndOverlay2;
+    public int obstacleAndOverlay3;
+
+
+    public Pottential()
+    {
+        map = 0;
+        notObstacle = 0;
+        onlyObstacle = 0;
+
+        onlyAllBlocked = 0;
+        onlyBlocked1 = 0;
+        onlyBlocked2 = 0;
+        onlyBlocked3 = 0;
+
+        onlyAllOverlay = 0;
+        onlyOverlay1 = 0;
+        onlyOverlay2 = 0;
+        onlyOverlay3 = 0;
+
+        obstacleAndAllBlocked = 0;
+        obstacleAndBlocked1 = 0;
+        obstacleAndBlocked2 = 0;
+        obstacleAndBlocked3 = 0;
+
+        obstacleAndAllOverlay = 0;
+        obstacleAndOverlay1 = 0;
+        obstacleAndOverlay2 = 0;
+        obstacleAndOverlay3 = 0;
+    }
+}
+
+public class AllPottentials
+{
+
+
+    public double map;
+    public double notObstacle;
+
+    public double obstacle;
+    public double blocked1;
+    public double blocked2;
+    public double blocked3;
+    public double overlay1;
+    public double overlay2;
+    public double overlay3;
+    public double somethingWrong;
+
+
+
+    public AllPottentials()
+    {
+        map = 0;
+        notObstacle = 0;
+
+        obstacle = 0;
+        blocked1 = 0;
+        blocked2 = 0;
+        blocked3 = 0;
+        overlay1 = 0;
+        overlay2 = 0;
+        overlay3 = 0;
+        somethingWrong = 0;
+
+    }
+}
+
+
+//public class SwapablePottential
+//{
+//    public int map;
+//    public int notObstacle;
+
+//    public int onlyObstacle;
+
+//    public int onlyAllBlocked;
+//    public int onlyBlocked1;
+//    public int onlyBlocked2;
+//    public int onlyBlocked3;
+
+//    public int onlyAllOverlay;
+//    public int onlyOverlay1;
+//    public int onlyOverlay2;
+//    public int onlyOverlay3;
+
+//    public int obstacleAndAllBlocked;
+//    public int obstacleAndBlocked1;
+//    public int obstacleAndBlocked2;
+//    public int obstacleAndBlocked3;
+
+//    public int obstacleAndAllOverlay;
+//    public int obstacleAndOverlay1;
+//    public int obstacleAndOverlay2;
+//    public int obstacleAndOverlay3;
+
+
+//    public SwapablePottential()
+//    {
+//        map = 0;
+//        notObstacle = 0;
+
+//        onlyObstacle = 0;
+
+//        onlyAllBlocked = 0;
+//        onlyBlocked1 = 0;
+//        onlyBlocked2 = 0;
+//        onlyBlocked3 = 0;
+
+//        onlyAllOverlay = 0;
+//        onlyOverlay1 = 0;
+//        onlyOverlay2 = 0;
+//        onlyOverlay3 = 0;
+
+//        obstacleAndAllBlocked = 0;
+//        obstacleAndBlocked1 = 0;
+//        obstacleAndBlocked2 = 0;
+//        obstacleAndBlocked3 = 0;
+
+//        obstacleAndAllOverlay = 0;
+//        obstacleAndOverlay1 = 0;
+//        obstacleAndOverlay2 = 0;
+//        obstacleAndOverlay3 = 0;
+//    }
+
+//}
+
+
+
+
+
+
 public class DNA<T>
 {
 	public T[] genes { get; private set; }
@@ -52,8 +208,10 @@ public class DNA<T>
     public int overlayPottentialCnt;
     public int notObstacleCnt;
 
-    public List<int> cellsID;
-    public List<int> kindsOfObstacle;
+
+
+    //public List<int> cellsID;
+    //public List<int> kindsOfObstacle;
 
     public int matchFromMap;
     public int nearBreakableObstacles;
@@ -63,16 +221,55 @@ public class DNA<T>
 
     public Block[] blocks;
 
+    //public SwapablePottential swapablePottential;
+    public AllPottentials allPottential;
+    public Pottential swapablePottential;
+
+    public List<int> gridObjects;
+    public List<int> objectProtection;
+
+
+
+    //public int obstacle;
+    //public int blocked1;
+    //public int blocked2;
+    //public int blocked3;
+    //public int overlay1;
+    //public int overlay2;
+    //public int overlay3;
+    //public int somethingWrong;
+
+
+    //public int mapObstacle;
+    //public int mapBlocked1;
+    //public int mapBlocked2;
+    //public int mapBlocked3;
+    //public int mapOverlay1;
+    //public int mapOverlay2;
+    //public int mapOverlay3;
+    //public int mapSomethingWrong;
+
+
+
+
+
+
     public DNA(int size, Random random, Func<T> getRandomGene, Func<T[]> getGenes, bool getSetGenes, bool shouldInitGenes = true)
 	{
-		genes = new T[size];
+        gridObjects = new List<int>();
+        objectProtection = new List<int>();
+
+
+        genes = new T[size];
 		this.random = random;
         this.getGenes = getGenes;
         this.getRandomGene = getRandomGene;
 
         if (shouldInitGenes)
         {
-            if(getSetGenes) genes = getGenes();
+            //for (int i = 0; i < size; i++) genes[i] = getRandomGene();
+
+            if (getSetGenes) genes = getGenes();
 
             else
             {
@@ -102,8 +299,8 @@ public class DNA<T>
         blockedPottentialCnt = 0;
         overlayPottentialCnt = 0;
         notObstacleCnt = 0;
-        cellsID = new List<int>();
-        kindsOfObstacle = new List<int>();
+        //cellsID = new List<int>();
+        //kindsOfObstacle = new List<int>();
 
 
 
@@ -128,6 +325,30 @@ public class DNA<T>
             blocks[i + 2].kind = 2;
             blocks[i + 2].protection = i;
         }
+
+
+
+
+        //obstacle = 0;
+        //blocked1 = 0;
+        //blocked2 = 0;
+        //blocked3 = 0;
+        //overlay1 = 0;
+        //overlay2 = 0;
+        //overlay3 = 0;
+        //somethingWrong = 0;
+
+
+
+        //mapObstacle = 0;
+        //mapBlocked1 = 0;
+        //mapBlocked2 = 0;
+        //mapBlocked3 = 0;
+        //mapOverlay1 = 0;
+        //mapOverlay2 = 0;
+        //mapOverlay3 = 0;
+        //mapSomethingWrong = 0;
+
     }
 
 
@@ -143,7 +364,8 @@ public class DNA<T>
 
     public void calculateFeasibleFitness(int wantDifficulty, int difficultyTolerance)
     {
-        fitness = Math.Abs(mapMatchPotential - wantDifficulty);
+        fitness = Math.Abs(allPottential.map - (double)wantDifficulty);
+        //fitness = Math.Abs(swapablePottential.map - wantDifficulty);
 
         if (fitness > difficultyTolerance) fitness = 1.0 / (1.0 + Math.Abs(fitness));
         else fitness = 1;
@@ -163,13 +385,13 @@ public class DNA<T>
             if(random.NextDouble() < 0.5)
             {
                 child.genes[i] = genes[i];
-                child.cellsID.Add(cellsID[i]);
+                //child.cellsID.Add(cellsID[i]);
             }
 
             else
             {
                 child.genes[i] = otherParent.genes[i];
-                child.cellsID.Add(otherParent.cellsID[i]);
+                //child.cellsID.Add(otherParent.cellsID[i]);
             }
 
         }

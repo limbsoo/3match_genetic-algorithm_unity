@@ -18,6 +18,7 @@ using UnityEngine.UIElements;
 using UnityEditor;
 using UnityEditor.VersionControl;
 using System.Security.Cryptography.X509Certificates;
+using static Mkey.GridCell;
 
 //231018 sundry
 
@@ -26,6 +27,7 @@ namespace Mkey
     public class Difficult
     {
         public char[] map;
+        public char[] protections;
         public int pottential;
         public int obstacle;
         public int blockedPottential;
@@ -67,7 +69,7 @@ namespace Mkey
         public int csvCnt;
         public int match3Cycle;
 
-        public bool isActualMeasureSwap;
+        //public bool isActualMeasureSwap;
         //public bool onlySpawnBlockedObject;
         //public bool onlySpawnOverlayObject;
         //public bool onlySpawnObstacleObject;
@@ -88,13 +90,17 @@ namespace Mkey
         public int numOfMatchBlock;
         public int blockProtection;
 
-        public List<int> protections;
+        //public List<int> protections;
 
         public bool spawnObstacleObject;
         public bool spawnBlockedObject;
         public bool spawnOverlayObject;
         public bool haveRandomProtection;
         public bool getSetGenes;
+        public bool isOnce;
+
+        public bool divideSpecificBlock;
+
 
         public Difficult[] difficults;
         public Match3Helper(MatchGrid g, Dictionary<int, TargetData> targets)
@@ -105,20 +111,42 @@ namespace Mkey
             rowSize = g.Rows.Count;
             colSize = g.Columns.Count;
 
-
             board = new GameBoard();
             limits = new Limit();
 
             csvCnt = 0;
             match3Cycle = 0;
 
-            limits.csvCnt = 9;
+            isOnce = false;
+            getSetGenes = false;
 
-            //limits.match3Cycle = 1;
-            //limits.generation = 1;
+            divideSpecificBlock = false;
 
-            limits.match3Cycle = 50;
-            limits.generation = 100;
+            if (isOnce && getSetGenes)
+            {
+                limits.match3Cycle = 1;
+                limits.generation = 1;
+                limits.csvCnt = 0;
+            }
+
+            else if(!isOnce && getSetGenes)
+            {
+                limits.match3Cycle = 15;
+                limits.generation = 1;
+                limits.csvCnt = 9;
+            }
+
+            else
+            {
+
+                //limits.match3Cycle = 1;
+                //limits.generation = 1;
+                //limits.csvCnt = 0;
+                limits.match3Cycle = 50;
+                limits.generation = 100;
+                limits.csvCnt = 19;
+            }
+
 
             limits.geneticGeneration = 500;
             limits.move = 300;
@@ -126,13 +154,13 @@ namespace Mkey
             limits.find = 2000;
             limits.mix = 200;
 
-            getSetGenes = false;
-            if (getSetGenes) setPottentials();
+            
+            //if (getSetGenes) setPottentials();
 
             blockedObjectHitCnt = 0;
             overlayObjectHitCnt = 0;
 
-            isActualMeasureSwap = true;
+            //isActualMeasureSwap = false;
 
             //spawnObstacleObject = true;
             //spawnBlockedObject = true;
@@ -140,11 +168,23 @@ namespace Mkey
             //haveRandomProtection = true;
             //blockProtection = 3;
 
-            spawnObstacleObject = false;
-            spawnBlockedObject = false;
-            spawnOverlayObject = true;
-            haveRandomProtection = false;
+
+            spawnObstacleObject = true;
+            spawnBlockedObject = true;
+            spawnOverlayObject = false;
+            haveRandomProtection = true;
             blockProtection = 3;
+
+
+
+
+
+
+            //spawnObstacleObject = false;
+            //spawnBlockedObject = false;
+            //spawnOverlayObject = true;
+            //haveRandomProtection = false;
+            //blockProtection = 3;
 
 
             wantDifficulty = 600;
@@ -154,129 +194,216 @@ namespace Mkey
             numOfMatchBlock = 7;
 
 
-
-
-
-            
-
+            // 0 600
+            //1 550
+            //2 500
+            //3 450
+            //4 400
+            //5 350
+            //6 300
+            //7 250
+            //8 200
+            //9 150
         }
 
-        public void setPottentials()
+        public string setMaps(int idx, bool isMap)
         {
-            difficults = new Difficult[10];
-
             string[] map =
             {
-                "100000000100010000000000001000000001000100001000001010000000000100000000100000000" ,
-                "000010000000100000000000000000000010001000000010000000000000001110100001110100011" ,
-                "000010000101111100000110000001001000000000000000000000000000000010100000111100000" ,
-                "110111010100000001101100000000000000010000010100000000100000000100010010100000111" ,
-                "000001011000011100000011100000000000000001001100010001101110000000010000110000000" ,
-                "101100000100000110100000000000100000010010000001010000101000000100000011101110011" ,
-                "010000000010110100000111110000011100000000000010100011000000011000000011001001111" ,
-                "001100100011111101001111000000110100000000100000000100000001000111000000000011011" ,
-                "010010110000000000100101000100100110011000100000100101001010000000000100001110101" ,
-                "010111010101011110100011010000110000000100110100100010000000100111001000000011010"
+                "311333030011333333133303333333333331333333313333333333333333333333333333133333113" ,
+                "333330303301333333333333333333310333333333333333333333331033333301033333333333330" ,
+                "331333133133333330133300133330333331333303333333333333333333333333303333333333330" ,
+                "033103030133333333331333333313033313333333333333333333333333330331310331131301333" ,
+                "331113331313330333133333333333333331333130333333133333133333333030313333130313103" ,
+                "313033103111333113333333311100333311130333333333333311113333333033303333103011333" ,
+                "130303011333333333313303333333333333333133333330013013333313133030013333330101330" ,
+                "000331101303333333333333003133330331133333313133331333333003333300333310331103000" ,
+                "033310030030100333001111310033333333010333300133333103333333133030033333101003030" ,
+                "333133133300333331103333101313333330303333331333301333131000300010333300010300311"
             };
 
-            string[] masp =
-                {
-                "561	738	685	685	0	0	0	0	0	0" ,
-                "501	670	646	646	0	0	0	0	0	0" ,
-                "456	525	683	683	0	0	0	0	0	0" ,
-                "406	498	716	716	0	0	0	0	0	0" ,
-                "350	517	553	553	0	0	0	0	0	0" ,
-                "329	518	572	572	0	0	0	0	0	0" ,
-                "268	447	499	499	0	0	0	0	0	0" ,
-                "246	335	601	601	0	0	0	0	0	0" ,
-                "165	566	279	279	0	0	0	0	0	0" ,
-                "134	451	299	299	0	0	0	0	0	0"
+            string[] protections =
+            {
+                "011000000032000000100000000000000001000000020000000000000000000000000000200000210" ,
+                "000000000002000000000000000000030000000000000000000000003000000003000000000000000" ,
+                "003000300200000000100000300000000002000000000000000000000000000000000000000000000" ,
+                "000100000100000000001000000020000030000000000000000000000000000002030002203002000" ,
+                "003130002020000000300000000000000003000300000000200000100000000000020000300010200" ,
+                "010000200211000210000000011200000012100000000000000011310000000000000000300013000" ,
+                "200000032000000000030000000000000000000100000000030030000010200000030000000102000" ,
+                "000002102000000000000000000200000002300000020100003000000000000000000010001100000" ,
+                "000030000000200000001332030000000000010000000200000100000000300000000000102000000" ,
+                "000100100000000002300000303020000000000000003000003000201000000010000000020000022"
             };
 
+            if (isMap) return map[idx];
 
-            for (int i = 0; i < 10; i++)
-            {
-                Difficult difficlut = new Difficult();
-                string s = "";
-                int cnt = 0;
-
-                for (int j = 0; j < masp[i].Length; j++)
-                {
-                    if (masp[i][j] == '\t')
-                    {
-                        if (s != "")
-                        {
-                            if (cnt == 0) difficlut.pottential = Convert.ToInt32(s);
-                            else if (cnt == 1) difficlut.obstacle = Convert.ToInt32(s);
-
-                            else if (cnt == 2) difficlut.blockedPottential = Convert.ToInt32(s);
-                            else if (cnt == 3) difficlut.blocked1 = Convert.ToInt32(s);
-                            else if (cnt == 4) difficlut.blocked2 = Convert.ToInt32(s);
-                            else if (cnt == 5) difficlut.blocked3 = Convert.ToInt32(s);
-
-                            else if (cnt == 6) difficlut.overlayPottential = Convert.ToInt32(s);
-                            else if (cnt == 7) difficlut.overlay1 = Convert.ToInt32(s);
-                            else if (cnt == 8) difficlut.overlay2 = Convert.ToInt32(s);
-                            else if (cnt == 9) difficlut.overlay3 = Convert.ToInt32(s);
-
-                            cnt++;
-                        }
-
-                        s = "";
-                    }
-
-                    else s += masp[i][j];
-                }
-
-                difficults[i] = difficlut;
-            }
-
-
-            
-
-            for (int i = 0; i < map.Length; i++)
-            {
-                char[] genes = new char[gridSize];
-
-                for (int j = 0; j < map[i].Length; j++)
-                {
-                    genes[j] = map[i][j];
-                }
-                
-
-                difficults[i].map = genes;
-            }
-            
-
+            else return protections[idx];
         }
 
 
+        //public void setPottentials()
+        //{
+        //    difficults = new Difficult[10];
+
+        //    string[] map =
+        //    {
+        //        "311333030011333333133303333333333331333333313333333333333333333333333333133333113" ,
+        //        "333330303301333333333333333333310333333333333333333333331033333301033333333333330" ,
+        //        "331333133133333330133300133330333331333303333333333333333333333333303333333333330" ,
+        //        "033103030133333333331333333313033313333333333333333333333333330331310331131301333" ,
+        //        "331113331313330333133333333333333331333130333333133333133333333030313333130313103" ,
+        //        "313033103111333113333333311100333311130333333333333311113333333033303333103011333" ,
+        //        "130303011333333333313303333333333333333133333330013013333313133030013333330101330" ,
+        //        "000331101303333333333333003133330331133333313133331333333003333300333310331103000" ,
+        //        "033310030030100333001111310033333333010333300133333103333333133030033333101003030" ,
+        //        "333133133300333331103333101313333330303333331333301333131000300010333300010300311"
+        //    };
+
+        //    string[] masp =
+        //        {
+        //        "556	426	239	350	290	0	0	0	0	0" ,
+        //        "519	586	323	406	476	0	0	0	0	0" ,
+        //        "451	334	190	246	257	0	0	0	0	0" ,
+        //        "404	385	115	237	238	0	0	0	0	0" ,
+        //        "364	453	153	271	246	0	0	0	0	0" ,
+        //        "307	368	156	196	289	0	0	0	0	0" ,
+        //        "256	487	194	305	315	0	0	0	0	0" ,
+        //        "202	412	189	269	305	0	0	0	0	0" ,
+        //        "170	404	167	302	254	0	0	0	0	0" ,
+        //        "103	402	118	250	235	0	0	0	0	0"
+        //    };
+
+        //    string[]protections =
+        //    {
+        //        "011000000032000000100000000000000001000000020000000000000000000000000000200000210" ,
+        //        "000000000002000000000000000000030000000000000000000000003000000003000000000000000" ,
+        //        "003000300200000000100000300000000002000000000000000000000000000000000000000000000" ,
+        //        "000100000100000000001000000020000030000000000000000000000000000002030002203002000" ,
+        //        "003130002020000000300000000000000003000300000000200000100000000000020000300010200" ,
+        //        "010000200211000210000000011200000012100000000000000011310000000000000000300013000" ,
+        //        "200000032000000000030000000000000000000100000000030030000010200000030000000102000" ,
+        //        "000002102000000000000000000200000002300000020100003000000000000000000010001100000" ,
+        //        "000030000000200000001332030000000000010000000200000100000000300000000000102000000" ,
+        //        "000100100000000002300000303020000000000000003000003000201000000010000000020000022"
+        //    };
 
 
-        public void setProtection(DNA<char> p)
-        {
-            protections = new List<int>();
+        //    for (int i = 0; i < 10; i++)
+        //    {
+        //        Difficult difficlut = new Difficult();
+        //        string s = "";
+        //        int cnt = 0;
 
-            for (int i = 0; i < p.cellsID.Count; i++)
-            {
-                if (p.cellsID[i] == 0 || p.cellsID[i] == 3) protections.Add(0);
+        //        for (int j = 0; j < masp[i].Length; j++)
+        //        {
+        //            if (masp[i][j] == '\t')
+        //            {
+        //                if (s != "")
+        //                {
+        //                    if (cnt == 0) difficlut.pottential = Convert.ToInt32(s);
+        //                    else if (cnt == 1) difficlut.obstacle = Convert.ToInt32(s);
 
-                else
-                {
-                    if(haveRandomProtection)
-                    {
-                        int randomProtection = Random.Range(1, blockProtection + 1);
-                        protections.Add(randomProtection);
-                    }
+        //                    else if (cnt == 2) difficlut.blockedPottential = Convert.ToInt32(s);
+        //                    else if (cnt == 3) difficlut.blocked1 = Convert.ToInt32(s);
+        //                    else if (cnt == 4) difficlut.blocked2 = Convert.ToInt32(s);
+        //                    else if (cnt == 5) difficlut.blocked3 = Convert.ToInt32(s);
 
-                   else protections.Add(blockProtection);
+        //                    else if (cnt == 6) difficlut.overlayPottential = Convert.ToInt32(s);
+        //                    else if (cnt == 7) difficlut.overlay1 = Convert.ToInt32(s);
+        //                    else if (cnt == 8) difficlut.overlay2 = Convert.ToInt32(s);
+        //                    else if (cnt == 9) difficlut.overlay3 = Convert.ToInt32(s);
 
-                }
+        //                    cnt++;
+        //                }
 
-            }
+        //                s = "";
+        //            }
+
+        //            else s += masp[i][j];
+        //        }
+
+        //        difficults[i] = difficlut;
+        //    }
+
+
+            
+
+        //    for (int i = 0; i < map.Length; i++)
+        //    {
+        //        char[] genes = new char[gridSize];
+
+        //        for (int j = 0; j < gridSize; j++)
+        //        {
+        //            genes[j] = map[i][j+81];
+        //        }
+  
+        //        difficults[i].map = genes;
+        //    }
+
+        //    for (int i = 0; i < map.Length; i++)
+        //    {
+        //        char[] genes = new char[gridSize];
+
+        //        for (int j = 0; j < gridSize; j++)
+        //        {
+        //            genes[j] = protections[i][j + 81];
+        //        }
+
+        //        difficults[i].protections = genes;
+        //    }
+
+
+        //}
+
+
+
+
+        //public void setProtection(DNA<char> p)
+        //{
+        //    protections = new List<int>();
+
+        //    for (int i = 0; i < p.cellsID.Count; i++)
+        //    {
+        //        if (difficults[csvCnt].protections[i] == '1')
+        //        {
+        //            protections.Add(1);
+        //        }
+
+        //        else if(difficults[csvCnt].protections[i] == '2')
+        //        {
+        //            protections.Add(2);
+        //        }
+
+        //        else if (difficults[csvCnt].protections[i] == '3')
+        //        {
+        //            protections.Add(3);
+        //        }
+
+        //        else if (difficults[csvCnt].protections[i] == '0')
+        //        {
+        //            protections.Add(0);
+        //        }
+
+
+        //        //if (p.cellsID[i] == 0 || p.cellsID[i] == 3) protections.Add(0);
+
+        //        //else
+        //        //{
+        //        //    if(haveRandomProtection)
+        //        //    {
+        //        //        int randomProtection = Random.Range(1, blockProtection + 1);
+        //        //        protections.Add(randomProtection);
+        //        //    }
+
+        //        //   else protections.Add(blockProtection);
+
+        //        //}
+
+        //    }
            
 
-        }
+        //}
 
 
 
@@ -736,70 +863,428 @@ namespace Mkey
 
 
 
-        public void countObstacle(DNA<char> p)
+
+
+
+        public void cntPerPottentials(DNA<char> p)
+        {
+            MatchGroup mg = new MatchGroup();
+
+            for (int i = 0; i < grid.Cells.Count; i++)
+            {
+                grid.Cells[i].cellPottential = new GridCell.CellPottential();
+            }
+
+            for (int i = 0; i < grid.Cells.Count; i++)
+            {
+                mg.countPottential(grid, i);
+            }
+
+            p.allPottential = new AllPottentials();
+
+            for (int i = 0; i < grid.Cells.Count; i++)
+            {
+                p.allPottential.map += grid.Cells[i].cellPottential.map;
+                p.allPottential.obstacle += grid.Cells[i].cellPottential.obstacle;
+                p.allPottential.blocked1 += grid.Cells[i].cellPottential.blocked1;
+                p.allPottential.blocked2 += grid.Cells[i].cellPottential.blocked2;
+                p.allPottential.blocked3 += grid.Cells[i].cellPottential.blocked3;
+                p.allPottential.overlay1 += grid.Cells[i].cellPottential.overlay1;
+                p.allPottential.overlay2 += grid.Cells[i].cellPottential.overlay2;
+                p.allPottential.overlay3 += grid.Cells[i].cellPottential.overlay3;
+                p.allPottential.somethingWrong += grid.Cells[i].cellPottential.somethingWrong;
+            }
+        }
+
+
+
+        public void cntMapPottentials(DNA<char> p)
         {
             MatchGroup mg = new MatchGroup();
 
             for (int i = 0; i < grid.Cells.Count; i++)
             {
                 grid.Cells[i].matchFromSwapPotential = 0;
-                grid.Cells[i].nearBreakableObstacle = 0;
-                grid.Cells[i].includeMatchObstacle = 0;
+                grid.Cells[i].obstacle = 0;
+                grid.Cells[i].blocked1 = 0;
+                grid.Cells[i].blocked2 = 0;
+                grid.Cells[i].blocked3 = 0;
+                grid.Cells[i].overlay1 = 0;
+                grid.Cells[i].overlay2 = 0;
+                grid.Cells[i].overlay3 = 0;
+                grid.Cells[i].somethingWrong = 0;
             }
-            
 
-            for (int i = 0; i < grid.Cells.Count; i++) mg.cntMatchPottential(grid, i);
+            for (int i = 0; i < grid.Cells.Count; i++)
+            {
+                mg.cntMapPerPottentials(grid, i);
+            }
+
+            int mapMatchPotential = 0;
+            int obstacle = 0;
+            int blocked1 = 0;
+            int blocked2 = 0;
+            int blocked3 = 0;
+            int overlay1 = 0;
+            int overlay2 = 0;
+            int overlay3 = 0;
+            int somethingWrong = 0;
+
+
+            for (int i = 0; i < grid.Cells.Count; i++)
+            {
+                mapMatchPotential += grid.Cells[i].matchFromSwapPotential;
+
+                obstacle += grid.Cells[i].obstacle;
+                blocked1 += grid.Cells[i].blocked1;
+                blocked2 += grid.Cells[i].blocked2;
+                blocked3 += grid.Cells[i].blocked3;
+                overlay1 += grid.Cells[i].overlay1;
+                overlay2 += grid.Cells[i].overlay2;
+                overlay3 += grid.Cells[i].overlay3;
+                somethingWrong += grid.Cells[i].somethingWrong;
+            }
+
+            //p.mapObstacle = obstacle;
+            //p.mapBlocked1 = blocked1;
+            //p.mapBlocked2 = blocked2;
+            //p.mapBlocked3 = blocked3;
+            //p.mapOverlay1 = overlay1;
+            //p.mapOverlay2 = overlay2;
+            //p.mapOverlay3 = overlay3;
+            //p.mapSomethingWrong = somethingWrong;
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        public void cntMapmatchPottential(DNA<char> p)
+        {
+            MatchGroup mg = new MatchGroup();
+
+            for (int i = 0; i < grid.Cells.Count; i++)
+            {
+                grid.Cells[i].matchFromSwapPotential = 0;
+                grid.Cells[i].obstacle = 0;
+                grid.Cells[i].blocked1 = 0;
+                grid.Cells[i].blocked2 = 0;
+                grid.Cells[i].blocked3 = 0;
+                grid.Cells[i].overlay1 = 0;
+                grid.Cells[i].overlay2 = 0;
+                grid.Cells[i].overlay3 = 0;
+                grid.Cells[i].somethingWrong = 0;
+            }
+
+
+            for (int i = 0; i < grid.Cells.Count; i++)
+            {
+                mg.cntPerPottentials(grid, i);
+            }
 
             int mapMatchPotential = 0;
             List<int> mapMatchPotentialList = new List<int>();
-            int breakableObstacle = 0;
             int obstacleCnt = 0;
-            int includeMatchObstacle = 0;
 
             for (int i = 0; i < grid.Cells.Count; i++)
             {
                 mapMatchPotentialList.Add(grid.Cells[i].matchFromSwapPotential);
-                mapMatchPotential += grid.Cells[i].matchFromSwapPotential;              
-                breakableObstacle += grid.Cells[i].nearBreakableObstacle;
-                includeMatchObstacle += grid.Cells[i].includeMatchObstacle;
-
-                //if (grid.Cells[i].DynamicObject == null) obstacleCnt++;
+                mapMatchPotential += grid.Cells[i].matchFromSwapPotential;
 
                 if (grid.Cells[i].Blocked != null || grid.Cells[i].Overlay != null) obstacleCnt++;
-
             }
 
-            p.mapMatchPotential = mapMatchPotential;
-            p.mapMatchPotentialList = mapMatchPotentialList;
-            p.breakableObstacle = breakableObstacle;
-            p.obstacleCnt = obstacleCnt;
-            p.includeMatchObstacle = includeMatchObstacle;
+            //p.pottential = new Pottential();
+            //p.pottential.map = mapMatchPotential;
+            //p.mapMatchPotentialList = mapMatchPotentialList;
+            //p.obstacleCnt = obstacleCnt;
+
+
+            //p.originMapPottential = new OriginMapPottential();
+
+            //MatchGroup mg = new MatchGroup();
+
+            //for (int i = 0; i < grid.Cells.Count; i++)
+            //{
+            //    grid.Cells[i].matchFromSwapPotential = 0;
+            //    mg.cntPottential(grid, i);
+            //}
+
+            //int mapMatchPotential = 0;
+            //List<int> mapMatchPotentialList = new List<int>();
+            //int obstacleCnt = 0;
+
+            //for (int i = 0; i < grid.Cells.Count; i++)
+            //{
+            //    mapMatchPotentialList.Add(grid.Cells[i].matchFromSwapPotential);
+            //    mapMatchPotential += grid.Cells[i].matchFromSwapPotential;
+
+            //    if (grid.Cells[i].Blocked != null || grid.Cells[i].Overlay != null) obstacleCnt++;
+            //}
+
+            //p.pottential = new Pottential();
+
+            //p.pottential.map = mapMatchPotential;
+            //p.mapMatchPotentialList = mapMatchPotentialList;
+            //p.obstacleCnt = obstacleCnt;
         }
 
+        //public int cntPottentials(DNA<char> p)
+        //{
+        //    MatchGroup mg = new MatchGroup();
+
+        //    for (int i = 0; i < grid.Cells.Count; i++)
+        //    {
+        //        grid.Cells[i].matchFromSwapPotential = 0;
+        //    }
+
+        //    for (int i = 0; i < grid.Cells.Count; i++)
+        //    {
+        //        mg.cntPottential(grid, i);
+        //    }
+
+        //    int mapMatchPotential = 0;
+
+        //    for (int i = 0; i < grid.Cells.Count; i++)
+        //    {
+        //        mapMatchPotential += grid.Cells[i].matchFromSwapPotential;
+        //    }
+
+        //    return mapMatchPotential;
+        //}
+
+        //public void cntPerPottentials(DNA<char> p)
+        //{
+        //    MatchGroup mg = new MatchGroup();
+
+        //    for (int i = 0; i < grid.Cells.Count; i++)
+        //    {
+        //        grid.Cells[i].matchFromSwapPotential = 0;
+
+        //        grid.Cells[i].obstacle = 0;
+        //        grid.Cells[i].blocked1 = 0;
+        //        grid.Cells[i].blocked2 = 0;
+        //        grid.Cells[i].blocked3 = 0;
+        //        grid.Cells[i].overlay1 = 0;
+        //        grid.Cells[i].overlay2 = 0;
+        //        grid.Cells[i].overlay3 = 0;
+        //        grid.Cells[i].somethingWrong = 0;
+        //    }
+
+        //    for (int i = 0; i < grid.Cells.Count; i++)
+        //    {
+        //        mg.cntPerPottentials(grid, i);
+        //    }
+
+        //    int mapMatchPotential = 0;
+        //    int obstacle = 0;
+        //    int blocked1 = 0;
+        //    int blocked2 = 0;
+        //    int blocked3 = 0;
+        //    int overlay1 = 0;
+        //    int overlay2 = 0;
+        //    int overlay3 = 0;
+        //    int somethingWrong = 0;
+
+
+        //    for (int i = 0; i < grid.Cells.Count; i++)
+        //    {
+        //        mapMatchPotential += grid.Cells[i].matchFromSwapPotential;
+
+        //        obstacle += grid.Cells[i].obstacle;
+        //        blocked1 += grid.Cells[i].blocked1;
+        //        blocked2 += grid.Cells[i].blocked2;
+        //        blocked3 += grid.Cells[i].blocked3;
+        //        overlay1 += grid.Cells[i].overlay1;
+        //        overlay2 += grid.Cells[i].overlay2;
+        //        overlay3 += grid.Cells[i].overlay3;
+        //        somethingWrong += grid.Cells[i].somethingWrong;
+        //    }
+
+        //    p.obstacle = obstacle;
+        //    p.blocked1 = blocked1;
+        //    p.blocked2 = blocked2;
+        //    p.blocked3 = blocked3;
+        //    p.overlay1 = overlay1;
+        //    p.overlay2 = overlay2;
+        //    p.overlay3 = overlay3;
+        //    p.somethingWrong = somethingWrong;
+        //}
+
+        //public void cntMapPottentials(DNA<char> p)
+        //{
+        //    MatchGroup mg = new MatchGroup();
+
+        //    for (int i = 0; i < grid.Cells.Count; i++)
+        //    {
+        //        grid.Cells[i].matchFromSwapPotential = 0;
+        //        grid.Cells[i].obstacle = 0;
+        //        grid.Cells[i].blocked1 = 0;
+        //        grid.Cells[i].blocked2 = 0;
+        //        grid.Cells[i].blocked3 = 0;
+        //        grid.Cells[i].overlay1 = 0;
+        //        grid.Cells[i].overlay2 = 0;
+        //        grid.Cells[i].overlay3 = 0;
+        //        grid.Cells[i].somethingWrong = 0;
+        //    }
+
+        //    for (int i = 0; i < grid.Cells.Count; i++)
+        //    {
+        //        mg.cntMapPerPottentials(grid, i);
+        //    }
+
+        //    int mapMatchPotential = 0;
+        //    int obstacle = 0;
+        //    int blocked1 = 0;
+        //    int blocked2 = 0;
+        //    int blocked3 = 0;
+        //    int overlay1 = 0;
+        //    int overlay2 = 0;
+        //    int overlay3 = 0;
+        //    int somethingWrong = 0;
+
+
+        //    for (int i = 0; i < grid.Cells.Count; i++)
+        //    {
+        //        mapMatchPotential += grid.Cells[i].matchFromSwapPotential;
+
+        //        obstacle += grid.Cells[i].obstacle;
+        //        blocked1 += grid.Cells[i].blocked1;
+        //        blocked2 += grid.Cells[i].blocked2;
+        //        blocked3 += grid.Cells[i].blocked3;
+        //        overlay1 += grid.Cells[i].overlay1;
+        //        overlay2 += grid.Cells[i].overlay2;
+        //        overlay3 += grid.Cells[i].overlay3;
+        //        somethingWrong += grid.Cells[i].somethingWrong;
+        //    }
 
 
 
-        public int cntPerPottential(DNA<char> p)
-        {
-            for (int i = 0; i < grid.Cells.Count; i++)
-            {
-                grid.Cells[i].matchFromSwapPotential = 0;
-                grid.Cells[i].nearBreakableObstacle = 0;
-                grid.Cells[i].includeMatchObstacle = 0;
-            }
+        //    p.mapObstacle = obstacle;
+        //    p.mapBlocked1 = blocked1;
+        //    p.mapBlocked2 = blocked2;
+        //    p.mapBlocked3 = blocked3;
+        //    p.mapOverlay1 = overlay1;
+        //    p.mapOverlay2 = overlay2;
+        //    p.mapOverlay3 = overlay3;
+        //    p.mapSomethingWrong = somethingWrong;
+        //}
 
-            int cnt = 0;
 
-            MatchGroup mg = new MatchGroup();
-            for (int i = 0; i < grid.Cells.Count; i++) mg.cntMatchPottential(grid, i);
 
-            for (int i = 0; i < grid.Cells.Count; i++)
-            {
-                cnt += grid.Cells[i].matchFromSwapPotential;
-            }
 
-            return cnt;
-        }
+        //public void countObstacle(DNA<char> p)
+        //{
+        //    MatchGroup mg = new MatchGroup();
+
+        //    for (int i = 0; i < grid.Cells.Count; i++)
+        //    {
+        //        grid.Cells[i].matchFromSwapPotential = 0;
+        //        grid.Cells[i].nearBreakableObstacle = 0;
+        //        grid.Cells[i].includeMatchObstacle = 0;
+        //    }
+
+
+        //    for (int i = 0; i < grid.Cells.Count; i++) mg.cntMatchPottential(grid, i);
+
+        //    int mapMatchPotential = 0;
+        //    List<int> mapMatchPotentialList = new List<int>();
+        //    int breakableObstacle = 0;
+        //    int obstacleCnt = 0;
+        //    int includeMatchObstacle = 0;
+
+        //    for (int i = 0; i < grid.Cells.Count; i++)
+        //    {
+        //        mapMatchPotentialList.Add(grid.Cells[i].matchFromSwapPotential);
+        //        mapMatchPotential += grid.Cells[i].matchFromSwapPotential;              
+        //        breakableObstacle += grid.Cells[i].nearBreakableObstacle;
+        //        includeMatchObstacle += grid.Cells[i].includeMatchObstacle;
+
+        //        //if (grid.Cells[i].DynamicObject == null) obstacleCnt++;
+
+        //        if (grid.Cells[i].Blocked != null || grid.Cells[i].Overlay != null) obstacleCnt++;
+
+        //    }
+
+        //    p.mapMatchPotential = mapMatchPotential;
+        //    p.mapMatchPotentialList = mapMatchPotentialList;
+        //    p.breakableObstacle = breakableObstacle;
+        //    p.obstacleCnt = obstacleCnt;
+        //    p.includeMatchObstacle = includeMatchObstacle;
+        //}
+
+
+
+
+        //public int cntPerPottential(DNA<char> p)
+        //{
+        //    for (int i = 0; i < grid.Cells.Count; i++)
+        //    {
+        //        grid.Cells[i].matchFromSwapPotential = 0;
+        //        grid.Cells[i].nearBreakableObstacle = 0;
+        //        grid.Cells[i].includeMatchObstacle = 0;
+        //    }
+
+        //    int cnt = 0;
+
+        //    MatchGroup mg = new MatchGroup();
+        //    for (int i = 0; i < grid.Cells.Count; i++) mg.cntMatchPottential(grid, i);
+
+        //    for (int i = 0; i < grid.Cells.Count; i++)
+        //    {
+        //        cnt += grid.Cells[i].matchFromSwapPotential;
+        //    }
+
+        //    return cnt;
+        //}
 
 
         public void createMatchGroups(int minMatches, bool estimate, MatchGrid grid)
@@ -926,6 +1411,7 @@ namespace Mkey
 
                 grid.Cells.ForEach((c) =>
                 {
+                    //if (!c.Blocked && !c.IsDisabled && !c.MovementBlocked && !c.Overlay)
                     if (!c.Blocked && !c.IsDisabled && !c.MovementBlocked)
                     {
                         int length = int.MaxValue;
@@ -1128,5 +1614,3 @@ namespace Mkey
 
     }
 }
-
-

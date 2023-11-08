@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Dynamic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Mkey
@@ -47,6 +48,11 @@ namespace Mkey
         #region regular
 
         #endregion regular
+
+
+
+
+
 
         /// <summary>
         /// Return true if object IDs is Equal
@@ -115,6 +121,11 @@ namespace Mkey
         /// <param name="completeCallBack"></param>
         internal void Collect(GridCell gCell, float delay, bool showPrefab, bool fly, bool hitProtection, bool sideHitProtection, bool showScore, int score, Action completeCallBack)
         {
+            //if(gCell.Overlay == null)
+            //{
+            //    return;
+            //}
+
             this.gCell = gCell;
             transform.parent = null;
 

@@ -59,7 +59,37 @@ namespace Mkey
         public List<Row<GridCell>> Rows { get; private set; }
         #endregion row column
 
+        public class CellPottential
+        {
+            public double map;
+            public double notObstacle;
 
+            public double obstacle;
+            public double blocked1;
+            public double blocked2;
+            public double blocked3;
+            public double overlay1;
+            public double overlay2;
+            public double overlay3;
+            public double somethingWrong;
+
+            public CellPottential()
+            {
+                map = 0;
+                notObstacle = 0;
+
+                obstacle = 0;
+                blocked1 = 0;
+                blocked2 = 0;
+                blocked3 = 0;
+                overlay1 = 0;
+                overlay2 = 0;
+                overlay3 = 0;
+                somethingWrong = 0;
+            }
+        }
+
+        public CellPottential cellPottential;
 
 
         public int matchFromSwapPotential;
@@ -69,7 +99,45 @@ namespace Mkey
 
         public int setProtection;
 
-        public bool isNotFill = false;
+        //public bool isNotFill = false;
+        //public bool BlockMovement = true;
+
+        public int obstacle;
+        public int blocked1;
+        public int blocked2;
+        public int blocked3;
+        public int overlay1;
+        public int overlay2;
+        public int overlay3;
+        public int somethingWrong;
+
+        public void checkPerHindrance()
+        {
+            if (Blocked != null)
+            {
+                if (!Blocked.Destroyable) obstacle++;
+
+                else
+                {
+                    if (setProtection == 1) blocked1++;
+                    else if (setProtection == 2) blocked2++;
+                    else if (setProtection == 3) blocked3++;
+                    else somethingWrong++;
+                }
+            }
+
+            else if (Overlay != null)
+            {
+                if (setProtection == 1) overlay1++;
+                else if (setProtection == 2) overlay2++;
+                else if (setProtection == 3) overlay3++;
+                else somethingWrong++;
+            }
+
+            else somethingWrong++;
+        }
+
+
 
 
 
@@ -324,6 +392,13 @@ namespace Mkey
             if (!Touch.Target && Touch.Draggable)
                 Touch.ResetDrag(null);
         }
+
+        public bool IsMatchableBlock()
+        {
+            if(Match != null) return true;
+            return false;
+        }
+
 
         public bool IsDraggable()
         {
@@ -776,6 +851,8 @@ namespace Mkey
             }
             else
             {
+                
+
                 Match.Collect(this, delay, showPrefab, fly, hitProtection, sideHitProtection, showScore, score, completeCallBack);
             }
         }

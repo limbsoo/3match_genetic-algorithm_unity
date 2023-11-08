@@ -27,6 +27,7 @@ public class GeneticAlgorithm<T>
 
     public int repeat = 1; // 왜 있는거지
 
+    public int bestPottential;
 
     public GeneticAlgorithm(int cellSize, Random random, Func<T> getRandomGene, Func<T[]> getGenes, Match3Helper m3h)
     {
@@ -50,6 +51,8 @@ public class GeneticAlgorithm<T>
         bestFitness = 0;
         feasibleFitnessSum = 0;
         infeasibleFitnessSum = 0;
+
+        bestPottential = 0;
 
         for (int i = 0; i < populationSize; i++)
         {
