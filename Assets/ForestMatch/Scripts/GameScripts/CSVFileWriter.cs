@@ -118,6 +118,9 @@ public class CSVFileWriter : MonoBehaviour
         gaDatas[csvIdx] = "blocked3"; csvIdx++;
         gaDatas[csvIdx] = ga.population[0].allPottential.blocked3.ToString(); csvIdx++;
 
+        gaDatas[csvIdx] = "blocked4"; csvIdx++;
+        gaDatas[csvIdx] = ga.population[0].allPottential.blocked4.ToString(); csvIdx++;
+
         gaDatas[csvIdx] = "overlay1"; csvIdx++;
         gaDatas[csvIdx] = ga.population[0].allPottential.overlay1.ToString(); csvIdx++;
 
@@ -126,6 +129,9 @@ public class CSVFileWriter : MonoBehaviour
 
         gaDatas[csvIdx] = "overlay3"; csvIdx++;
         gaDatas[csvIdx] = ga.population[0].allPottential.overlay3.ToString(); csvIdx++;
+
+        gaDatas[csvIdx] = "overlay4"; csvIdx++;
+        gaDatas[csvIdx] = ga.population[0].allPottential.overlay4.ToString(); csvIdx++;
 
         gaDatas[csvIdx] = "somethingWrong"; csvIdx++;
         gaDatas[csvIdx] = ga.population[0].allPottential.somethingWrong.ToString(); csvIdx++;

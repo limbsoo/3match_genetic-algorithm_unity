@@ -89,9 +89,11 @@ public class AllPottentials
     public double blocked1;
     public double blocked2;
     public double blocked3;
+    public double blocked4;
     public double overlay1;
     public double overlay2;
     public double overlay3;
+    public double overlay4;
     public double somethingWrong;
 
 
@@ -105,9 +107,11 @@ public class AllPottentials
         blocked1 = 0;
         blocked2 = 0;
         blocked3 = 0;
+        blocked4 = 0;
         overlay1 = 0;
         overlay2 = 0;
         overlay3 = 0;
+        overlay4 = 0;
         somethingWrong = 0;
 
     }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using UnityEngine;
 
 namespace Mkey
@@ -68,9 +69,11 @@ namespace Mkey
             public double blocked1;
             public double blocked2;
             public double blocked3;
+            public double blocked4;
             public double overlay1;
             public double overlay2;
             public double overlay3;
+            public double overlay4;
             public double somethingWrong;
 
             public CellPottential()
@@ -82,9 +85,11 @@ namespace Mkey
                 blocked1 = 0;
                 blocked2 = 0;
                 blocked3 = 0;
+                blocked4 = 0;
                 overlay1 = 0;
                 overlay2 = 0;
                 overlay3 = 0;
+                overlay4 = 0;
                 somethingWrong = 0;
             }
         }
@@ -106,36 +111,38 @@ namespace Mkey
         public int blocked1;
         public int blocked2;
         public int blocked3;
+        public int blocked4;
         public int overlay1;
         public int overlay2;
         public int overlay3;
+        public int overlay4;
         public int somethingWrong;
 
-        public void checkPerHindrance()
-        {
-            if (Blocked != null)
-            {
-                if (!Blocked.Destroyable) obstacle++;
+        //public void checkPerHindrance()
+        //{
+        //    if (Blocked != null)
+        //    {
+        //        if (!Blocked.Destroyable) obstacle++;
 
-                else
-                {
-                    if (setProtection == 1) blocked1++;
-                    else if (setProtection == 2) blocked2++;
-                    else if (setProtection == 3) blocked3++;
-                    else somethingWrong++;
-                }
-            }
+        //        else
+        //        {
+        //            if (setProtection == 1) blocked1++;
+        //            else if (setProtection == 2) blocked2++;
+        //            else if (setProtection == 3) blocked3++;
+        //            else somethingWrong++;
+        //        }
+        //    }
 
-            else if (Overlay != null)
-            {
-                if (setProtection == 1) overlay1++;
-                else if (setProtection == 2) overlay2++;
-                else if (setProtection == 3) overlay3++;
-                else somethingWrong++;
-            }
+        //    else if (Overlay != null)
+        //    {
+        //        if (setProtection == 1) overlay1++;
+        //        else if (setProtection == 2) overlay2++;
+        //        else if (setProtection == 3) overlay3++;
+        //        else somethingWrong++;
+        //    }
 
-            else somethingWrong++;
-        }
+        //    else somethingWrong++;
+        //}
 
 
 
@@ -1103,6 +1110,9 @@ namespace Mkey
             GridObject[] gridObjects = GetComponentsInChildren<GridObject>();
             foreach (var item in gridObjects)
             {
+
+                //Resources.UnloadAsset(item.gameObject);
+
                 DestroyImmediate(item.gameObject);
             }
         }

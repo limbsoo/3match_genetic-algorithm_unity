@@ -101,6 +101,8 @@ namespace Mkey
 
         public bool divideSpecificBlock;
 
+        public int minusRange;
+        public int originPoten;
 
         public Difficult[] difficults;
         public Match3Helper(MatchGrid g, Dictionary<int, TargetData> targets)
@@ -138,13 +140,18 @@ namespace Mkey
 
             else
             {
-
-                //limits.match3Cycle = 1;
-                //limits.generation = 1;
-                //limits.csvCnt = 0;
                 limits.match3Cycle = 50;
                 limits.generation = 100;
-                limits.csvCnt = 19;
+                limits.csvCnt = 29;
+
+
+                ////limits.match3Cycle = 1;
+                ////limits.generation = 1;
+                ////limits.csvCnt = 0;
+                //limits.match3Cycle = 50;
+                //limits.generation = 100;
+                //limits.csvCnt = 29;
+                ////limits.csvCnt = 9;
             }
 
 
@@ -154,11 +161,54 @@ namespace Mkey
             limits.find = 2000;
             limits.mix = 200;
 
+
+            spawnObstacleObject = false;
+            spawnBlockedObject = true;
+            spawnOverlayObject = false;
+
             
+            haveRandomProtection = false;
+            blockProtection = 3;
+
+            ////size 99
+            //wantDifficulty = 888;
+            //difficultyTolerance = 30;
+            //minusRange = 80;
+            //originPoten = 888;
+
+
+            //size 1010
+            wantDifficulty = 1144;
+            difficultyTolerance = 30;
+            minusRange = 110;
+            originPoten = 1144;
+
+            ////size 1111
+            //wantDifficulty = 1432;
+            //difficultyTolerance = 30;
+            //minusRange = 140;
+            //originPoten = 1432;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             //if (getSetGenes) setPottentials();
 
-            blockedObjectHitCnt = 0;
-            overlayObjectHitCnt = 0;
+            //blockedObjectHitCnt = 0;
+            //overlayObjectHitCnt = 0;
 
             //isActualMeasureSwap = false;
 
@@ -167,13 +217,6 @@ namespace Mkey
             //spawnOverlayObject = false;
             //haveRandomProtection = true;
             //blockProtection = 3;
-
-
-            spawnObstacleObject = true;
-            spawnBlockedObject = true;
-            spawnOverlayObject = false;
-            haveRandomProtection = true;
-            blockProtection = 3;
 
 
 
@@ -186,12 +229,17 @@ namespace Mkey
             //haveRandomProtection = false;
             //blockProtection = 3;
 
+            //wantDifficulty = 1300;
+            //difficultyTolerance = 50;
+            //minusRange = 120;
+            //originPoten = 1300;
 
-            wantDifficulty = 600;
-            difficultyTolerance = 50;
+            //wantDifficulty = 800;
+            //difficultyTolerance = 50;
+            //minusRange = 70;
+            //originPoten = 800;
 
-
-            numOfMatchBlock = 7;
+            numOfMatchBlock = 7; //GetRandomObjectPrefab 이거 지워서 가지수바꾸려면 바꿔야함
 
 
             // 0 600
@@ -427,7 +475,11 @@ namespace Mkey
             List<GridCell> gFreeCells = new List<GridCell>();
             gFreeCells = GetFreeCells(grid, true);
             //if (gFreeCells.Count > 0) createFillPath(grid);
-            if (gFreeCells.Count > 0) new_createFillPath();
+            if (gFreeCells.Count > 0)
+            {
+                new_createFillPath();
+            }
+            
 
             while (gFreeCells.Count > 0)
             {
@@ -507,15 +559,16 @@ namespace Mkey
 
                     if(obstacleMax == 0)
                     {
-                        int randNum = Random.Range(0, predictMatch.Count - 1);
-                        grid.mgList[randNum].SwapEstimate();
+                        int randNum = Random.Range(0, predictMatch.Count);
+                        //int randNum = Random.Range(0, predictMatch.Count - 1);
+                        grid.mgList[randNum].new_SwapEstimate();
                     }
 
-                    else grid.mgList[obstacleMaxIdx].SwapEstimate();
+                    else grid.mgList[obstacleMaxIdx].new_SwapEstimate();
 
                 }
 
-                else grid.mgList[maxIdx].SwapEstimate();
+                else grid.mgList[maxIdx].new_SwapEstimate();
 
             }
 
@@ -655,11 +708,11 @@ namespace Mkey
         {
             if (estimateMax(plays.findMatchCnt, limits.find)) return;
 
-            if (grid.GetFreeCells(true).Count > 0)
-            {
-                plays.curState = 0;
-                return;
-            }
+            //if (grid.GetFreeCells(true).Count > 0)
+            //{
+            //    plays.curState = 0;
+            //    return;
+            //}
 
             createMatchGroups(3, false, grid);
 
@@ -704,6 +757,7 @@ namespace Mkey
                                         }
                                     }
                                 }
+
 
                                 grid.mgList[i].Cells[j].DestroyGridObjects();
                             }
@@ -889,71 +943,73 @@ namespace Mkey
                 p.allPottential.blocked1 += grid.Cells[i].cellPottential.blocked1;
                 p.allPottential.blocked2 += grid.Cells[i].cellPottential.blocked2;
                 p.allPottential.blocked3 += grid.Cells[i].cellPottential.blocked3;
+                p.allPottential.blocked4 += grid.Cells[i].cellPottential.blocked4;
                 p.allPottential.overlay1 += grid.Cells[i].cellPottential.overlay1;
                 p.allPottential.overlay2 += grid.Cells[i].cellPottential.overlay2;
                 p.allPottential.overlay3 += grid.Cells[i].cellPottential.overlay3;
+                p.allPottential.overlay4 += grid.Cells[i].cellPottential.overlay4;
                 p.allPottential.somethingWrong += grid.Cells[i].cellPottential.somethingWrong;
             }
         }
 
 
 
-        public void cntMapPottentials(DNA<char> p)
-        {
-            MatchGroup mg = new MatchGroup();
+        //public void cntMapPottentials(DNA<char> p)
+        //{
+        //    MatchGroup mg = new MatchGroup();
 
-            for (int i = 0; i < grid.Cells.Count; i++)
-            {
-                grid.Cells[i].matchFromSwapPotential = 0;
-                grid.Cells[i].obstacle = 0;
-                grid.Cells[i].blocked1 = 0;
-                grid.Cells[i].blocked2 = 0;
-                grid.Cells[i].blocked3 = 0;
-                grid.Cells[i].overlay1 = 0;
-                grid.Cells[i].overlay2 = 0;
-                grid.Cells[i].overlay3 = 0;
-                grid.Cells[i].somethingWrong = 0;
-            }
+        //    for (int i = 0; i < grid.Cells.Count; i++)
+        //    {
+        //        grid.Cells[i].matchFromSwapPotential = 0;
+        //        grid.Cells[i].obstacle = 0;
+        //        grid.Cells[i].blocked1 = 0;
+        //        grid.Cells[i].blocked2 = 0;
+        //        grid.Cells[i].blocked3 = 0;
+        //        grid.Cells[i].overlay1 = 0;
+        //        grid.Cells[i].overlay2 = 0;
+        //        grid.Cells[i].overlay3 = 0;
+        //        grid.Cells[i].somethingWrong = 0;
+        //    }
 
-            for (int i = 0; i < grid.Cells.Count; i++)
-            {
-                mg.cntMapPerPottentials(grid, i);
-            }
+        //    for (int i = 0; i < grid.Cells.Count; i++)
+        //    {
+        //        mg.cntMapPerPottentials(grid, i);
+        //    }
 
-            int mapMatchPotential = 0;
-            int obstacle = 0;
-            int blocked1 = 0;
-            int blocked2 = 0;
-            int blocked3 = 0;
-            int overlay1 = 0;
-            int overlay2 = 0;
-            int overlay3 = 0;
-            int somethingWrong = 0;
+        //    int mapMatchPotential = 0;
+        //    int obstacle = 0;
+        //    int blocked1 = 0;
+        //    int blocked2 = 0;
+        //    int blocked3 = 0;
+        //    int overlay1 = 0;
+        //    int overlay2 = 0;
+        //    int overlay3 = 0;
+        //    int somethingWrong = 0;
 
 
-            for (int i = 0; i < grid.Cells.Count; i++)
-            {
-                mapMatchPotential += grid.Cells[i].matchFromSwapPotential;
+        //    for (int i = 0; i < grid.Cells.Count; i++)
+        //    {
+        //        mapMatchPotential += grid.Cells[i].matchFromSwapPotential;
 
-                obstacle += grid.Cells[i].obstacle;
-                blocked1 += grid.Cells[i].blocked1;
-                blocked2 += grid.Cells[i].blocked2;
-                blocked3 += grid.Cells[i].blocked3;
-                overlay1 += grid.Cells[i].overlay1;
-                overlay2 += grid.Cells[i].overlay2;
-                overlay3 += grid.Cells[i].overlay3;
-                somethingWrong += grid.Cells[i].somethingWrong;
-            }
+        //        obstacle += grid.Cells[i].obstacle;
+        //        blocked1 += grid.Cells[i].blocked1;
+        //        blocked2 += grid.Cells[i].blocked2;
+        //        blocked3 += grid.Cells[i].blocked3;
+        //        overlay1 += grid.Cells[i].overlay1;
+        //        overlay2 += grid.Cells[i].overlay2;
+        //        overlay3 += grid.Cells[i].overlay3;
+        //        somethingWrong += grid.Cells[i].somethingWrong;
+        //    }
 
-            //p.mapObstacle = obstacle;
-            //p.mapBlocked1 = blocked1;
-            //p.mapBlocked2 = blocked2;
-            //p.mapBlocked3 = blocked3;
-            //p.mapOverlay1 = overlay1;
-            //p.mapOverlay2 = overlay2;
-            //p.mapOverlay3 = overlay3;
-            //p.mapSomethingWrong = somethingWrong;
-        }
+        //    //p.mapObstacle = obstacle;
+        //    //p.mapBlocked1 = blocked1;
+        //    //p.mapBlocked2 = blocked2;
+        //    //p.mapBlocked3 = blocked3;
+        //    //p.mapOverlay1 = overlay1;
+        //    //p.mapOverlay2 = overlay2;
+        //    //p.mapOverlay3 = overlay3;
+        //    //p.mapSomethingWrong = somethingWrong;
+        //}
 
 
 
@@ -1422,8 +1478,12 @@ namespace Mkey
                             {
                                 if (col.Spawn.gridCell != c)
                                 {
-                                    pF.CreatePath(map, c.pfCell, col.Spawn.gridCell.pfCell);
-                                    if (pF.FullPath != null && pF.PathLenght < length) { path = pF.GCPath(); length = pF.PathLenght; }
+                                    pF.new_CreatePath(map, c.pfCell, col.Spawn.gridCell.pfCell);
+
+                                    if (pF.FullPath != null && pF.PathLenght < length) 
+                                    {
+                                        path = pF.GCPath(); length = pF.PathLenght; 
+                                    }
                                 }
                                 else
                                 {

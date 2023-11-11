@@ -107,12 +107,36 @@ namespace Mkey
             return (fullPath!=null && PathLenght > 0 && fullPath[0] == A && fullPath[PathLenght - 1] == B);
         }
 
+        public void new_CreatePath(Map WorkMap, PFCell A, PFCell B)
+        {
+            fullPath = null;
+            if (WorkMap == null || A == null || B == null || !A.available || !B.available) return;
+
+            CreateGlobWayMap(WorkMap, A, B);
+            if (IsWayExistTo(B))
+            {
+                fullPath = new List<PFCell>();
+                fullPath.Add(B);
+                PFCell mather = B.mather;
+                while (mather != A.mather)
+                {
+                    fullPath.Add(mather);
+                    mather = mather.mather;
+                }
+                fullPath.Reverse();
+            }
+
+        }
+
+
+
+
         public void CreatePath(Map WorkMap, PFCell A, PFCell B)
         {
-         //   UnityEngine.Debug.Log(A + " : " + B);
+            //   UnityEngine.Debug.Log(A + " : " + B);
             fullPath = null;
-            if (WorkMap == null || A == null || B == null  || !A.available|| !B.available) return;
-        //    if (!IsWayCreated(A, B))
+            if (WorkMap == null || A == null || B == null || !A.available || !B.available) return;
+            //    if (!IsWayCreated(A, B))
             {
                 CreateGlobWayMap(WorkMap, A, B);
                 if (IsWayExistTo(B))

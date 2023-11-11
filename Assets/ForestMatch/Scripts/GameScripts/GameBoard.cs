@@ -105,9 +105,11 @@ namespace Mkey
             public double blocked1;
             public double blocked2;
             public double blocked3;
+            public double blocked4;
             public double overlay1;
             public double overlay2;
             public double overlay3;
+            public double overlay4;
             public double somethingWrong;
 
             public InterferenceRate()
@@ -116,9 +118,11 @@ namespace Mkey
                 blocked1 = 0;
                 blocked2 = 0;
                 blocked3 = 0;
+                blocked4 = 0;
                 overlay1 = 0;
                 overlay2 = 0;
                 overlay3 = 0;
+                overlay4 = 0;
                 somethingWrong = 0;
             }
 
@@ -135,11 +139,15 @@ namespace Mkey
 
                 if (blocked3 > 0) sum += blocked3;
 
+                if (blocked4 > 0) sum += blocked4;
+
                 if (overlay1 > 0) sum += overlay1;
 
                 if (overlay2 > 0) sum += overlay2;
 
                 if (overlay3 > 0) sum += overlay3;
+
+                if (overlay4 > 0) sum += overlay4;
 
                 if (somethingWrong > 0) sum += 999999999;
  
@@ -149,9 +157,11 @@ namespace Mkey
                 if (blocked1 > 0) c.cellPottential.blocked1 += (blocked1 / sum);
                 if (blocked2 > 0) c.cellPottential.blocked2 += (blocked2 / sum);
                 if (blocked3 > 0) c.cellPottential.blocked3 += (blocked3 / sum);
+                if (blocked4 > 0) c.cellPottential.blocked4 += (blocked4 / sum);
                 if (overlay1 > 0) c.cellPottential.overlay1 += (overlay1 / sum);
                 if (overlay2 > 0) c.cellPottential.overlay2 += (overlay2 / sum);
                 if (overlay3 > 0) c.cellPottential.overlay3 += (overlay3 / sum);
+                if (overlay4 > 0) c.cellPottential.overlay4 += (overlay4 / sum);
                 if (somethingWrong > 0) c.cellPottential.somethingWrong += (somethingWrong / sum);
             }
 
@@ -170,6 +180,7 @@ namespace Mkey
                         if (c.setProtection == 1) blocked1++;
                         else if (c.setProtection == 2) blocked2++;
                         else if (c.setProtection == 3) blocked3++;
+                        else if (c.setProtection == 4) blocked4++;
                         else somethingWrong++;
                     }
                 }
@@ -188,6 +199,7 @@ namespace Mkey
                         if (c.setProtection == 1) blocked1++;
                         else if (c.setProtection == 2) blocked2++;
                         else if (c.setProtection == 3) blocked3++;
+                        else if (c.setProtection == 4) blocked4++;
                         else somethingWrong++;
                     }
 
@@ -198,6 +210,7 @@ namespace Mkey
                     if (c.setProtection == 1) overlay1++;
                     else if (c.setProtection == 2) overlay2++;
                     else if (c.setProtection == 3) overlay3++;
+                    else if (c.setProtection == 4) overlay4++;
                     else somethingWrong++;
                 }
 

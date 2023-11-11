@@ -106,17 +106,17 @@ namespace Mkey
 
         public MatchObject GetRandomObjectPrefab(LevelConstructSet lCSet, GameObjectsSet gOSet)
         {
-            //List<MatchObject> gridObjects = lCSet.GetMatchObjects(gOSet);
-            //gridObjects.Shuffle();
-            //return gridObjects.Count > 0 ? gridObjects[0] : null;
-
-
             List<MatchObject> gridObjects = lCSet.GetMatchObjects(gOSet);
-            List<MatchObject> gridObjects1 = new List<MatchObject>();
+            gridObjects.Shuffle();
+            return gridObjects.Count > 0 ? gridObjects[0] : null;
 
-            for (int i = 0; i < numOfMatchBlock; i++) gridObjects1.Add(gridObjects[i]);
-            gridObjects1.Shuffle();
-            return gridObjects1.Count > 0 ? gridObjects1[0] : null;
+
+            //List<MatchObject> gridObjects = lCSet.GetMatchObjects(gOSet);
+            //List<MatchObject> gridObjects1 = new List<MatchObject>();
+
+            ////for (int i = 0; i < numOfMatchBlock; i++) gridObjects1.Add(gridObjects[i]);
+            //gridObjects1.Shuffle();
+            //return gridObjects1.Count > 0 ? gridObjects1[0] : null;
         }
 
 
