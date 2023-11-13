@@ -168,7 +168,7 @@ namespace Mkey
 
             
             haveRandomProtection = false;
-            blockProtection = 3;
+            blockProtection = 1;
 
             ////size 99
             //wantDifficulty = 888;
@@ -179,7 +179,7 @@ namespace Mkey
 
             //size 1010
             wantDifficulty = 1144;
-            difficultyTolerance = 30;
+            difficultyTolerance = 50;
             minusRange = 110;
             originPoten = 1144;
 
@@ -609,7 +609,22 @@ namespace Mkey
 
         public bool estimateNeighborObstacle(GridCell g)
         {
-            if (g != null) if (g.MovementBlocked) return true;
+            //if (g != null) if (g.MovementBlocked) return true;
+
+            if (g != null)
+            {
+                if (g.Blocked != null)
+                {
+                    if (!g.Blocked.Destroyable) return false;
+
+                    else return true;
+                }
+                 
+                else if (g.Overlay != null) return true;
+
+                else return false;
+            }
+
             return false;
         }
 
