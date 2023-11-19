@@ -45,15 +45,33 @@ namespace Mkey
         public GridObject new_Get(GridCell gridCell, LevelConstructSet lCSet, GameObjectsSet gOSet, GameBoard mBoard, Vector3 position)
         {
             if (!gridCell) return null;
-            MatchObject prefab = GetMainRandomObjectPrefab(lCSet, gOSet);
-            if (!prefab) return null;
 
-            GridObject match = prefab.new_create(gridCell);
-            if (match)
+            int[] arr = { 0, 1, 2, 3, 4, 5, 6 };
+
+            int n = 7;
+            while (n > 1)
             {
-                match.transform.position = position;
+                int k = (UnityEngine.Random.Range(0, n) % n);
+                n--;
+                int val = arr[k];
+                arr[k] = arr[n];
+                arr[n] = val;
             }
-            return match;
+
+            gridCell.poolingmatchObjects[arr[0]].gameObject.SetActive(true);
+
+
+            //MatchObject prefab = GetMainRandomObjectPrefab(lCSet, gOSet);
+            //if (!prefab) return null;
+
+            //GridObject match = prefab.new_create(gridCell);
+
+            //if (gridCell.DynamicObject)
+            //{
+            //    gridCell.DynamicObject.transform.position = position;
+            //}
+
+            return gridCell.poolingmatchObjects[arr[0]];
         }
 
         /// <summary>11111111111111111111111111sacascasfas
@@ -68,16 +86,16 @@ namespace Mkey
         public MatchObject GetMainRandomObjectPrefab(LevelConstructSet lCSet, GameObjectsSet gOSet)
         {
 
-            //List<MatchObject> gridObjects = lCSet.GetMatchObjects(gOSet);
-            //gridObjects.Shuffle();
-            //return gridObjects.Count > 0 ? gridObjects[0] : null;
-
             List<MatchObject> gridObjects = lCSet.GetMatchObjects(gOSet);
-            List<MatchObject> gridObjects1 = new List<MatchObject>();
+            gridObjects.Shuffle();
+            return gridObjects.Count > 0 ? gridObjects[0] : null;
 
-            for (int i = 0; i < numOfMatchBlock; i++) gridObjects1.Add(gridObjects[i]);
-            gridObjects1.Shuffle();
-            return gridObjects1.Count > 0 ? gridObjects1[0] : null;
+            //List<MatchObject> gridObjects = lCSet.GetMatchObjects(gOSet);
+            //List<MatchObject> gridObjects1 = new List<MatchObject>();
+
+            //for (int i = 0; i < numOfMatchBlock; i++) gridObjects1.Add(gridObjects[i]);
+            //gridObjects1.Shuffle();
+            //return gridObjects1.Count > 0 ? gridObjects1[0] : null;
         }
 
         //get picked object block

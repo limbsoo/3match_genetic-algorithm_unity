@@ -159,6 +159,22 @@ namespace Mkey
             return parent ? Instantiate(this, parent.transform) : Instantiate(this);
         }
 
+        public virtual void returnObject(GridObject go)
+        {
+            go.returnObject(go);
+        }
+
+
+        public virtual void initailze(GridObject go)
+        {
+            go.initailze(go);
+        }
+
+        //public virtual GridObject CreateNewObject(GridObject go)
+        //{
+        //    return parent ? Instantiate(this, parent.transform) : Instantiate(this);
+        //}
+
 
 
 

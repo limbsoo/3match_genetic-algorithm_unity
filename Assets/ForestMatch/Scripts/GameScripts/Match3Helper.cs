@@ -19,6 +19,9 @@ using UnityEditor;
 using UnityEditor.VersionControl;
 using System.Security.Cryptography.X509Certificates;
 using static Mkey.GridCell;
+using static UnityEngine.GraphicsBuffer;
+using System.IO;
+using System.Security.Cryptography;
 
 //231018 sundry
 
@@ -104,6 +107,35 @@ namespace Mkey
         public int minusRange;
         public int originPoten;
 
+
+        public List<MatchGrid> mgs;
+
+
+        public List<Queue<GridObject>> poolingObjectQueue;
+
+
+        //public Queue<List<GridCell>> llg;
+
+
+        public BlockedObject obsatcle;
+        public BlockedObject blocked;
+        public OverlayObject overlay;
+        public List<MatchObject> match;
+        public List<GridCell> tmpCells;
+        public List<GridCell> tmpMatchCells;
+
+
+        public List<int> spawnRootSize;
+        public bool knwoSpawnRootSize;
+
+        public int fCnt;
+        public int sCnt;
+        public int dCnt;
+
+
+        public Queue<PathFinder> pFs;
+
+
         public Difficult[] difficults;
         public Match3Helper(MatchGrid g, Dictionary<int, TargetData> targets)
         {
@@ -131,7 +163,7 @@ namespace Mkey
                 limits.csvCnt = 0;
             }
 
-            else if(!isOnce && getSetGenes)
+            else if (!isOnce && getSetGenes)
             {
                 limits.match3Cycle = 15;
                 limits.generation = 1;
@@ -145,9 +177,11 @@ namespace Mkey
                 limits.csvCnt = 29;
 
 
-                ////limits.match3Cycle = 1;
-                ////limits.generation = 1;
-                ////limits.csvCnt = 0;
+                //limits.match3Cycle = 1;
+                //limits.generation = 3;
+                //limits.csvCnt = 0;
+
+
                 //limits.match3Cycle = 50;
                 //limits.generation = 100;
                 //limits.csvCnt = 29;
@@ -166,7 +200,7 @@ namespace Mkey
             spawnBlockedObject = true;
             spawnOverlayObject = false;
 
-            
+
             haveRandomProtection = false;
             blockProtection = 1;
 
@@ -178,8 +212,10 @@ namespace Mkey
 
 
             //size 1010
+
             wantDifficulty = 1144;
-            difficultyTolerance = 50;
+            //wantDifficulty = 1034;
+            difficultyTolerance = 55;
             minusRange = 110;
             originPoten = 1144;
 
@@ -191,68 +227,82 @@ namespace Mkey
 
 
 
+            obsatcle = null;
+            blocked = null;
+            overlay = null;
+            match = null;
 
+            tmpCells = new List<GridCell>();
+            tmpMatchCells = new List<GridCell>();
 
+            spawnRootSize = new List<int>(gridSize);
 
-
-
-
-
-
-
-
-
-
-
-
-            //if (getSetGenes) setPottentials();
-
-            //blockedObjectHitCnt = 0;
-            //overlayObjectHitCnt = 0;
-
-            //isActualMeasureSwap = false;
-
-            //spawnObstacleObject = true;
-            //spawnBlockedObject = true;
-            //spawnOverlayObject = false;
-            //haveRandomProtection = true;
-            //blockProtection = 3;
-
-
-
-
-
-
-            //spawnObstacleObject = false;
-            //spawnBlockedObject = false;
-            //spawnOverlayObject = true;
-            //haveRandomProtection = false;
-            //blockProtection = 3;
-
-            //wantDifficulty = 1300;
-            //difficultyTolerance = 50;
-            //minusRange = 120;
-            //originPoten = 1300;
-
-            //wantDifficulty = 800;
-            //difficultyTolerance = 50;
-            //minusRange = 70;
-            //originPoten = 800;
 
             numOfMatchBlock = 7; //GetRandomObjectPrefab 이거 지워서 가지수바꾸려면 바꿔야함
 
 
-            // 0 600
-            //1 550
-            //2 500
-            //3 450
-            //4 400
-            //5 350
-            //6 300
-            //7 250
-            //8 200
-            //9 150
+            // pFs = new Queue<PathFinder> ();
+
+            //for (int i = 0; i < 100; i++)
+            //{
+            //    pFs.Enqueue(new PathFinder());
+            //}
+
+
+            //llg = new Queue<List<GridCell>> ();
+
+            //for(int i = 0; i < 100; i++) 
+            //{
+            //    llg.Enqueue(new List<GridCell> ());
+            //}
+
+            knwoSpawnRootSize = false;
         }
+
+
+
+        public void makeBlocks(SpawnController sC, LevelConstructSet LcSet, GameObjectsSet goSet)
+        {
+            obsatcle = sC.GetObstacleObjectPrefab(LcSet, goSet);
+            blocked = sC.GetSelectBreakableBlockedObjectPrefab(LcSet, goSet);
+            overlay = sC.GetSelectOverlayObjectPrefab(LcSet, goSet);
+
+            match = new List<MatchObject>();
+
+            for (int i = 0; i < 7; i++)
+            {
+                MatchObject m = sC.GetPickMatchObject(LcSet, goSet, i);
+                match.Add(m);
+            }
+
+
+            //List<GridObject> list = new List<GridObject> ();
+
+            //Queue<GridObject> poolingObjectQueue = new Queue<GridObject>();
+
+            //for (int i = 0; i < 10; i++)
+            //{
+            //    poolingObjectQueue.Enqueue(CreateNewObject());
+            //}
+
+
+
+            //tmpCells = new List<GridCell>();
+
+
+
+            //GridCell g = new GridCell();
+
+            //g.Create(this, MBoard.TargetCollectEventHandler);
+
+
+
+            //tmpCells.Add(g);
+
+        }
+
+
+
 
         public string setMaps(int idx, bool isMap)
         {
@@ -290,174 +340,13 @@ namespace Mkey
         }
 
 
-        //public void setPottentials()
-        //{
-        //    difficults = new Difficult[10];
 
-        //    string[] map =
-        //    {
-        //        "311333030011333333133303333333333331333333313333333333333333333333333333133333113" ,
-        //        "333330303301333333333333333333310333333333333333333333331033333301033333333333330" ,
-        //        "331333133133333330133300133330333331333303333333333333333333333333303333333333330" ,
-        //        "033103030133333333331333333313033313333333333333333333333333330331310331131301333" ,
-        //        "331113331313330333133333333333333331333130333333133333133333333030313333130313103" ,
-        //        "313033103111333113333333311100333311130333333333333311113333333033303333103011333" ,
-        //        "130303011333333333313303333333333333333133333330013013333313133030013333330101330" ,
-        //        "000331101303333333333333003133330331133333313133331333333003333300333310331103000" ,
-        //        "033310030030100333001111310033333333010333300133333103333333133030033333101003030" ,
-        //        "333133133300333331103333101313333330303333331333301333131000300010333300010300311"
-        //    };
-
-        //    string[] masp =
-        //        {
-        //        "556	426	239	350	290	0	0	0	0	0" ,
-        //        "519	586	323	406	476	0	0	0	0	0" ,
-        //        "451	334	190	246	257	0	0	0	0	0" ,
-        //        "404	385	115	237	238	0	0	0	0	0" ,
-        //        "364	453	153	271	246	0	0	0	0	0" ,
-        //        "307	368	156	196	289	0	0	0	0	0" ,
-        //        "256	487	194	305	315	0	0	0	0	0" ,
-        //        "202	412	189	269	305	0	0	0	0	0" ,
-        //        "170	404	167	302	254	0	0	0	0	0" ,
-        //        "103	402	118	250	235	0	0	0	0	0"
-        //    };
-
-        //    string[]protections =
-        //    {
-        //        "011000000032000000100000000000000001000000020000000000000000000000000000200000210" ,
-        //        "000000000002000000000000000000030000000000000000000000003000000003000000000000000" ,
-        //        "003000300200000000100000300000000002000000000000000000000000000000000000000000000" ,
-        //        "000100000100000000001000000020000030000000000000000000000000000002030002203002000" ,
-        //        "003130002020000000300000000000000003000300000000200000100000000000020000300010200" ,
-        //        "010000200211000210000000011200000012100000000000000011310000000000000000300013000" ,
-        //        "200000032000000000030000000000000000000100000000030030000010200000030000000102000" ,
-        //        "000002102000000000000000000200000002300000020100003000000000000000000010001100000" ,
-        //        "000030000000200000001332030000000000010000000200000100000000300000000000102000000" ,
-        //        "000100100000000002300000303020000000000000003000003000201000000010000000020000022"
-        //    };
-
-
-        //    for (int i = 0; i < 10; i++)
-        //    {
-        //        Difficult difficlut = new Difficult();
-        //        string s = "";
-        //        int cnt = 0;
-
-        //        for (int j = 0; j < masp[i].Length; j++)
-        //        {
-        //            if (masp[i][j] == '\t')
-        //            {
-        //                if (s != "")
-        //                {
-        //                    if (cnt == 0) difficlut.pottential = Convert.ToInt32(s);
-        //                    else if (cnt == 1) difficlut.obstacle = Convert.ToInt32(s);
-
-        //                    else if (cnt == 2) difficlut.blockedPottential = Convert.ToInt32(s);
-        //                    else if (cnt == 3) difficlut.blocked1 = Convert.ToInt32(s);
-        //                    else if (cnt == 4) difficlut.blocked2 = Convert.ToInt32(s);
-        //                    else if (cnt == 5) difficlut.blocked3 = Convert.ToInt32(s);
-
-        //                    else if (cnt == 6) difficlut.overlayPottential = Convert.ToInt32(s);
-        //                    else if (cnt == 7) difficlut.overlay1 = Convert.ToInt32(s);
-        //                    else if (cnt == 8) difficlut.overlay2 = Convert.ToInt32(s);
-        //                    else if (cnt == 9) difficlut.overlay3 = Convert.ToInt32(s);
-
-        //                    cnt++;
-        //                }
-
-        //                s = "";
-        //            }
-
-        //            else s += masp[i][j];
-        //        }
-
-        //        difficults[i] = difficlut;
-        //    }
-
-
-            
-
-        //    for (int i = 0; i < map.Length; i++)
-        //    {
-        //        char[] genes = new char[gridSize];
-
-        //        for (int j = 0; j < gridSize; j++)
-        //        {
-        //            genes[j] = map[i][j+81];
-        //        }
-  
-        //        difficults[i].map = genes;
-        //    }
-
-        //    for (int i = 0; i < map.Length; i++)
-        //    {
-        //        char[] genes = new char[gridSize];
-
-        //        for (int j = 0; j < gridSize; j++)
-        //        {
-        //            genes[j] = protections[i][j + 81];
-        //        }
-
-        //        difficults[i].protections = genes;
-        //    }
-
-
-        //}
-
-
-
-
-        //public void setProtection(DNA<char> p)
-        //{
-        //    protections = new List<int>();
-
-        //    for (int i = 0; i < p.cellsID.Count; i++)
-        //    {
-        //        if (difficults[csvCnt].protections[i] == '1')
-        //        {
-        //            protections.Add(1);
-        //        }
-
-        //        else if(difficults[csvCnt].protections[i] == '2')
-        //        {
-        //            protections.Add(2);
-        //        }
-
-        //        else if (difficults[csvCnt].protections[i] == '3')
-        //        {
-        //            protections.Add(3);
-        //        }
-
-        //        else if (difficults[csvCnt].protections[i] == '0')
-        //        {
-        //            protections.Add(0);
-        //        }
-
-
-        //        //if (p.cellsID[i] == 0 || p.cellsID[i] == 3) protections.Add(0);
-
-        //        //else
-        //        //{
-        //        //    if(haveRandomProtection)
-        //        //    {
-        //        //        int randomProtection = Random.Range(1, blockProtection + 1);
-        //        //        protections.Add(randomProtection);
-        //        //    }
-
-        //        //   else protections.Add(blockProtection);
-
-        //        //}
-
-        //    }
-           
-
-        //}
-
-
+        List<GridCell> gcL = new List<GridCell>();
 
         internal List<GridCell> GetFreeCells(MatchGrid g, bool withPath)
         {
-            List<GridCell> gcL = new List<GridCell>();
+            //gcL.Clear();
+            gcL = new List<GridCell>();
             for (int i = 0; i < g.Cells.Count; i++)
             {
                 if (g.Cells[i].IsDynamicFree && !g.Cells[i].Blocked && !g.Cells[i].IsDisabled)
@@ -468,18 +357,40 @@ namespace Mkey
             return gcL;
         }
 
+        List<GridCell> gFreeCells = new List<GridCell>();
+
 
         //-- fillFreeCells ------------------------------------------------------------------------//
         public void fillFreeCells()
         {
-            List<GridCell> gFreeCells = new List<GridCell>();
+            //gFreeCells.Clear();
+
+            //List<GridCell> gFreeCells = new List<GridCell>();
+
+            gFreeCells = new List<GridCell>();
             gFreeCells = GetFreeCells(grid, true);
-            //if (gFreeCells.Count > 0) createFillPath(grid);
+
+            //int min = 0;
+
             if (gFreeCells.Count > 0)
             {
-                new_createFillPath();
+                //for (int i = 0; i < gFreeCells.Count; i++)
+                //{
+                //    if (min < gFreeCells[i].Column)
+                //    {
+                //        min = gFreeCells[i].Column;
+                //    }
+                //}
+
+                CreateFillPath(grid);
+                //new_createFillPath111111111();
+                //new_createFillPathTOFill(min);
+
             }
-            
+
+
+            //gFreeCells = GetFreeCells(grid, true);
+
 
             while (gFreeCells.Count > 0)
             {
@@ -492,9 +403,14 @@ namespace Mkey
 
             estimateClear();
 
+            fCnt++;
             plays.fillGridCnt = 0;
             plays.curState = 2;
         }
+
+
+        List<int> predictMatch = new List<int>();
+        List<int> predictObstacle = new List<int>();
 
         //-- swapCells ------------------------------------------------------------------------//
         public void swapCells(DNA<char> p, Transform trans)
@@ -516,14 +432,17 @@ namespace Mkey
 
             if (grid.mgList.Count > 1)
             {
-                List<int> predictMatch = new List<int>();
-                List<int> predictObstacle = new List<int>();
-
+                predictMatch = null;
+                predictMatch = new List<int>();
+                predictObstacle = null;
+                predictObstacle = new List<int>();
 
                 for (int i = 0; i < grid.mgList.Count; i++)
                 {
                     int predictCnt = 0;
-                    predictCnt += estimateIncludeTarget(grid.mgList[i]);
+                    //predictCnt += estimateIncludeTarget(grid.mgList[i]);
+                    predictCnt += estimateIncludingTarget(grid.mgList[i]);
+
                     predictMatch.Add(predictCnt);
 
                     int predictObstacleCnt = 0;
@@ -557,7 +476,7 @@ namespace Mkey
                         }
                     }
 
-                    if(obstacleMax == 0)
+                    if (obstacleMax == 0)
                     {
                         int randNum = Random.Range(0, predictMatch.Count);
                         //int randNum = Random.Range(0, predictMatch.Count - 1);
@@ -574,6 +493,8 @@ namespace Mkey
 
             else grid.mgList[0].new_SwapEstimate();
 
+
+            sCnt++;
             p.swapCnt++;
             plays.curState = 2;
         }
@@ -611,27 +532,58 @@ namespace Mkey
         {
             //if (g != null) if (g.MovementBlocked) return true;
 
-            if (g != null)
+            if (g.Blocked != null)
             {
-                if (g.Blocked != null)
-                {
-                    if (!g.Blocked.Destroyable) return false;
+                if (!g.Blocked.Destroyable) return false;
 
-                    else return true;
-                }
-                 
-                else if (g.Overlay != null) return true;
-
-                else return false;
+                else return true;
             }
 
-            return false;
+            else if (g.Overlay != null) return true;
+
+            else return false;
+
         }
 
 
 
 
         //-- swapCells --////////////////////////////////////////////////////////////////////////
+
+
+        public int estimateIncludingTarget(MatchGroup mg)
+        {
+
+            int includeTargetCnt = 0;
+
+            foreach (var item in curTargets)
+            {
+                if (!item.Value.Achieved)
+                {
+                    List<int> mg_cell = mg.Cells[0].GetGridObjectsIDs();
+                    if (mg_cell[0] == item.Value.ID) includeTargetCnt += mg.Length;
+                }
+            }
+
+            return includeTargetCnt;
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         public int estimateIncludeTarget(MatchGroup mg)
         {
             int includeTargetCnt = 0;
@@ -719,15 +671,19 @@ namespace Mkey
         }
 
         //-- matchAndDestory ------------------------------------------------------------------------//
+
+
+        List<int> mgCells;
+
         public void matchAndDestory(DNA<char> p)
         {
             if (estimateMax(plays.findMatchCnt, limits.find)) return;
 
-            //if (grid.GetFreeCells(true).Count > 0)
-            //{
-            //    plays.curState = 0;
-            //    return;
-            //}
+            if (grid.GetFreeCells(true).Count > 0)
+            {
+                plays.curState = 0;
+                return;
+            }
 
             createMatchGroups(3, false, grid);
 
@@ -747,7 +703,9 @@ namespace Mkey
                         {
                             for (int j = 0; j < grid.mgList[i].Cells.Count; j++)
                             {
-                                List<int> mgCells = grid.mgList[i].Cells[j].GetGridObjectsIDs();
+                                mgCells = null;
+                                mgCells = grid.mgList[i].Cells[j].GetGridObjectsIDs();
+                                //List<int> mgCells = grid.mgList[i].Cells[j].GetGridObjectsIDs();
 
                                 if (mgCells[0] == item.Value.ID) item.Value.IncCurrCount(1);
 
@@ -762,19 +720,19 @@ namespace Mkey
 
                                 if (spawnOverlayObject)
                                 {
-                                    if(grid.mgList[i].Cells[j].Overlay != null)
+                                    if (grid.mgList[i].Cells[j].Overlay != null)
                                     {
                                         grid.mgList[i].Cells[j].Overlay.hitCnt++;
 
                                         if (grid.mgList[i].Cells[j].setProtection <= grid.mgList[i].Cells[j].Overlay.hitCnt)
                                         {
-                                            grid.mgList[i].Cells[j].DestroyGridObjects();
+                                            grid.mgList[i].Cells[j].DestroyObjects();
                                         }
                                     }
                                 }
 
 
-                                grid.mgList[i].Cells[j].DestroyGridObjects();
+                                grid.mgList[i].Cells[j].DestroyObjects();
                             }
                         }
                     }
@@ -782,6 +740,8 @@ namespace Mkey
 
                 p.matchCnt++;
                 plays.curState = 0;
+
+                dCnt++;
             }
         }
 
@@ -793,7 +753,12 @@ namespace Mkey
                 if (gc.Blocked.Destroyable)
                 {
                     gc.Blocked.hitCnt++;
-                    if (gc.setProtection <= gc.Blocked.hitCnt) gc.DestroyGridObjects();
+
+                    if (gc.setProtection <= gc.Blocked.hitCnt)
+                    {
+                        gc.DestroyObjects();
+                    }
+
                     //if (gc.Blocked.Protection <= gc.Blocked.hitCnt) gc.DestroyGridObjects();
                 }
             }
@@ -839,7 +804,7 @@ namespace Mkey
         {
             if (gc.Neighbors.Top != null)
             {
-                if(checkNeigborIsBreakableObstacle(gc.Neighbors.Top)) return true;
+                if (checkNeigborIsBreakableObstacle(gc.Neighbors.Top)) return true;
             }
 
             if (gc.Neighbors.Left != null)
@@ -856,7 +821,7 @@ namespace Mkey
             {
                 if (checkNeigborIsBreakableObstacle(gc.Neighbors.Bottom)) return true;
             }
-            
+
             return false;
         }
 
@@ -968,436 +933,134 @@ namespace Mkey
         }
 
 
-
-        //public void cntMapPottentials(DNA<char> p)
-        //{
-        //    MatchGroup mg = new MatchGroup();
-
-        //    for (int i = 0; i < grid.Cells.Count; i++)
-        //    {
-        //        grid.Cells[i].matchFromSwapPotential = 0;
-        //        grid.Cells[i].obstacle = 0;
-        //        grid.Cells[i].blocked1 = 0;
-        //        grid.Cells[i].blocked2 = 0;
-        //        grid.Cells[i].blocked3 = 0;
-        //        grid.Cells[i].overlay1 = 0;
-        //        grid.Cells[i].overlay2 = 0;
-        //        grid.Cells[i].overlay3 = 0;
-        //        grid.Cells[i].somethingWrong = 0;
-        //    }
-
-        //    for (int i = 0; i < grid.Cells.Count; i++)
-        //    {
-        //        mg.cntMapPerPottentials(grid, i);
-        //    }
-
-        //    int mapMatchPotential = 0;
-        //    int obstacle = 0;
-        //    int blocked1 = 0;
-        //    int blocked2 = 0;
-        //    int blocked3 = 0;
-        //    int overlay1 = 0;
-        //    int overlay2 = 0;
-        //    int overlay3 = 0;
-        //    int somethingWrong = 0;
-
-
-        //    for (int i = 0; i < grid.Cells.Count; i++)
-        //    {
-        //        mapMatchPotential += grid.Cells[i].matchFromSwapPotential;
-
-        //        obstacle += grid.Cells[i].obstacle;
-        //        blocked1 += grid.Cells[i].blocked1;
-        //        blocked2 += grid.Cells[i].blocked2;
-        //        blocked3 += grid.Cells[i].blocked3;
-        //        overlay1 += grid.Cells[i].overlay1;
-        //        overlay2 += grid.Cells[i].overlay2;
-        //        overlay3 += grid.Cells[i].overlay3;
-        //        somethingWrong += grid.Cells[i].somethingWrong;
-        //    }
-
-        //    //p.mapObstacle = obstacle;
-        //    //p.mapBlocked1 = blocked1;
-        //    //p.mapBlocked2 = blocked2;
-        //    //p.mapBlocked3 = blocked3;
-        //    //p.mapOverlay1 = overlay1;
-        //    //p.mapOverlay2 = overlay2;
-        //    //p.mapOverlay3 = overlay3;
-        //    //p.mapSomethingWrong = somethingWrong;
-        //}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        public void cntMapmatchPottential(DNA<char> p)
+        public void cntFinalPottential(DNA<char> p)
         {
             MatchGroup mg = new MatchGroup();
 
             for (int i = 0; i < grid.Cells.Count; i++)
             {
-                grid.Cells[i].matchFromSwapPotential = 0;
-                grid.Cells[i].obstacle = 0;
-                grid.Cells[i].blocked1 = 0;
-                grid.Cells[i].blocked2 = 0;
-                grid.Cells[i].blocked3 = 0;
-                grid.Cells[i].overlay1 = 0;
-                grid.Cells[i].overlay2 = 0;
-                grid.Cells[i].overlay3 = 0;
-                grid.Cells[i].somethingWrong = 0;
+                grid.Cells[i].cellPottential = new GridCell.CellPottential();
             }
-
 
             for (int i = 0; i < grid.Cells.Count; i++)
             {
-                mg.cntPerPottentials(grid, i);
+                mg.countPottential(grid, i);
             }
-
-            int mapMatchPotential = 0;
-            List<int> mapMatchPotentialList = new List<int>();
-            int obstacleCnt = 0;
 
             for (int i = 0; i < grid.Cells.Count; i++)
             {
-                mapMatchPotentialList.Add(grid.Cells[i].matchFromSwapPotential);
-                mapMatchPotential += grid.Cells[i].matchFromSwapPotential;
-
-                if (grid.Cells[i].Blocked != null || grid.Cells[i].Overlay != null) obstacleCnt++;
+                p.finalPottential += grid.Cells[i].cellPottential.map;
             }
-
-            //p.pottential = new Pottential();
-            //p.pottential.map = mapMatchPotential;
-            //p.mapMatchPotentialList = mapMatchPotentialList;
-            //p.obstacleCnt = obstacleCnt;
-
-
-            //p.originMapPottential = new OriginMapPottential();
-
-            //MatchGroup mg = new MatchGroup();
-
-            //for (int i = 0; i < grid.Cells.Count; i++)
-            //{
-            //    grid.Cells[i].matchFromSwapPotential = 0;
-            //    mg.cntPottential(grid, i);
-            //}
-
-            //int mapMatchPotential = 0;
-            //List<int> mapMatchPotentialList = new List<int>();
-            //int obstacleCnt = 0;
-
-            //for (int i = 0; i < grid.Cells.Count; i++)
-            //{
-            //    mapMatchPotentialList.Add(grid.Cells[i].matchFromSwapPotential);
-            //    mapMatchPotential += grid.Cells[i].matchFromSwapPotential;
-
-            //    if (grid.Cells[i].Blocked != null || grid.Cells[i].Overlay != null) obstacleCnt++;
-            //}
-
-            //p.pottential = new Pottential();
-
-            //p.pottential.map = mapMatchPotential;
-            //p.mapMatchPotentialList = mapMatchPotentialList;
-            //p.obstacleCnt = obstacleCnt;
         }
 
-        //public int cntPottentials(DNA<char> p)
-        //{
-        //    MatchGroup mg = new MatchGroup();
-
-        //    for (int i = 0; i < grid.Cells.Count; i++)
-        //    {
-        //        grid.Cells[i].matchFromSwapPotential = 0;
-        //    }
-
-        //    for (int i = 0; i < grid.Cells.Count; i++)
-        //    {
-        //        mg.cntPottential(grid, i);
-        //    }
-
-        //    int mapMatchPotential = 0;
-
-        //    for (int i = 0; i < grid.Cells.Count; i++)
-        //    {
-        //        mapMatchPotential += grid.Cells[i].matchFromSwapPotential;
-        //    }
-
-        //    return mapMatchPotential;
-        //}
-
-        //public void cntPerPottentials(DNA<char> p)
-        //{
-        //    MatchGroup mg = new MatchGroup();
-
-        //    for (int i = 0; i < grid.Cells.Count; i++)
-        //    {
-        //        grid.Cells[i].matchFromSwapPotential = 0;
-
-        //        grid.Cells[i].obstacle = 0;
-        //        grid.Cells[i].blocked1 = 0;
-        //        grid.Cells[i].blocked2 = 0;
-        //        grid.Cells[i].blocked3 = 0;
-        //        grid.Cells[i].overlay1 = 0;
-        //        grid.Cells[i].overlay2 = 0;
-        //        grid.Cells[i].overlay3 = 0;
-        //        grid.Cells[i].somethingWrong = 0;
-        //    }
-
-        //    for (int i = 0; i < grid.Cells.Count; i++)
-        //    {
-        //        mg.cntPerPottentials(grid, i);
-        //    }
-
-        //    int mapMatchPotential = 0;
-        //    int obstacle = 0;
-        //    int blocked1 = 0;
-        //    int blocked2 = 0;
-        //    int blocked3 = 0;
-        //    int overlay1 = 0;
-        //    int overlay2 = 0;
-        //    int overlay3 = 0;
-        //    int somethingWrong = 0;
 
 
-        //    for (int i = 0; i < grid.Cells.Count; i++)
-        //    {
-        //        mapMatchPotential += grid.Cells[i].matchFromSwapPotential;
-
-        //        obstacle += grid.Cells[i].obstacle;
-        //        blocked1 += grid.Cells[i].blocked1;
-        //        blocked2 += grid.Cells[i].blocked2;
-        //        blocked3 += grid.Cells[i].blocked3;
-        //        overlay1 += grid.Cells[i].overlay1;
-        //        overlay2 += grid.Cells[i].overlay2;
-        //        overlay3 += grid.Cells[i].overlay3;
-        //        somethingWrong += grid.Cells[i].somethingWrong;
-        //    }
-
-        //    p.obstacle = obstacle;
-        //    p.blocked1 = blocked1;
-        //    p.blocked2 = blocked2;
-        //    p.blocked3 = blocked3;
-        //    p.overlay1 = overlay1;
-        //    p.overlay2 = overlay2;
-        //    p.overlay3 = overlay3;
-        //    p.somethingWrong = somethingWrong;
-        //}
-
-        //public void cntMapPottentials(DNA<char> p)
-        //{
-        //    MatchGroup mg = new MatchGroup();
-
-        //    for (int i = 0; i < grid.Cells.Count; i++)
-        //    {
-        //        grid.Cells[i].matchFromSwapPotential = 0;
-        //        grid.Cells[i].obstacle = 0;
-        //        grid.Cells[i].blocked1 = 0;
-        //        grid.Cells[i].blocked2 = 0;
-        //        grid.Cells[i].blocked3 = 0;
-        //        grid.Cells[i].overlay1 = 0;
-        //        grid.Cells[i].overlay2 = 0;
-        //        grid.Cells[i].overlay3 = 0;
-        //        grid.Cells[i].somethingWrong = 0;
-        //    }
-
-        //    for (int i = 0; i < grid.Cells.Count; i++)
-        //    {
-        //        mg.cntMapPerPottentials(grid, i);
-        //    }
-
-        //    int mapMatchPotential = 0;
-        //    int obstacle = 0;
-        //    int blocked1 = 0;
-        //    int blocked2 = 0;
-        //    int blocked3 = 0;
-        //    int overlay1 = 0;
-        //    int overlay2 = 0;
-        //    int overlay3 = 0;
-        //    int somethingWrong = 0;
-
-
-        //    for (int i = 0; i < grid.Cells.Count; i++)
-        //    {
-        //        mapMatchPotential += grid.Cells[i].matchFromSwapPotential;
-
-        //        obstacle += grid.Cells[i].obstacle;
-        //        blocked1 += grid.Cells[i].blocked1;
-        //        blocked2 += grid.Cells[i].blocked2;
-        //        blocked3 += grid.Cells[i].blocked3;
-        //        overlay1 += grid.Cells[i].overlay1;
-        //        overlay2 += grid.Cells[i].overlay2;
-        //        overlay3 += grid.Cells[i].overlay3;
-        //        somethingWrong += grid.Cells[i].somethingWrong;
-        //    }
-
-
-
-        //    p.mapObstacle = obstacle;
-        //    p.mapBlocked1 = blocked1;
-        //    p.mapBlocked2 = blocked2;
-        //    p.mapBlocked3 = blocked3;
-        //    p.mapOverlay1 = overlay1;
-        //    p.mapOverlay2 = overlay2;
-        //    p.mapOverlay3 = overlay3;
-        //    p.mapSomethingWrong = somethingWrong;
-        //}
-
-
-
-
-        //public void countObstacle(DNA<char> p)
-        //{
-        //    MatchGroup mg = new MatchGroup();
-
-        //    for (int i = 0; i < grid.Cells.Count; i++)
-        //    {
-        //        grid.Cells[i].matchFromSwapPotential = 0;
-        //        grid.Cells[i].nearBreakableObstacle = 0;
-        //        grid.Cells[i].includeMatchObstacle = 0;
-        //    }
-
-
-        //    for (int i = 0; i < grid.Cells.Count; i++) mg.cntMatchPottential(grid, i);
-
-        //    int mapMatchPotential = 0;
-        //    List<int> mapMatchPotentialList = new List<int>();
-        //    int breakableObstacle = 0;
-        //    int obstacleCnt = 0;
-        //    int includeMatchObstacle = 0;
-
-        //    for (int i = 0; i < grid.Cells.Count; i++)
-        //    {
-        //        mapMatchPotentialList.Add(grid.Cells[i].matchFromSwapPotential);
-        //        mapMatchPotential += grid.Cells[i].matchFromSwapPotential;              
-        //        breakableObstacle += grid.Cells[i].nearBreakableObstacle;
-        //        includeMatchObstacle += grid.Cells[i].includeMatchObstacle;
-
-        //        //if (grid.Cells[i].DynamicObject == null) obstacleCnt++;
-
-        //        if (grid.Cells[i].Blocked != null || grid.Cells[i].Overlay != null) obstacleCnt++;
-
-        //    }
-
-        //    p.mapMatchPotential = mapMatchPotential;
-        //    p.mapMatchPotentialList = mapMatchPotentialList;
-        //    p.breakableObstacle = breakableObstacle;
-        //    p.obstacleCnt = obstacleCnt;
-        //    p.includeMatchObstacle = includeMatchObstacle;
-        //}
-
-
-
-
-        //public int cntPerPottential(DNA<char> p)
-        //{
-        //    for (int i = 0; i < grid.Cells.Count; i++)
-        //    {
-        //        grid.Cells[i].matchFromSwapPotential = 0;
-        //        grid.Cells[i].nearBreakableObstacle = 0;
-        //        grid.Cells[i].includeMatchObstacle = 0;
-        //    }
-
-        //    int cnt = 0;
-
-        //    MatchGroup mg = new MatchGroup();
-        //    for (int i = 0; i < grid.Cells.Count; i++) mg.cntMatchPottential(grid, i);
-
-        //    for (int i = 0; i < grid.Cells.Count; i++)
-        //    {
-        //        cnt += grid.Cells[i].matchFromSwapPotential;
-        //    }
-
-        //    return cnt;
-        //}
-
+        List<MatchGroup> mgList_t;
 
         public void createMatchGroups(int minMatches, bool estimate, MatchGrid grid)
         {
             //l_mgList = new List<MatchGroup>();
+            grid.mgList = null;
             grid.mgList = new List<MatchGroup>();
             if (!estimate)
             {
-                grid.Rows.ForEach((br) =>
+                foreach (var br in grid.Rows)
                 {
-                    List<MatchGroup> mgList_t = br.GetMatches(minMatches, false);
-                    if (mgList_t != null && mgList_t.Count > 0)
-                    {
-                        addRange(mgList_t, grid);
-                    }
-                });
+                    mgList_t = null;
+                    mgList_t = br.GetMatches(minMatches, false);
 
-                grid.Columns.ForEach((bc) =>
-                {
-                    List<MatchGroup> mgList_t = bc.GetMatches(minMatches, false);
+                    //List<MatchGroup> mgList_t = br.GetMatches(minMatches, false);
                     if (mgList_t != null && mgList_t.Count > 0)
                     {
                         addRange(mgList_t, grid);
                     }
-                });
+                }
+
+                foreach (var bc in grid.Columns)
+                {
+                    mgList_t = null;
+                    mgList_t = bc.GetMatches(minMatches, false);
+                    //List<MatchGroup> mgList_t = bc.GetMatches(minMatches, false);
+                    if (mgList_t != null && mgList_t.Count > 0)
+                    {
+                        addRange(mgList_t, grid);
+                    }
+                }
             }
             else
             {
-                List<MatchGroup> mgList_t = new List<MatchGroup>();
-                grid.Rows.ForEach((gr) =>
+                mgList_t = null;
+                mgList_t = new List<MatchGroup>();
+                //List<MatchGroup> mgList_t = new List<MatchGroup>();
+                foreach (var gr in grid.Rows)
                 {
                     mgList_t.AddRange(gr.GetMatches(minMatches, true));
-                });
-                mgList_t.ForEach((mg) => { if (mg.IsEstimateMatch(mg.Length, true, grid)) { addEstimate(mg, grid); } });
+                }
+                foreach (var mg in mgList_t)
+                {
+                    if (mg.IsEstimateMatch(mg.Length, true, grid))
+                    {
+                        addEstimate(mg, grid);
+                    }
+                }
 
+                mgList_t = null;
                 mgList_t = new List<MatchGroup>();
-                grid.Columns.ForEach((gc) =>
+                foreach (var gc in grid.Columns)
                 {
                     mgList_t.AddRange(gc.GetMatches(minMatches, true));
-                });
-                mgList_t.ForEach((mg) => { if (mg.IsEstimateMatch(mg.Length, false, grid)) { addEstimate(mg, grid); } });
+                }
+                foreach (var mg in mgList_t)
+                {
+                    if (mg.IsEstimateMatch(mg.Length, false, grid))
+                    {
+                        addEstimate(mg, grid);
+                    }
+                }
             }
+
+
+
+
+
+            ////l_mgList = new List<MatchGroup>();
+            //grid.mgList = new List<MatchGroup>();
+            //if (!estimate)
+            //{
+            //    grid.Rows.ForEach((br) =>
+            //    {
+            //        List<MatchGroup> mgList_t = br.GetMatches(minMatches, false);
+            //        if (mgList_t != null && mgList_t.Count > 0)
+            //        {
+            //            addRange(mgList_t, grid);
+            //        }
+            //    });
+
+            //    grid.Columns.ForEach((bc) =>
+            //    {
+            //        List<MatchGroup> mgList_t = bc.GetMatches(minMatches, false);
+            //        if (mgList_t != null && mgList_t.Count > 0)
+            //        {
+            //            addRange(mgList_t, grid);
+            //        }
+            //    });
+            //}
+            //else
+            //{
+            //    List<MatchGroup> mgList_t = new List<MatchGroup>();
+            //    grid.Rows.ForEach((gr) =>
+            //    {
+            //        mgList_t.AddRange(gr.GetMatches(minMatches, true));
+            //    });
+            //    mgList_t.ForEach((mg) => { if (mg.IsEstimateMatch(mg.Length, true, grid)) { addEstimate(mg, grid); } });
+
+            //    mgList_t = new List<MatchGroup>();
+            //    grid.Columns.ForEach((gc) =>
+            //    {
+            //        mgList_t.AddRange(gc.GetMatches(minMatches, true));
+            //    });
+            //    mgList_t.ForEach((mg) => { if (mg.IsEstimateMatch(mg.Length, false, grid)) { addEstimate(mg, grid); } });
+            //}
         }
 
         private MatchGroup merge(List<MatchGroup> intersections)
@@ -1472,140 +1135,601 @@ namespace Mkey
             g.Cells.ForEach((c) => { c.CancelTween(); });
         }
 
-        public void new_createFillPath()
+        //Map map1;
+        //PathFinder pF1;
+        //List<GridCell> path1;
+
+        //Map map;
+        //PathFinder pF;
+        //List<GridCell> path;
+
+
+
+
+
+
+        // pF = new PathFinder();
+
+
+        Map map;
+        PathFinder pF;
+
+
+
+
+        public void new_createFillPath111111111()
         {
-            if (!grid.haveFillPath)
+            map = new Map(grid);
+            pF = new PathFinder();
+
+
+            for (int i = 0; i < grid.Cells.Count; i++)
             {
-                Debug.Log("mh Make gravity fill path");
-                Map map = new Map(grid);
-                PathFinder pF = new PathFinder();
-
-                grid.Cells.ForEach((c) =>
+                if (!grid.Cells[i].Blocked && !grid.Cells[i].IsDisabled && !grid.Cells[i].MovementBlocked)
                 {
-                    //if (!c.Blocked && !c.IsDisabled && !c.MovementBlocked && !c.Overlay)
-                    if (!c.Blocked && !c.IsDisabled && !c.MovementBlocked)
-                    {
-                        int length = int.MaxValue;
-                        List<GridCell> path = null;
-                        grid.Columns.ForEach((col) =>
-                        {
-                            if (col.Spawn)
-                            {
-                                if (col.Spawn.gridCell != c)
-                                {
-                                    pF.new_CreatePath(map, c.pfCell, col.Spawn.gridCell.pfCell);
+                    grid.Cells[i].isVisit = false;
+                }
 
-                                    if (pF.FullPath != null && pF.PathLenght < length) 
-                                    {
-                                        path = pF.GCPath(); length = pF.PathLenght; 
-                                    }
-                                }
-                                else
-                                {
-                                    length = 0;
-                                    path = new List<GridCell>();
-                                }
-                            }
-                        });
-                        c.fillPathToSpawner = path;
-                    }
-                });
+                else grid.Cells[i].isVisit = true;
             }
-            else
-            {
-                Debug.Log("Have predefined fill path");
-                PBoard pBoard = grid.LcSet.GetBoard(grid);
-                grid.Cells.ForEach((c) =>
-                {
-                    if (!c.Blocked && !c.IsDisabled && !c.MovementBlocked && !c.spawner)
-                    {
-                        //   Debug.Log("path for " + c);
-                        GridCell next = c;
-                        List<GridCell> path = new List<GridCell>();
-                        GridCell mather = null;
-                        GridCell neigh = null;
-                        bool end = false;
-                        DirMather dir = DirMather.None;
-                        bool clampDir = false;
-                        while (!end)
-                        {
-                            dir = (!clampDir) ? pBoard[next.Row, next.Column] : dir;
-                            NeighBors nS = next.Neighbors;
-                            //     Debug.Log(dir);
-                            switch (dir)
-                            {
-                                case DirMather.None:
-                                    neigh = null;
-                                    break;
-                                case DirMather.Top:
-                                    neigh = nS.Top;
-                                    break;
-                                case DirMather.Right:
-                                    neigh = nS.Right;
-                                    break;
-                                case DirMather.Bottom:
-                                    neigh = nS.Bottom;
-                                    break;
-                                case DirMather.Left:
-                                    neigh = nS.Left;
-                                    break;
-                            }
 
-                            if (neigh && neigh.spawner)
+            for (int i = 0; i < grid.Rows[0].Length; i++)
+            {
+                grid.Rows[0].cells[i].fillPathToSpawner = null;
+                grid.Rows[0].cells[i].isVisit = true;
+            }
+
+
+            for (int i = 0; i < grid.Rows[0].Length; i++)
+            {
+                for (int j = 1; j < grid.Rows.Count; j++)
+                {
+                    if (!grid.Cells[i].Blocked && !grid.Cells[i].IsDisabled && !grid.Cells[i].MovementBlocked)
+                    {
+                        grid.Rows[j].cells[i].fillPathToSpawner = new List<GridCell>();
+
+                        grid.Rows[j].cells[i].fillPathToSpawner.Add(grid.Rows[j - 1].cells[i]);
+
+                        if (grid.Rows[j - 1].cells[i].fillPathToSpawner != null)
+                        {
+                            foreach (var v in grid.Rows[j - 1].cells[i].fillPathToSpawner)
                             {
-                                //  Debug.Log("spawner neigh " + neigh);
-                                path.Add(neigh);
-                                if (mather) mather = neigh;
-                                end = true;
-                            }
-                            else if (!neigh)
-                            {
-                                //  Debug.Log("none neigh ");
-                                end = true;
-                                path = null;
-                            }
-                            else if (neigh)
-                            {
-                                if (!neigh.Blocked && !neigh.IsDisabled && !neigh.MovementBlocked)
-                                {
-                                    if (path.Contains(neigh)) // corrupted path
-                                    {
-                                        // Debug.Log("corruptred neigh " + neigh);
-                                        end = true;
-                                        path = null;
-                                    }
-                                    else
-                                    {
-                                        clampDir = false;
-                                        path.Add(neigh);
-                                        next = neigh;
-                                        // Debug.Log("add " + neigh);
-                                        clampDir = pBoard[next.Row, next.Column] == DirMather.None; // предусмотреть отсутствие направление у ячейки (save pevious dir)
-                                    }
-                                }
-                                else if (neigh.IsDisabled) // passage cell
-                                {
-                                    next = neigh;
-                                    clampDir = true;
-                                    //  Debug.Log("disabled " + neigh);
-                                }
-                                else
-                                {
-                                    //  Debug.Log("another block " + neigh);
-                                    end = true;
-                                    path = null;
-                                }
+                                grid.Rows[j].cells[i].fillPathToSpawner.Add(v);
                             }
                         }
-                        c.fillPathToSpawner = path;
+                        grid.Rows[j].cells[i].isVisit = true;
                     }
-                });
+
+                    else break;
+                }
+            }
+
+            for (int i = 0; i < grid.Rows[0].Length; i++)
+            {
+                for (int j = 1; j < grid.Rows.Count; j++)
+                {
+                    if (!grid.Rows[j].cells[i].isVisit)
+                    {
+                        int leftSize = 0;
+                        int RightSize = 0;
+
+                        if (grid.Rows[j].cells[i].Neighbors.Left != null)
+                        {
+                            if (grid.Rows[j].cells[i].Neighbors.Left.fillPathToSpawner != null)
+                            {
+                                leftSize = grid.Rows[j].cells[i].Neighbors.Left.fillPathToSpawner.Count();
+                            }
+                        }
+
+                        if (grid.Rows[j].cells[i].Neighbors.Right != null)
+                        {
+                            if (grid.Rows[j].cells[i].Neighbors.Right.fillPathToSpawner != null)
+                            {
+                                RightSize = grid.Rows[j].cells[i].Neighbors.Right.fillPathToSpawner.Count();
+                            }
+                        }
+
+                        if (leftSize == 0 && RightSize == 0)
+                        {
+                        }
+
+                        else
+                        {
+                            grid.Rows[j].cells[i].fillPathToSpawner = new List<GridCell>();
+
+                            if (leftSize > RightSize)
+                            {
+                                grid.Rows[j].cells[i].fillPathToSpawner.Add(grid.Rows[j].cells[i].Neighbors.Left);
+
+                                if (grid.Rows[j].cells[i].Neighbors.Left.fillPathToSpawner != null)
+                                {
+                                    foreach (var v in grid.Rows[j].cells[i].Neighbors.Left.fillPathToSpawner)
+                                    {
+                                        grid.Rows[j].cells[i].fillPathToSpawner.Add(v);
+                                    }
+                                }
+                                grid.Rows[j].cells[i].isVisit = true;
+                            }
+
+                            else if (leftSize < RightSize)
+                            {
+                                grid.Rows[j].cells[i].fillPathToSpawner.Add(grid.Rows[j].cells[i].Neighbors.Right);
+
+                                if (grid.Rows[j].cells[i].Neighbors.Right.fillPathToSpawner != null)
+                                {
+                                    foreach (var v in grid.Rows[j].cells[i].Neighbors.Right.fillPathToSpawner)
+                                    {
+                                        grid.Rows[j].cells[i].fillPathToSpawner.Add(v);
+                                    }
+                                }
+                                grid.Rows[j].cells[i].isVisit = true;
+                            }
+
+                            else
+                            {
+                                if(i < grid.Rows.Count - i)
+                                {
+                                    grid.Rows[j].cells[i].fillPathToSpawner.Add(grid.Rows[j].cells[i].Neighbors.Right);
+
+                                    if (grid.Rows[j].cells[i].Neighbors.Right.fillPathToSpawner != null)
+                                    {
+                                        foreach (var v in grid.Rows[j].cells[i].Neighbors.Right.fillPathToSpawner)
+                                        {
+                                            grid.Rows[j].cells[i].fillPathToSpawner.Add(v);
+                                        }
+                                    }
+                                    grid.Rows[j].cells[i].isVisit = true;
+                                }
+
+
+                                else
+                                {
+                                    grid.Rows[j].cells[i].fillPathToSpawner.Add(grid.Rows[j].cells[i].Neighbors.Left);
+
+                                    if (grid.Rows[j].cells[i].Neighbors.Left.fillPathToSpawner != null)
+                                    {
+                                        foreach (var v in grid.Rows[j].cells[i].Neighbors.Left.fillPathToSpawner)
+                                        {
+                                            grid.Rows[j].cells[i].fillPathToSpawner.Add(v);
+                                        }
+                                    }
+                                    grid.Rows[j].cells[i].isVisit = true;
+                                }
+                            }
+                            grid.Rows[j].cells[i].Neighbors.bottomFill(grid.Rows[j].cells[i]);
+                        }
+                    }
+                }
+            }
+
+            bool allVisit = false;
+            while (allVisit)
+            {
+                allVisit = true;
+                foreach (var c in grid.Cells)
+                {
+                    if (!c.isVisit)
+                    {
+                        c.findingPath();
+
+                        //c.Neighbors.findFillPath(c);
+                        allVisit = false;
+                    }
+                }
+            }
+
+            //foreach (var c in grid.Cells)
+            //{
+            //    if(c.fillPathToSpawner != null)
+            //    {
+            //        c.fillPathToSpawner.Reverse();
+            //    }
+            //}
+        }
+
+
+
+
+        //foreach (var c in grid.Cells)
+        //{
+        //    if (!c.isVisit)
+        //    {
+        //        List<GridCell> res = c.Neighbors.HaveFillPath();
+
+        //        if (res != null)
+        //        {
+        //            c.fillPathToSpawner = res;
+        //            c.isVisit = true;
+        //        }
+        //    }
+        //}
+
+        //int count = 0;
+
+        //foreach (var c in grid.Cells)
+        //{
+        //    if (!c.isVisit) count++;
+        //}
+
+        //for (int i = 0; i < grid.Columns[0].Length; i++)
+        //{
+        //    for (int j = 1; j < grid.Columns.Count; j++)
+        //    {
+        //        if()
+
+
+        //        if(i != 0)
+        //        {
+        //            grid.Columns[j].cells[i].Neighbors.Left.isVisit = false;
+        //        }
+        //    }
+        //}
+
+
+        //        for (int i = 0; i < grid.Cells.Count; i++)
+        //{
+        //    if(!grid.Cells[i].isVisit)
+        //    {
+        //        grid.Cells[i].Neighbors.HaveFillPath();
+        //    }
+
+
+
+        //}
+
+
+
+
+
+
+          bool isFirst = true;
+
+
+        public int maxLength = 0;
+        public int cnt = 0;
+
+
+
+        //public void new_createFillPath()
+        //{
+
+        //    //Map map = new Map(grid);
+        //    //PathFinder pF = new PathFinder();
+
+        //    //map = null;
+        //    map = new Map(grid);
+        //    //pF = null;
+        //    pF = new PathFinder();
+
+
+
+        //    //if (isFirst)
+        //    //{
+        //    //    map = new Map(grid);
+        //    //    pF = new PathFinder();
+        //    //    isFirst = false;
+        //    //}
+
+        //    //else
+        //    //{
+        //    //    map.Dispose();
+        //    //    map = new Map(grid);
+
+        //    //    pF.Dispose();
+        //    //    pF = new PathFinder();
+        //    //}
+        //    //pF = null;
+        //    //map = null;
+
+
+        //    cnt = 0;
+        //    maxLength = 0;
+
+        //    int size = 0;
+
+
+
+        //    foreach (var c in grid.Cells)
+        //    {
+        //        if (knwoSpawnRootSize) size = spawnRootSize[cnt];
+
+
+        //        if (!c.Blocked && !c.IsDisabled && !c.MovementBlocked)
+        //        {
+        //            int length = int.MaxValue;
+        //            List<GridCell> path = null;
+
+        //            foreach (var col in grid.Columns)
+        //            {
+        //                if (col.Spawn)
+        //                {
+        //                    if (col.Spawn.gridCell != c)
+        //                    {
+        //                        pF.new_CreatePath(map, c.pfCell, col.Spawn.gridCell.pfCell, size);
+
+
+        //                        if (pF.PathLenght != int.MaxValue && pF.PathLenght > maxLength)
+        //                        {
+        //                            if(pF.PathLenght != int.MaxValue && pF.PathLenght > 2000)
+        //                            {
+        //                                maxLength = pF.PathLenght;
+        //                            }
+        //                        }
+
+
+        //                        if (pF.FullPath != null && pF.PathLenght < length)
+        //                        {
+        //                            path = null;
+        //                            path = pF.GCPath();
+        //                            length = pF.PathLenght;
+        //                        }
+        //                    }
+
+        //                    else
+        //                    {
+        //                        length = 0;
+        //                        //path = new List<GridCell>();
+
+        //                        path = null;
+
+
+        //                        //int count = (int)c.cellPottential.map;
+
+        //                        path = new List<GridCell>(50);
+
+        //                        //if (cnt > 70)
+        //                        //{
+        //                        //    path = new List<GridCell>(20);
+        //                        //}
+
+        //                        //else if (cnt > 30)
+        //                        //{
+        //                        //    path = new List<GridCell>(10);
+        //                        //}
+
+        //                        //else path = new List<GridCell>();
+        //                    }  
+        //                }
+        //            }
+
+        //            c.fillPathToSpawner = null;
+        //            c.fillPathToSpawner = path;
+
+        //        }
+
+        //        cnt++;
+        //    }
+
+
+        //    //map.Dispose();
+        //    //pF.Dispose();
+
+
+
+
+
+
+        //    //using (pF = new PathFinder())
+        //    //{
+        //    //    // myObject를 사용한 후, using 블록을 빠져나가면 Dispose가 호출됨
+        //    //}
+
+        //    //map1 = new Map(grid);
+        //    //pF1 = new PathFinder();
+
+        //    //foreach (var c in grid.Cells)
+        //    //{
+        //    //    if (!c.Blocked && !c.IsDisabled && !c.MovementBlocked)
+        //    //    {
+        //    //        int length = int.MaxValue;
+        //    //        path1 = null;
+
+        //    //        foreach (var col in grid.Columns)
+        //    //        {
+        //    //            if (col.Spawn)
+        //    //            {
+        //    //                if (col.Spawn.gridCell != c)
+        //    //                {
+        //    //                    pF1.new_CreatePath(map1, c.pfCell, col.Spawn.gridCell.pfCell);
+
+        //    //                    //pF.CreatePathToTop(map, c.pfCell);
+
+        //    //                    if (pF1.FullPath != null && pF1.PathLenght < length)
+        //    //                    {
+        //    //                        path1 = pF1.GCPath();
+        //    //                        length = pF1.PathLenght;
+        //    //                    }
+        //    //                }
+        //    //                else
+        //    //                {
+        //    //                    length = 0;
+        //    //                    path1 = new List<GridCell>();
+        //    //                }
+        //    //            }
+        //    //        }
+
+        //    //        c.fillPathToSpawner = path1;
+        //    //    }
+        //    //}
+
+
+        //    ////Debug.Log("mh Make gravity fill path");
+        //    //Map map = new Map(grid);
+        //    //PathFinder pF = new PathFinder();
+
+        //    //grid.Cells.ForEach((c) =>
+        //    //{
+        //    //    //if (!c.Blocked && !c.IsDisabled && !c.MovementBlocked && !c.Overlay)
+        //    //    if (!c.Blocked && !c.IsDisabled && !c.MovementBlocked)
+        //    //    {
+        //    //        int length = int.MaxValue;
+        //    //        List<GridCell> path = null;
+        //    //        grid.Columns.ForEach((col) =>
+        //    //        {
+        //    //            if (col.Spawn)
+        //    //            {
+        //    //                if (col.Spawn.gridCell != c)
+        //    //                {
+        //    //                    pF.new_CreatePath(map, c.pfCell, col.Spawn.gridCell.pfCell);
+
+        //    //                    //pF.CreatePathToTop(map, c.pfCell);
+
+        //    //                    if (pF.FullPath != null && pF.PathLenght < length)
+        //    //                    {
+        //    //                        path = pF.GCPath(); 
+        //    //                        length = pF.PathLenght;
+        //    //                    }
+        //    //                }
+        //    //                else
+        //    //                {
+        //    //                    length = 0;
+        //    //                    path = new List<GridCell>();
+        //    //                }
+        //    //            }
+        //    //        });
+        //    //        c.fillPathToSpawner = path;
+        //    //    }
+        //    //});
+
+        //}
+
+        //Map map;
+        //PathFinder pF ;
+        //List<GridCell> path;
+
+
+        //public void new_createFillPathTOFill(int min)
+        //{
+        //    map = new Map(grid);
+        //    pF = new PathFinder();
+        //    path = null;
+
+        //    foreach (var c in grid.Cells)
+        //    {
+        //        if (!c.Blocked && !c.IsDisabled && !c.MovementBlocked)
+        //        {
+        //            int length = int.MaxValue;
+        //            path = null;
+
+        //            foreach (var col in grid.Columns)
+        //            {
+
+        //                if (col.Spawn)
+        //                {
+        //                    if (col.Spawn.gridCell != c)
+        //                    {
+        //                        pF.new_CreatePath(map, c.pfCell, col.Spawn.gridCell.pfCell);
+
+        //                        if (pF.FullPath != null && pF.PathLenght < length)
+        //                        {
+        //                            path = pF.GCPath();
+        //                            length = pF.PathLenght;
+        //                        }
+        //                    }
+        //                    else
+        //                    {
+        //                        length = 0;
+        //                        //path = new List<GridCell>();
+        //                        path = null;
+        //                    }
+        //                }
+        //            }
+
+        //            c.fillPathToSpawner = path;
+        //        }
+        //    }
+
+
+        //    //    grid.Cells.ForEach((c) =>
+        //    //{
+        //    //    //if (!c.Blocked && !c.IsDisabled && !c.MovementBlocked && !c.Overlay)
+        //    //    if (!c.Blocked && !c.IsDisabled && !c.MovementBlocked)
+        //    //    {
+        //    //        int length = int.MaxValue;
+        //    //        List<GridCell> path = null;
+
+
+
+
+
+        //    //        grid.Columns.ForEach((col) =>
+        //    //        {
+        //    //            if (col.Spawn || col.Column)
+        //    //            {
+        //    //                if (col.Spawn.gridCell != c)
+        //    //                {
+        //    //                    pF.new_CreatePath(map, c.pfCell, col.Spawn.gridCell.pfCell);
+
+        //    //                    //pF.CreatePathToTop(map, c.pfCell);
+
+        //    //                    if (pF.FullPath != null && pF.PathLenght < length)
+        //    //                    {
+        //    //                        path = pF.GCPath();
+        //    //                        length = pF.PathLenght;
+        //    //                    }
+        //    //                }
+        //    //                else
+        //    //                {
+        //    //                    length = 0;
+        //    //                    path = new List<GridCell>();
+        //    //                }
+        //    //            }
+        //    //        });
+        //    //        c.fillPathToSpawner = path;
+        //    //    }
+        //    //});
+
+        //}
+
+
+        public void CreateFillPath(MatchGrid g)
+        {
+            Map map = new Map(g);
+            PathFinder pF = new PathFinder();
+
+
+            foreach (var c in g.Cells)
+            {
+                if (!c.Blocked && !c.IsDisabled && !c.MovementBlocked)
+                {
+                    int length = int.MaxValue;
+                    List<GridCell> path = null;
+
+
+                    foreach (var col in g.Columns)
+                    {
+                        if (col.Spawn)
+                        {
+                            if (col.Spawn.gridCell != c)
+                            {
+                                pF.CreatePath(map, c.pfCell, col.Spawn.gridCell.pfCell);
+
+                                if (pF.FullPath != null && pF.PathLenght < length)
+                                {
+                                    path = pF.GCPath();
+                                    length = pF.PathLenght;
+                                }
+                            }
+                            else
+                            {
+                                length = 0;
+                                //path = new List<GridCell>();
+                                path = null;
+                            }
+                        }
+                    }
+
+                    c.fillPathToSpawner = path;
+                }
             }
         }
 
 
 
-        public void new_fillGridByStep(List<GridCell> freeCells)
+
+
+
+            public void new_fillGridByStep(List<GridCell> freeCells)
         {
             if (freeCells.Count == 0) return;
 
@@ -1615,39 +1739,117 @@ namespace Mkey
 
         public void mixGrid(Action completeCallBack, MatchGrid grid, Transform trans)
         {
-            ParallelTween pT0 = new ParallelTween();
-            ParallelTween pT1 = new ParallelTween();
-
-            TweenSeq tweenSeq = new TweenSeq();
             List<GridCell> cellList = new List<GridCell>();
-            List<GameObject> goList = new List<GameObject>();
+            List<GridCell> cellList2 = new List<GridCell>();
 
-            cancelTweens(grid);
-
-
-            grid.Cells.ForEach((c) => { if (c.IsMixable) { cellList.Add(c); goList.Add(c.DynamicObject); } });
-
-            cellList.ForEach((c) =>
+            for(int i =0;i < grid.Cells.Count;i++) 
             {
-                int random = UnityEngine.Random.Range(0, goList.Count);
-                GameObject m = goList[random];
-                pT1.Add((callBack) => { c.GrabDynamicObject1(m.gameObject, false, callBack); });
-                goList.RemoveAt(random);
-            });
-
-            tweenSeq.Add((callBack) =>
-            {
-                pT0.Start(callBack);
-            });
-
-            tweenSeq.Add((callBack) =>
-            {
-                pT1.Start(() =>
+                if (grid.Cells[i].IsMixable)
                 {
-                    callBack();
-                });
-            });
-            tweenSeq.Start();
+                    cellList.Add(grid.Cells[i]);
+                    cellList2.Add(grid.Cells[i]);
+                }
+            }
+
+            for (int i = 0; i < cellList.Count; i++)
+            {
+                int random = UnityEngine.Random.Range(0, cellList2.Count);
+
+                List<int> id = cellList[i].GetGridObjectsIDs();
+                List<int> id2 = cellList2[random].GetGridObjectsIDs();
+
+                cellList[i].DestroyObjects();
+                cellList2[random].DestroyObjects();
+
+                switch (id2[0])
+                {
+                    case 1000:
+                        cellList[i].poolingmatchObjects[0].gameObject.SetActive(true);
+                        break;
+                    case 1001:
+                        cellList[i].poolingmatchObjects[1].gameObject.SetActive(true);
+                        break;
+                    case 1002:
+                        cellList[i].poolingmatchObjects[2].gameObject.SetActive(true);
+                        break;
+                    case 1003:
+                        cellList[i].poolingmatchObjects[3].gameObject.SetActive(true);
+                        break;
+                    case 1004:
+                        cellList[i].poolingmatchObjects[4].gameObject.SetActive(true);
+                        break;
+                    case 1005:
+                        cellList[i].poolingmatchObjects[5].gameObject.SetActive(true);
+                        break;
+                    case 1006:
+                        cellList[i].poolingmatchObjects[6].gameObject.SetActive(true);
+                        break;
+                }
+ 
+                switch (id[0])
+                {
+                    case 1000:
+                        cellList2[random].poolingmatchObjects[0].gameObject.SetActive(true);
+                        break;
+                    case 1001:
+                        cellList2[random].poolingmatchObjects[1].gameObject.SetActive(true);
+                        break;
+                    case 1002:
+                        cellList2[random].poolingmatchObjects[2].gameObject.SetActive(true);
+                        break;
+                    case 1003:
+                        cellList2[random].poolingmatchObjects[3].gameObject.SetActive(true);
+                        break;
+                    case 1004:
+                        cellList2[random].poolingmatchObjects[4].gameObject.SetActive(true);
+                        break;
+                    case 1005:
+                        cellList2[random].poolingmatchObjects[5].gameObject.SetActive(true);
+                        break;
+                    case 1006:
+                        cellList2[random].poolingmatchObjects[6].gameObject.SetActive(true);
+                        break;
+                }
+
+                cellList2.RemoveAt(random);
+            }
+
+
+
+
+            //ParallelTween pT0 = new ParallelTween();
+            //ParallelTween pT1 = new ParallelTween();
+
+                //TweenSeq tweenSeq = new TweenSeq();
+                //List<GridCell> cellList = new List<GridCell>();
+                //List<GameObject> goList = new List<GameObject>();
+
+                //cancelTweens(grid);
+
+
+                //grid.Cells.ForEach((c) => { if (c.IsMixable) { cellList.Add(c); goList.Add(c.DynamicObject); } });
+
+                //cellList.ForEach((c) =>
+                //{
+                //    int random = UnityEngine.Random.Range(0, goList.Count);
+                //    GameObject m = goList[random];
+                //    pT1.Add((callBack) => { c.GrabDynamicObject1(m.gameObject, false, callBack); });
+                //    goList.RemoveAt(random);
+                //});
+
+                //tweenSeq.Add((callBack) =>
+                //{
+                //    pT0.Start(callBack);
+                //});
+
+                //tweenSeq.Add((callBack) =>
+                //{
+                //    pT1.Start(() =>
+                //    {
+                //        callBack();
+                //    });
+                //});
+                //tweenSeq.Start();
         }
 
     }

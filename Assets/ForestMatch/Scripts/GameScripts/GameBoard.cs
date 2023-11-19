@@ -582,7 +582,7 @@ namespace Mkey
 
         public void makeBoard(MatchGrid g, Spawner spawnerPrefab,SpawnerStyle spawnerStyle, Transform GridContainer, Transform trans, LevelConstructSet IC)
         {
-            int cnt = 0;
+            //int cnt = 0;
 
             g.haveFillPath = IC.HaveFillPath(g);
 
@@ -605,8 +605,10 @@ namespace Mkey
                 });
             }
 
-            // create pathes to spawners
+            //// create pathes to spawners
             CreateFillPath(g);
+
+
 
             g.Cells.ForEach((c) =>
             {
@@ -629,7 +631,8 @@ namespace Mkey
             if (GMode == GameMode.Play)
             {
 
-                Func<LevelConstructSet, Transform, MatchGrid> create = (lC, cont) =>
+                //Func<LevelConstructSet, Transform, MatchGrid> create = (lC, cont) =>
+                MatchGrid create(LevelConstructSet lC, Transform cont)
                 {
                     MatchGrid g = new MatchGrid(lC, GOSet, cont, SortingOrder.Base, GMode);
                     // set cells delegates
@@ -640,6 +643,9 @@ namespace Mkey
                         g.Cells[i].GCDoubleClickEvent = MatchDoubleClickHandler;
                     }
                     MaxDragDistance = Vector3.Distance(g.Cells[0].transform.position, g.Cells[1].transform.position);
+
+
+                    /////////////////////////////////////////////////////////////////////////
 
 
                     /////////////////////////////////////////////////////////////////////////
@@ -721,7 +727,7 @@ namespace Mkey
                     ///////////////////////////////////////////////////
 
                     return g;
-                };
+                }
 
                 SwapHelper.SwapEndEvent = MatchEndSwapHandler;
                 SwapHelper.SwapBeginEvent = MatchBeginSwapHandler;
@@ -863,129 +869,517 @@ namespace Mkey
 
         private void CreateFillPath(MatchGrid g)
         {
-            if (!g.haveFillPath)
-            {
-                Debug.Log("Make gravity fill path");
-                Map map = new Map(g);
-                PathFinder pF = new PathFinder();
+            Map map = new Map(g);
+            PathFinder pF = new PathFinder();
 
-                g.Cells.ForEach((c) =>
-                {
-                    //if (!c.Blocked && !c.IsDisabled && !c.MovementBlocked && !c.Overlay)
-                    if (!c.Blocked && !c.IsDisabled && !c.MovementBlocked && !c.MovementBlocked)
-                    {
-                        int length = int.MaxValue;
-                        List<GridCell> path = null;
-                        g.Columns.ForEach((col) =>
-                        {
-                            if (col.Spawn)
-                            {
-                                if (col.Spawn.gridCell != c)
-                                {
-                                    pF.CreatePath(map, c.pfCell, col.Spawn.gridCell.pfCell);
-                                    if (pF.FullPath != null && pF.PathLenght < length) { path = pF.GCPath(); length = pF.PathLenght; }
-                                }
-                                else
-                                {
-                                    length = 0;
-                                    path = new List<GridCell>();
-                                }
-                            }
-                        });
-                        c.fillPathToSpawner = path;
-                    }
-                });
-            }
-            else
-            {
-                Debug.Log("Have predefined fill path");
-                PBoard pBoard = g.LcSet.GetBoard(g);
-                g.Cells.ForEach((c) =>
-                {
-                    if (!c.Blocked && !c.IsDisabled && !c.MovementBlocked && !c.spawner)
-                    {
-                     //   Debug.Log("path for " + c);
-                        GridCell next = c;
-                        List<GridCell> path = new List<GridCell>();
-                        GridCell mather = null;
-                        GridCell neigh = null;
-                        bool end = false;
-                        DirMather dir = DirMather.None;
-                        bool clampDir = false;
-                        while (!end)
-                        {
-                            dir = (!clampDir) ? pBoard[next.Row, next.Column] : dir;
-                            NeighBors nS = next.Neighbors;
-                       //     Debug.Log(dir);
-                            switch (dir)
-                            {
-                                case DirMather.None:
-                                    neigh = null;
-                                    break;
-                                case DirMather.Top:
-                                    neigh = nS.Top;
-                                    break;
-                                case DirMather.Right:
-                                    neigh = nS.Right;
-                                    break;
-                                case DirMather.Bottom:
-                                    neigh = nS.Bottom;
-                                    break;
-                                case DirMather.Left:
-                                    neigh = nS.Left;
-                                    break;
-                            }
+            //foreach (var c in g.Cells)
+            //{
+            //    if (!c.Blocked && !c.IsDisabled && !c.MovementBlocked)
+            //    {
+            //        int length = int.MaxValue;
+            //        List<GridCell> path = null;
 
-                            if (neigh && neigh.spawner)
+            //        foreach (var col in g.Columns)
+            //        {
+            //            if(!col.Spawn.gridCell.Blocked && !col.Spawn.gridCell.IsDisabled && !col.Spawn.gridCell.MovementBlocked )
+            //            {
+            //                pF.CreatePathes(map, c.pfCell, col.Spawn.gridCell.pfCell, 0);
+
+
+
+
+
+            //                //if (col.Spawn.gridCell != c)
+            //                //{
+            //                //    pF.CreatePath(map, c.pfCell, col.Spawn.gridCell.pfCell, path);
+            //                //}
+
+            //                //else
+            //                //{
+            //                //    length = 0;
+            //                //    path = null;
+            //                //}
+
+            //            }
+            //        }
+
+            //        c.fillPathToSpawner = path;
+            //    }
+            //}
+
+
+
+
+
+            foreach (var c in g.Cells)
+            {
+                if (!c.Blocked && !c.IsDisabled && !c.MovementBlocked)
+                {
+                    int length = int.MaxValue;
+                    List<GridCell> path = null;
+
+                    foreach (var col in g.Columns)
+                    {
+                        if (col.Spawn)
+                        {
+                            if (col.Spawn.gridCell != c)
                             {
-                                //  Debug.Log("spawner neigh " + neigh);
-                                path.Add(neigh);
-                                if (mather) mather = neigh;
-                                end = true;
+                                pF.CreatePath(map, c.pfCell, col.Spawn.gridCell.pfCell);
+
+                                if (pF.FullPath != null && pF.PathLenght < length)
+                                {
+                                    path = pF.GCPath();
+                                    length = pF.PathLenght;
+                                }
                             }
-                            else if (!neigh)
+                            else
                             {
-                                //  Debug.Log("none neigh ");
-                                end = true;
+                                length = 0;
+                                //path = new List<GridCell>();
                                 path = null;
                             }
-                            else if (neigh)
-                            {
-                                if (!neigh.Blocked && !neigh.IsDisabled && !neigh.MovementBlocked)
-                                {
-                                    if (path.Contains(neigh)) // corrupted path
-                                    {
-                                        // Debug.Log("corruptred neigh " + neigh);
-                                        end = true;
-                                        path = null;
-                                    }
-                                    else
-                                    {
-                                        clampDir = false;
-                                        path.Add(neigh);
-                                        next = neigh;
-                                        // Debug.Log("add " + neigh);
-                                        clampDir = pBoard[next.Row, next.Column] == DirMather.None; // предусмотреть отсутствие направление у ячейки (save pevious dir)
-                                    }
-                                }
-                                else if (neigh.IsDisabled) // passage cell
-                                {
-                                    next = neigh;
-                                    clampDir = true;
-                                    //  Debug.Log("disabled " + neigh);
-                                }
-                                else
-                                {
-                                    //  Debug.Log("another block " + neigh);
-                                    end = true;
-                                    path = null;
-                                }
-                            }
                         }
-                        c.fillPathToSpawner = path;
                     }
-                });
+
+                    c.fillPathToSpawner = path;
+                }
             }
+
+
+
+
+
+            //foreach (var c in g.Cells)
+            //{
+            //    if (!c.Blocked && !c.IsDisabled && !c.MovementBlocked)
+            //    {
+            //        int length = int.MaxValue;
+            //        List<GridCell> path = null;
+
+            //        foreach (var col in g.Columns)
+            //        {
+            //            if (col.Spawn)
+            //            {
+            //                if (col.Spawn.gridCell != c)
+            //                {
+            //                    pF.CreatePath(map, c.pfCell, col.Spawn.gridCell.pfCell);
+
+            //                    if (pF.FullPath != null && pF.PathLenght < length)
+            //                    {
+            //                        path = pF.GCPath();
+            //                        length = pF.PathLenght;
+            //                    }
+            //                }
+            //                else
+            //                {
+            //                    length = 0;
+            //                    //path = new List<GridCell>();
+            //                    path = null;
+            //                }
+            //            }
+            //        }
+
+            //        c.fillPathToSpawner = path;
+            //    }
+            //}
+
+
+
+
+            ////for (int i = 0; i < g.Cells.Count; i++)
+            ////{
+            ////    if (g.Cells[i].spawner) g.Cells[i].fillPathToSpawner = null;
+
+            ////    else
+            ////    {
+
+            ////    }
+            ////}
+
+
+
+            //for (int i = 0; i < g.Cells.Count; i++)
+            //{
+            //    if (!g.Cells[i].Blocked && !g.Cells[i].IsDisabled && !g.Cells[i].MovementBlocked)
+            //    {
+            //        g.Cells[i].isVisit = false;
+            //    }
+
+            //    else
+            //    {
+            //        g.Cells[i].isVisit = true;
+            //        g.Cells[i].fillPathToSpawner = null;
+            //    }
+
+            //}
+
+            //for (int i = 0; i < g.Rows[0].Length; i++)
+            //{
+            //    g.Rows[0].cells[i].fillPathToSpawner = null;
+            //    g.Rows[0].cells[i].isVisit = true;
+            //}
+
+
+            //for (int i = 0; i < g.Rows[0].Length; i++)
+            //{
+            //    for (int j = 1; j < g.Rows.Count; j++)
+            //    {
+            //        if (!g.Cells[i].Blocked && !g.Cells[i].IsDisabled && !g.Cells[i].MovementBlocked)
+            //        {
+            //            g.Rows[j].cells[i].fillPathToSpawner = new List<GridCell>();
+
+            //            g.Rows[j].cells[i].fillPathToSpawner.Add(g.Rows[j - 1].cells[i]);
+
+            //            if (g.Rows[j - 1].cells[i].fillPathToSpawner != null)
+            //            {
+            //                foreach (var v in g.Rows[j - 1].cells[i].fillPathToSpawner)
+            //                {
+            //                    g.Rows[j].cells[i].fillPathToSpawner.Add(v);
+            //                }
+            //            }
+            //            g.Rows[j].cells[i].isVisit = true;
+            //        }
+
+            //        else break;
+            //    }
+            //}
+
+            //for (int i = 0; i < g.Rows[0].Length; i++)
+            //{
+            //    for (int j = 1; j < g.Rows.Count; j++)
+            //    {
+            //        if (!g.Rows[j].cells[i].isVisit)
+            //        {
+            //            //if (g.Rows[j].cells[i].Neighbors.Left != null)
+            //            //{
+            //            //    if (g.Rows[j].cells[i].Neighbors.Left.fillPathToSpawner != null)
+            //            //    {
+            //            //        g.Rows[j].cells[i].fillPathToSpawner.Add(g.Rows[j].cells[i].Neighbors.Left);
+
+            //            //        foreach (var v in g.Rows[j].cells[i].Neighbors.Left.fillPathToSpawner)
+            //            //        {
+            //            //            g.Rows[j].cells[i].fillPathToSpawner.Add(v);
+            //            //        }
+
+            //            //    }
+            //            //}
+
+            //            //if (g.Rows[j].cells[i].Neighbors.Right != null)
+            //            //{
+            //            //    g.Rows[j].cells[i].fillPathToSpawner.Add(g.Rows[j].cells[i].Neighbors.Right);
+
+            //            //    foreach (var v in g.Rows[j].cells[i].Neighbors.Right.fillPathToSpawner)
+            //            //    {
+            //            //        g.Rows[j].cells[i].fillPathToSpawner.Add(v);
+            //            //    }
+            //            //}
+
+
+
+            //            //int leftSize = 0;
+            //            //int RightSize = 0;
+
+            //            //if (g.Rows[j].cells[i].Neighbors.Left != null)
+            //            //{
+            //            //    if (g.Rows[j].cells[i].Neighbors.Left.fillPathToSpawner != null)
+            //            //    {
+            //            //        leftSize = g.Rows[j].cells[i].Neighbors.Left.fillPathToSpawner.Count();
+            //            //    }
+            //            //}
+
+            //            //if (g.Rows[j].cells[i].Neighbors.Right != null)
+            //            //{
+            //            //    if (g.Rows[j].cells[i].Neighbors.Right.fillPathToSpawner != null)
+            //            //    {
+            //            //        RightSize = g.Rows[j].cells[i].Neighbors.Right.fillPathToSpawner.Count();
+            //            //    }
+            //            //}
+
+            //            //if(leftSize != 0 || RightSize != 0)
+            //            //{
+            //            //    g.Rows[j].cells[i].fillPathToSpawner = new List<GridCell>();
+
+            //            //    if (leftSize != 0 && RightSize != 0) 
+            //            //    {
+            //            //        if (leftSize < RightSize)
+            //            //        {
+            //            //            g.Rows[j].cells[i].fillPathToSpawner.Add(g.Rows[j].cells[i].Neighbors.Left);
+
+            //            //            if (g.Rows[j].cells[i].Neighbors.Left.fillPathToSpawner != null)
+            //            //            {
+            //            //                foreach (var v in g.Rows[j].cells[i].Neighbors.Left.fillPathToSpawner)
+            //            //                {
+            //            //                    g.Rows[j].cells[i].fillPathToSpawner.Add(v);
+            //            //                }
+            //            //            }
+            //            //            g.Rows[j].cells[i].isVisit = true;
+            //            //        }
+
+            //            //        else if (leftSize > RightSize)
+            //            //        {
+            //            //            g.Rows[j].cells[i].fillPathToSpawner.Add(g.Rows[j].cells[i].Neighbors.Right);
+
+            //            //            if (g.Rows[j].cells[i].Neighbors.Right.fillPathToSpawner != null)
+            //            //            {
+            //            //                foreach (var v in g.Rows[j].cells[i].Neighbors.Right.fillPathToSpawner)
+            //            //                {
+            //            //                    g.Rows[j].cells[i].fillPathToSpawner.Add(v);
+            //            //                }
+            //            //            }
+            //            //            g.Rows[j].cells[i].isVisit = true;
+            //            //        }
+
+            //            //        else
+            //            //        {
+            //            //            if (i < g.Rows.Count - i)
+            //            //            {
+            //            //                g.Rows[j].cells[i].fillPathToSpawner.Add(g.Rows[j].cells[i].Neighbors.Right);
+
+            //            //                if (g.Rows[j].cells[i].Neighbors.Right.fillPathToSpawner != null)
+            //            //                {
+            //            //                    foreach (var v in g.Rows[j].cells[i].Neighbors.Right.fillPathToSpawner)
+            //            //                    {
+            //            //                        g.Rows[j].cells[i].fillPathToSpawner.Add(v);
+            //            //                    }
+            //            //                }
+            //            //                g.Rows[j].cells[i].isVisit = true;
+            //            //            }
+
+            //            //            else
+            //            //            {
+            //            //                g.Rows[j].cells[i].fillPathToSpawner.Add(g.Rows[j].cells[i].Neighbors.Left);
+
+            //            //                if (g.Rows[j].cells[i].Neighbors.Left.fillPathToSpawner != null)
+            //            //                {
+            //            //                    foreach (var v in g.Rows[j].cells[i].Neighbors.Left.fillPathToSpawner)
+            //            //                    {
+            //            //                        g.Rows[j].cells[i].fillPathToSpawner.Add(v);
+            //            //                    }
+            //            //                }
+            //            //                g.Rows[j].cells[i].isVisit = true;
+            //            //            }
+            //            //        }
+            //            //    }
+
+            //            //    else
+            //            //    {
+            //            //        if(leftSize != 0)
+            //            //        {
+            //            //            g.Rows[j].cells[i].fillPathToSpawner.Add(g.Rows[j].cells[i].Neighbors.Left);
+
+            //            //            if (g.Rows[j].cells[i].Neighbors.Left.fillPathToSpawner != null)
+            //            //            {
+            //            //                foreach (var v in g.Rows[j].cells[i].Neighbors.Left.fillPathToSpawner)
+            //            //                {
+            //            //                    g.Rows[j].cells[i].fillPathToSpawner.Add(v);
+            //            //                }
+            //            //            }
+            //            //            g.Rows[j].cells[i].isVisit = true;
+            //            //        }
+
+            //            //        else
+            //            //        {
+            //            //            g.Rows[j].cells[i].fillPathToSpawner.Add(g.Rows[j].cells[i].Neighbors.Right);
+
+            //            //            if (g.Rows[j].cells[i].Neighbors.Right.fillPathToSpawner != null)
+            //            //            {
+            //            //                foreach (var v in g.Rows[j].cells[i].Neighbors.Right.fillPathToSpawner)
+            //            //                {
+            //            //                    g.Rows[j].cells[i].fillPathToSpawner.Add(v);
+            //            //                }
+            //            //            }
+            //            //            g.Rows[j].cells[i].isVisit = true;
+            //            //        }
+            //            //    }
+            //            //    //g.Rows[j].cells[i].Neighbors.bottomFill(g.Rows[j].cells[i]);
+            //            //}
+
+            //        }
+            //    }
+            //}
+
+            //bool allVisit = false;
+            //while (allVisit)
+            //{
+            //    allVisit = true;
+            //    foreach (var c in g.Cells)
+            //    {
+            //        if (!c.isVisit)
+            //        {
+            //            c.fillPathToSpawner = new List<GridCell>();
+            //            c.findingPath();
+
+            //            //if (c.fillPathToSpawner.Count == 0)
+            //            //{
+            //            //    c.fillPathToSpawner = null;
+            //            //}
+
+            //        }
+            //    }
+            //}
+
+
+            ////foreach (var c in g.Cells)
+            ////{
+            ////    c.findingPath();
+            ////}
+
+            ////foreach (var c in g.Cells)
+            ////{
+            ////    c.findingPath();
+            ////}
+
+
+            //////bool allVisit = false;
+            //////while (allVisit)
+            //////{
+            //////    allVisit = true;
+            //////    foreach (var c in g.Cells)
+            //////    {
+            //////        if (!c.isVisit)
+            //////        {
+            //////            c.findingPath();
+
+            //////            //if (c.fillPathToSpawner.Count == 0)
+            //////            //{
+            //////            //    c.fillPathToSpawner = null;
+            //////            //}
+
+
+
+            //////            //c.Neighbors.findFillPath(c);
+            //////            allVisit = false;
+            //////        }
+            //////    }
+            //////}
+
+
+
+
+
+            //if (!g.haveFillPath)
+            //{
+            //    Debug.Log("Make gravity fill path");
+            //    //Map map = new Map(g);
+            //    //PathFinder pF = new PathFinder();
+
+            //    g.Cells.ForEach((c) =>
+            //    {
+            //        //if (!c.Blocked && !c.IsDisabled && !c.MovementBlocked && !c.Overlay)
+            //        if (!c.Blocked && !c.IsDisabled && !c.MovementBlocked && !c.MovementBlocked)
+            //        {
+            //            int length = int.MaxValue;
+            //            List<GridCell> path = null;
+            //            g.Columns.ForEach((col) =>
+            //            {
+            //                if (col.Spawn)
+            //                {
+            //                    if (col.Spawn.gridCell != c)
+            //                    {
+            //                        pF.CreatePath(map, c.pfCell, col.Spawn.gridCell.pfCell);
+            //                        if (pF.FullPath != null && pF.PathLenght < length) { path = pF.GCPath(); length = pF.PathLenght; }
+            //                    }
+            //                    else
+            //                    {
+            //                        length = 0;
+            //                        path = new List<GridCell>();
+            //                    }
+            //                }
+            //            });
+            //            c.fillPathToSpawner = path;
+            //        }
+            //    });
+            //}
+            //else
+            //{
+            //    Debug.Log("Have predefined fill path");
+            //    PBoard pBoard = g.LcSet.GetBoard(g);
+            //    g.Cells.ForEach((c) =>
+            //    {
+            //        if (!c.Blocked && !c.IsDisabled && !c.MovementBlocked && !c.spawner)
+            //        {
+            //         //   Debug.Log("path for " + c);
+            //            GridCell next = c;
+            //            List<GridCell> path = new List<GridCell>();
+            //            GridCell mather = null;
+            //            GridCell neigh = null;
+            //            bool end = false;
+            //            DirMather dir = DirMather.None;
+            //            bool clampDir = false;
+            //            while (!end)
+            //            {
+            //                dir = (!clampDir) ? pBoard[next.Row, next.Column] : dir;
+            //                NeighBors nS = next.Neighbors;
+            //           //     Debug.Log(dir);
+            //                switch (dir)
+            //                {
+            //                    case DirMather.None:
+            //                        neigh = null;
+            //                        break;
+            //                    case DirMather.Top:
+            //                        neigh = nS.Top;
+            //                        break;
+            //                    case DirMather.Right:
+            //                        neigh = nS.Right;
+            //                        break;
+            //                    case DirMather.Bottom:
+            //                        neigh = nS.Bottom;
+            //                        break;
+            //                    case DirMather.Left:
+            //                        neigh = nS.Left;
+            //                        break;
+            //                }
+
+            //                if (neigh && neigh.spawner)
+            //                {
+            //                    //  Debug.Log("spawner neigh " + neigh);
+            //                    path.Add(neigh);
+            //                    if (mather) mather = neigh;
+            //                    end = true;
+            //                }
+            //                else if (!neigh)
+            //                {
+            //                    //  Debug.Log("none neigh ");
+            //                    end = true;
+            //                    path = null;
+            //                }
+            //                else if (neigh)
+            //                {
+            //                    if (!neigh.Blocked && !neigh.IsDisabled && !neigh.MovementBlocked)
+            //                    {
+            //                        if (path.Contains(neigh)) // corrupted path
+            //                        {
+            //                            // Debug.Log("corruptred neigh " + neigh);
+            //                            end = true;
+            //                            path = null;
+            //                        }
+            //                        else
+            //                        {
+            //                            clampDir = false;
+            //                            path.Add(neigh);
+            //                            next = neigh;
+            //                            // Debug.Log("add " + neigh);
+            //                            clampDir = pBoard[next.Row, next.Column] == DirMather.None; // предусмотреть отсутствие направление у ячейки (save pevious dir)
+            //                        }
+            //                    }
+            //                    else if (neigh.IsDisabled) // passage cell
+            //                    {
+            //                        next = neigh;
+            //                        clampDir = true;
+            //                        //  Debug.Log("disabled " + neigh);
+            //                    }
+            //                    else
+            //                    {
+            //                        //  Debug.Log("another block " + neigh);
+            //                        end = true;
+            //                        path = null;
+            //                    }
+            //                }
+            //            }
+            //            c.fillPathToSpawner = path;
+            //        }
+            //    });
+            //}
         }
 
         /// <summary>
@@ -1589,25 +1983,25 @@ namespace Mkey
             {
                 if (EstimateGroups.Length > 0)
                 {
-                    //EstimateGroups.SwapEstimate();
-                    List<List<int>> targetsInCell = new List<List<int>>();
+                    EstimateGroups.SwapEstimate();
+                    //List<List<int>> targetsInCell = new List<List<int>>();
 
-                    foreach (var currentCellsID in CurrentGrid.Cells)
-                    {
-                        List<int> res = currentCellsID.GetGridObjectsIDs();
+                    //foreach (var currentCellsID in CurrentGrid.Cells)
+                    //{
+                    //    List<int> res = currentCellsID.GetGridObjectsIDs();
 
-                        foreach (var item in CurTargets)
-                        {
-                            if (!item.Value.Achieved)
-                            {
-                                if (item.Value.ID >= 1000 && item.Value.ID <= 1006)
-                                {
-                                    if (item.Value.ID == res[0]) targetsInCell.Add(new List<int> { currentCellsID.Row, currentCellsID.Column });
-                                }
-                            }
-                        }
-                    }
-                    EstimateGroups.FOA_TargetSwap(targetsInCell);
+                    //    foreach (var item in CurTargets)
+                    //    {
+                    //        if (!item.Value.Achieved)
+                    //        {
+                    //            if (item.Value.ID >= 1000 && item.Value.ID <= 1006)
+                    //            {
+                    //                if (item.Value.ID == res[0]) targetsInCell.Add(new List<int> { currentCellsID.Row, currentCellsID.Column });
+                    //            }
+                    //        }
+                    //    }
+                    //}
+                    //EstimateGroups.FOA_TargetSwap(targetsInCell);
                 }
 
 
@@ -1876,7 +2270,7 @@ namespace Mkey
 
         public void CollectHandler1(MatchGroup m)
         {
-            float delay = 0;
+            //float delay = 0;
 
             //SetHidden(m.Cells);
 
@@ -1936,7 +2330,7 @@ namespace Mkey
 
         public MatchGroupsHelper(MatchGrid grid )
         {
-            //grid.mgList = new List<MatchGroup>();
+            grid.mgList = new List<MatchGroup>();
             this.grid = grid;
         }
 
@@ -2146,11 +2540,6 @@ namespace Mkey
 
             for (int i = 0; i < mgList.Count; i++)
             {
-
-
-
-
-
                 if (mgList[i] != null)
                 {
                     MatchGroup m = mgList[i];
@@ -4023,7 +4412,73 @@ namespace Mkey
             {
                 //Debug.Log("swap estimate");
                 //est1.Swap(est2.Match);
-                SwapHelper.new_Swap(est1, est2);
+                //SwapHelper.new_Swap(est1, est2);
+
+
+                List<int> id = est1.GetGridObjectsIDs();
+                List<int> id2 = est2.GetGridObjectsIDs();
+
+                est1.DestroyObjects();
+                est2.DestroyObjects();
+
+                if (id2.Count > 0)
+                {
+                    switch (id2[0])
+                    {
+                        case 1000:
+                            est1.poolingmatchObjects[0].gameObject.SetActive(true);
+                            break;
+                        case 1001:
+                            est1.poolingmatchObjects[1].gameObject.SetActive(true);
+                            break;
+                        case 1002:
+                            est1.poolingmatchObjects[2].gameObject.SetActive(true);
+                            break;
+                        case 1003:
+                            est1.poolingmatchObjects[3].gameObject.SetActive(true);
+                            break;
+                        case 1004:
+                            est1.poolingmatchObjects[4].gameObject.SetActive(true);
+                            break;
+                        case 1005:
+                            est1.poolingmatchObjects[5].gameObject.SetActive(true);
+                            break;
+                        case 1006:
+                            est1.poolingmatchObjects[6].gameObject.SetActive(true);
+                            break;
+                    }
+                }
+
+                if (id.Count > 0)
+                {
+                    switch (id[0])
+                    {
+                        case 1000:
+                            est2.poolingmatchObjects[0].gameObject.SetActive(true);
+                            break;
+                        case 1001:
+                            est2.poolingmatchObjects[1].gameObject.SetActive(true);
+                            break;
+                        case 1002:
+                            est2.poolingmatchObjects[2].gameObject.SetActive(true);
+                            break;
+                        case 1003:
+                            est2.poolingmatchObjects[3].gameObject.SetActive(true);
+                            break;
+                        case 1004:
+                            est2.poolingmatchObjects[4].gameObject.SetActive(true);
+                            break;
+                        case 1005:
+                            est2.poolingmatchObjects[5].gameObject.SetActive(true);
+                            break;
+                        case 1006:
+                            est2.poolingmatchObjects[6].gameObject.SetActive(true);
+                            break;
+                    }
+                }
+
+
+
             }
         }
 

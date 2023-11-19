@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Mkey
 {
@@ -81,15 +82,27 @@ namespace Mkey
             return res;
         }
 
+        List<PFCell> results = new List<PFCell>();
+
         public List<PFCell> GetNeighBorsPF()
         {
-            List<PFCell> res = new List<PFCell>();
+            results = new List<PFCell>();
+
             foreach (var item in Cells)
             {
-                res.Add(item.pfCell);
+                results.Add(item.pfCell);
             }
 
-            return res;
+            return results;
+
+
+            //List<PFCell> res = new List<PFCell>();
+            //foreach (var item in Cells)
+            //{
+            //    res.Add(item.pfCell);
+            //}
+
+            //return res;
         }
 
         public List<GridCell> GetMatchIdCells(int id, bool matchable)
@@ -105,5 +118,294 @@ namespace Mkey
             }
             return res;
         }
+
+
+        public List<GridCell> HaveFillPath()
+        {
+            List<GridCell> res = new List<GridCell>();
+
+            int maxSize = 100;
+
+            //if (Left != null)
+            //{
+            //    if (!Left.Blocked && !Left.IsDisabled && !Left.MovementBlocked)
+            //    {
+            //        if (Left.fillPathToSpawner != null)
+            //        {
+            //            Left.fillPathToSpawner = new List<GridCell>();
+            //            Bottom.fillPathToSpawner.Add(gc);
+
+            //            if (gc.fillPathToSpawner != null)
+            //            {
+            //                foreach (var v in gc.fillPathToSpawner) Bottom.fillPathToSpawner.Add(v);
+            //            }
+
+            //            Bottom.isVisit = true;
+
+            //            Bottom.Neighbors.bottomFill(Bottom);
+            //        }
+            //    }
+            //}
+
+
+
+
+
+            if (Left != null)
+            {
+                if (!Left.isVisit && Left.fillPathToSpawner != null)
+                {
+
+                }
+
+
+                if (Left.isVisit && Left.fillPathToSpawner != null)
+                {
+                    if (maxSize > Left.fillPathToSpawner.Count + 1)
+                    {
+                        maxSize = Left.fillPathToSpawner.Count + 1;
+                        res = Left.fillPathToSpawner;
+                        res.Add(Left);
+                    }
+                }
+            }
+
+            if (Right != null)
+            {
+                if (Right.isVisit && Right.fillPathToSpawner != null)
+                {
+                    if (maxSize > Right.fillPathToSpawner.Count + 1)
+                    {
+                        maxSize = Right.fillPathToSpawner.Count + 1;
+                        res = Right.fillPathToSpawner;
+                        res.Add(Right);
+                    }
+                }
+
+            }
+
+            if (Bottom != null)
+            {
+                if (Bottom.isVisit && Bottom.fillPathToSpawner != null)
+                {
+                    if (maxSize > Bottom.fillPathToSpawner.Count + 1)
+                    {
+                        maxSize = Bottom.fillPathToSpawner.Count + 1;
+                        res = Bottom.fillPathToSpawner;
+                        res.Add(Bottom);
+                    }
+                }
+            }
+
+            if (Top != null)
+            {
+                if (Top.isVisit && Top.fillPathToSpawner != null)
+                {
+                    if (maxSize > Top.fillPathToSpawner.Count + 1)
+                    {
+                        maxSize = Top.fillPathToSpawner.Count + 1;
+                        res = Top.fillPathToSpawner;
+                        res.Add(Top);
+                    }
+                }
+            }
+
+
+
+            if (res.Count == 0) res = null;
+
+            //if(Left.fillPathToSpawner != null && Left.fillPathToSpawner.Count < maxSize)
+            //{
+            //    maxSize = Left.fillPathToSpawner.Count;
+            //}
+
+                //if
+
+                //Left {
+                //    get;
+                //    Right {
+                //        get
+                //    Top {
+                //            get;
+                //            Bottom {
+                //                ge
+
+                //            TopLeft {
+                //                    g
+                //            BottomLeft
+                //            TopRight {
+                //                        BottomRight
+
+
+                //foreach (var item in Cells)
+                //{
+                //    MatchObject m = item.Match;
+                //    if (m && (m.ID == id) && (item.IsMatchable == matchable))
+                //    {
+                //        res.Add(item);
+                //    }
+                //}
+            return res;
+        }
+
+        public void findFillPath(GridCell gc)
+        {
+            gc.fillPathToSpawner = new List<GridCell>();
+
+            if (Left != null)
+            {
+                gc.calculate(Left);
+
+                //if (!Left.Blocked && !Left.IsDisabled && !Left.MovementBlocked)
+                //{
+                //    if(Left.fillPathToSpawner == null && !Left.isVisit)
+                //    {
+                //        Left.Neighbors.findFillPath(Left);
+                //    }
+
+                //    if (Bottom.fillPathToSpawner != null)
+                //    {
+                //        if(gc.fillPathToSpawner.Count > 0)
+                //        {
+                //            if(gc.fillPathToSpawner.Count < Left.fillPathToSpawner.Count + 1)
+                //            {
+                //                gc.fillPathToSpawner = new List<GridCell>();
+                //                gc.fillPathToSpawner.Add(Left);
+
+                //                if (Left.fillPathToSpawner != null)
+                //                {
+                //                    foreach (var v in Left.fillPathToSpawner) gc.fillPathToSpawner.Add(v);
+                //                }
+                //            }
+                //        }
+                //        gc.isVisit = true;
+                //    }
+
+                //    else
+                //    {
+                //        Bottom.isVisit = true;
+                //    }
+                //}
+            }
+
+            if (Right != null) gc.calculate(Right);
+
+            if (Bottom != null) gc.calculate(Bottom);
+
+            if (Top != null) gc.calculate(Top);
+
+        }
+
+
+
+        public void bottomFill(GridCell gc)
+        {
+            if(Bottom != null)
+            {
+                if (!Bottom.Blocked && !Bottom.IsDisabled && !Bottom.MovementBlocked)
+                {
+                    if(Bottom.fillPathToSpawner == null)
+                    {
+                        Bottom.fillPathToSpawner = new List<GridCell>();
+                        Bottom.fillPathToSpawner.Add(gc);
+
+                        if (gc.fillPathToSpawner != null)
+                        {
+                            foreach (var v in gc.fillPathToSpawner) Bottom.fillPathToSpawner.Add(v);
+                        }
+
+                        Bottom.isVisit = true;
+
+                        Bottom.Neighbors.bottomFill(Bottom);
+                    }
+                }
+            }
+        }
+        public List<GridCell> findPath()
+        {
+            List<GridCell> res = new List<GridCell>();
+            int maxSize = 100;
+
+            if(Left != null)
+            {
+                if(Left.Blocked == null && !Left.isVisit)
+                {
+                    List<GridCell> lgs = new List<GridCell>();
+                    lgs = Left.Neighbors.findPath();
+
+                    if (lgs != null)
+                    {
+                        if (maxSize > lgs.Count + 1)
+                        {
+                            maxSize = lgs.Count + 1;
+                            res = lgs;
+                            res.Add(Left);
+                        }
+                    }
+                }
+            }
+
+            if (Right != null)
+            {
+                if (Right.Blocked == null && !Right.isVisit)
+                {
+                    List<GridCell> lgs = new List<GridCell>();
+                    lgs = Right.Neighbors.findPath();
+
+                    if (lgs != null)
+                    {
+                        if (maxSize > lgs.Count + 1)
+                        {
+                            maxSize = lgs.Count + 1;
+                            res = lgs;
+                            res.Add(Right);
+                        }
+                    }
+                }
+            }
+
+            if (Top != null)
+            {
+                if (Top.Blocked == null && !Top.isVisit)
+                {
+                    List<GridCell> lgs = new List<GridCell>();
+                    lgs = Top.Neighbors.findPath();
+
+                    if (lgs != null)
+                    {
+                        if (maxSize > lgs.Count + 1)
+                        {
+                            maxSize = lgs.Count + 1;
+                            res = lgs;
+                            res.Add(Top);
+                        }
+                    }
+                }
+            }
+
+
+            if (Bottom != null)
+            {
+                if (Bottom.Blocked == null && !Bottom.isVisit)
+                {
+                    List<GridCell> lgs = new List<GridCell>();
+                    lgs = Bottom.Neighbors.findPath();
+
+                    if (lgs != null)
+                    {
+                        if (maxSize > lgs.Count + 1)
+                        {
+                            maxSize = lgs.Count + 1;
+                            res = lgs;
+                            res.Add(Bottom);
+                        }
+                    }
+                }
+            }
+
+            if (res.Count == 0) res = null;
+            return res;
+        }
+
     }
 }

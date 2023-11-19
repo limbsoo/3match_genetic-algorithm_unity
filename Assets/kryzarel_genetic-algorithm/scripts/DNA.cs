@@ -50,6 +50,8 @@ public class Pottential
     public int obstacleAndOverlay3;
 
 
+
+
     public Pottential()
     {
         map = 0;
@@ -232,7 +234,7 @@ public class DNA<T>
     public List<int> gridObjects;
     public List<int> objectProtection;
 
-
+    public double finalPottential;
 
     //public int obstacle;
     //public int blocked1;
@@ -330,7 +332,7 @@ public class DNA<T>
             blocks[i + 2].protection = i;
         }
 
-
+        finalPottential = 0;
 
 
         //obstacle = 0;

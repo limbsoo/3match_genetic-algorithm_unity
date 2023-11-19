@@ -31,7 +31,7 @@ MonoBehaviour:
     targets:
       list:
       - id: 1000
-        count: 15
+        count: 18
       - id: 1001
         count: 0
       - id: 1002

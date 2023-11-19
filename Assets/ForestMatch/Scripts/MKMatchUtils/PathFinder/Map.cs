@@ -1,30 +1,93 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace Mkey
 {
-    public class Map
+    public class Map : IDisposable
     {
-        private List<PFCell> pfCells;
+        public void Dispose()
+        {
+            //Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+
+        private List<PFCell> pfCells = new List<PFCell>(100);
         public IList<PFCell> PFCells { get { return pfCells.AsReadOnly(); } }
+
+
+
+        PFCell pfc;
 
         public Map(MatchGrid grid) 
         {
+            //pfc = new PFCell();
             CreateMap(grid);
         }
 
+        
+
         private void CreateMap(MatchGrid grid)
         {
+            ////pfCells.Clear();
+            ////pfCells.TrimExcess();
+
+            //// create all pfcells
+            //foreach (var item in grid.Cells)
+            //{
+            //    pfc.gCell = item;
+            //    pfc.mather = null;
+            //    pfc.row = item.Row;
+            //    pfc.col = item.Column;
+
+            //    pfc = new(item)
+            //    {
+            //        available = (!item.IsDisabled && !item.Blocked && !item.MovementBlocked)
+            //    };
+            //    item.pfCell = pfc;
+            //    pfCells.Add(pfc);
+            //}
+
+
+            //foreach (var item in pfCells)
+            //{
+            //    item.CreateNeighBorns();
+            //}
+
+
+
+
+
+
+
+
+
+
+
             pfCells = new List<PFCell>(grid.Cells.Count);
-          //  UnityEngine.Debug.Log("Create new map");
+            UnityEngine.Debug.Log("Create new map");
+
 
             // create all pfcells
             foreach (var item in grid.Cells)
             {
-                PFCell pfc = new PFCell(item);
-                pfc.available = (!item.IsDisabled && !item.Blocked && !item.MovementBlocked);
+                pfc = new(item)
+                {
+                    available = (!item.IsDisabled && !item.Blocked && !item.MovementBlocked)
+                };
                 item.pfCell = pfc;
                 pfCells.Add(pfc);
             }
+
+            //// create all pfcells
+            //foreach (var item in grid.Cells)
+            //{
+            //    PFCell pfc = new PFCell(item);
+            //    pfc.available = (!item.IsDisabled && !item.Blocked && !item.MovementBlocked);
+            //    item.pfCell = pfc;
+            //    pfCells.Add(pfc);
+            //}
 
             // set pfcell neighborns
             foreach (var item in pfCells)

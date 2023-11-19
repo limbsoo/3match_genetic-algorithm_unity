@@ -2,12 +2,21 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Security.Cryptography;
+using System.Xml.Linq;
 using UnityEngine;
 
 namespace Mkey
 {
-    public class GridCell : TouchPadMessageTarget
+    public class GridCell : TouchPadMessageTarget, IDisposable
     {
+
+        public void Dispose()
+        {
+
+        }
+
+
+
         #region debug
         private bool debug = false;
         #endregion debug
@@ -59,6 +68,10 @@ namespace Mkey
         public int Column { get; private set; }
         public List<Row<GridCell>> Rows { get; private set; }
         #endregion row column
+
+
+
+        public bool isVisit;
 
         public class CellPottential
         {
@@ -472,14 +485,24 @@ namespace Mkey
 
 
 
+
         internal GridObject new_setObject(GridObject prefab)
         {
             if (!prefab) return null;
 
-            int a = prefab.ID;
-
             GridObject gO = prefab.new_create(this);
-            return gO;
+
+            if (gO && !GameObjectsSet.IsDisabledObject(prefab.ID))
+            {
+                sRenderer.enabled = true;
+            }
+
+            sRenderer.enabled = false;
+
+
+            //GridObject gO = prefab.Create(this, MBoard.TargetCollectEventHandler);
+
+            return prefab;
         }
 
 
@@ -491,7 +514,12 @@ namespace Mkey
             int a = prefab.ID;
 
             GridObject gO = prefab.Create(this, MBoard.TargetCollectEventHandler);
-            if (gO && !GameObjectsSet.IsDisabledObject(prefab.ID)) sRenderer.enabled = true;
+
+            if (gO && !GameObjectsSet.IsDisabledObject(prefab.ID))
+            {
+                sRenderer.enabled = true;
+            }
+            
             return gO;
         }
 
@@ -507,6 +535,56 @@ namespace Mkey
         //{
         //    Blocked = null;
         //}
+
+        public List<GridObject> poolingSpecificObjects;
+
+        public List<GridObject> poolingmatchObjects;
+
+        public List<GridObject> setObjectPool(Match3Helper m3h)
+        {
+            poolingSpecificObjects = new List<GridObject>();
+
+            GridObject gO = new GridObject();
+            gO = m3h.blocked.new_create(this);
+            poolingSpecificObjects.Add(gO);
+
+
+            poolingmatchObjects = new List<GridObject>();
+
+            for (int i =0 ; i< 7;i++)
+            {
+                gO = new GridObject();
+                gO = m3h.match[i].new_create(this);
+                poolingmatchObjects.Add(gO);
+            }
+
+            return poolingSpecificObjects;
+
+
+
+
+            //for (int i = 0; i < 100; i++)
+            //{
+            //    GridObject go = new GridObject();
+
+
+            //    GridObject gO = m3h.blocked.new_create(gO);
+
+            //    go.CreateNewObject(m3h.blocked);
+            //    poolingObjectQueue.Enqueue(go);
+            //}
+
+            //m3h.poolingObjectQueue.Add(poolingObjectQueue);
+
+
+        }
+
+
+
+
+
+
+
 
 
 
@@ -582,30 +660,260 @@ namespace Mkey
             }
         }
 
-        /// <summary>
-        /// Try to grab match object from fill path
-        /// </summary>
-        /// <param name="completeCallBack"></param>
-        /// 
+
+
+
+
+
+        public void calculate(GridCell neibor)
+        {
+            if (!neibor.Blocked && !neibor.IsDisabled && !neibor.MovementBlocked)
+            {
+                if (neibor.fillPathToSpawner == null && !neibor.isVisit)
+                {
+                    neibor.Neighbors.findFillPath(neibor);
+                }
+
+                if (neibor.fillPathToSpawner != null)
+                {
+                    if (fillPathToSpawner.Count > 0)
+                    {
+                        if (fillPathToSpawner.Count < neibor.fillPathToSpawner.Count + 1)
+                        {
+                            fillPathToSpawner = new List<GridCell>();
+                            fillPathToSpawner.Add(neibor);
+
+                            if (neibor.fillPathToSpawner != null)
+                            {
+                                foreach (var v in neibor.fillPathToSpawner) fillPathToSpawner.Add(v);
+                            }
+                        }
+                    }
+                    isVisit = true;
+                }
+
+                else
+                {
+                    neibor.isVisit = true;
+                }
+
+            }
+        
+        }
+
+        public void findingNeigborPath()
+        {
+
+        }
+
+
+
+
+        public void findingPath()
+        {
+            isVisit = true;
+            
+
+            if (Neighbors.Left != null)
+            {
+                if (!Neighbors.Left.isVisit)
+                {
+                    Neighbors.Left.findingPath();
+                }
+
+                if (Neighbors.Left.fillPathToSpawner != null)
+                {
+                    if (fillPathToSpawner.Count > Neighbors.Left.fillPathToSpawner.Count + 1)
+                    {
+                        fillPathToSpawner = new List<GridCell>();
+                        fillPathToSpawner.Add(Neighbors.Left);
+
+                        foreach (var v in Neighbors.Left.fillPathToSpawner) fillPathToSpawner.Add(v);
+                    }
+                }
+            }
+
+            if (Neighbors.Right != null)
+            {
+                if (!Neighbors.Right.isVisit)
+                {
+                    Neighbors.Right.findingPath();
+                }
+
+                if (Neighbors.Right.fillPathToSpawner != null)
+                {
+                    if (fillPathToSpawner.Count > Neighbors.Right.fillPathToSpawner.Count + 1)
+                    {
+                        fillPathToSpawner = new List<GridCell>();
+                        fillPathToSpawner.Add(Neighbors.Right);
+
+                        foreach (var v in Neighbors.Right.fillPathToSpawner) fillPathToSpawner.Add(v);
+                    }
+                }
+            }
+
+            if (Neighbors.Top != null)
+            {
+                if (!Neighbors.Top.isVisit)
+                {
+                    Neighbors.Top.findingPath();
+                }
+
+                if (Neighbors.Top.fillPathToSpawner != null)
+                {
+                    if (fillPathToSpawner.Count > Neighbors.Top.fillPathToSpawner.Count + 1)
+                    {
+                        fillPathToSpawner = new List<GridCell>();
+                        fillPathToSpawner.Add(Neighbors.Top);
+
+                        foreach (var v in Neighbors.Top.fillPathToSpawner) fillPathToSpawner.Add(v);
+                    }
+                }
+            }
+
+            if (Neighbors.Bottom != null)
+            {
+                if (!Neighbors.Bottom.isVisit)
+                {
+                    Neighbors.Bottom.findingPath();
+                }
+
+                if (Neighbors.Bottom.fillPathToSpawner != null)
+                {
+                    if (fillPathToSpawner.Count > Neighbors.Bottom.fillPathToSpawner.Count + 1)
+                    {
+                        fillPathToSpawner = new List<GridCell>();
+                        fillPathToSpawner.Add(Neighbors.Bottom);
+
+                        foreach (var v in Neighbors.Bottom.fillPathToSpawner) fillPathToSpawner.Add(v);
+                    }
+                }
+            }
+
+
+
+
+
+
+
+
+
+
+
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            /// <summary>
+            /// Try to grab match object from fill path
+            /// </summary>
+            /// <param name="completeCallBack"></param>
+            /// 
 
         internal void new_fillGrab()
         {
-            GameObject mObject = null;
             GridCell gCell = null;
+            //GameObject mObject = null;
+
 
             if (spawner)
             {
-                GridObject mo = spawner.new_get();
-                mObject = (mo) ? mo.gameObject : null;
+                int[] arr = { 0, 1, 2, 3, 4, 5, 6 };
+                int n = 7;
+
+                while (n > 1)
+                {
+                    int k = (UnityEngine.Random.Range(0, n) % n);
+                    n--;
+                    int val = arr[k];
+                    arr[k] = arr[n];
+                    arr[n] = val;
+                }
+
+                poolingmatchObjects[arr[0]].gameObject.SetActive(true);
+
             }
+
             else
             {
                 gCell = (fillPathToSpawner != null && fillPathToSpawner.Count > 0) ? fillPathToSpawner[0] : GravityMather;
-                mObject = gCell.DynamicObject;
-            }
-            //if (mObject && gCell && (gCell.PhysStep)) return;
 
-            new_GrabDynamicObject(mObject);
+                //List<int> id = GetGridObjectsIDs();
+                List<int> id2 = gCell.GetGridObjectsIDs();
+
+                if(id2.Count > 0)
+                {
+                    switch (id2[0])
+                    {
+                        case 1000:
+                            poolingmatchObjects[0].gameObject.SetActive(true);
+                            break;
+                        case 1001:
+                            poolingmatchObjects[1].gameObject.SetActive(true);
+                            break;
+                        case 1002:
+                            poolingmatchObjects[2].gameObject.SetActive(true);
+                            break;
+                        case 1003:
+                            poolingmatchObjects[3].gameObject.SetActive(true);
+                            break;
+                        case 1004:
+                            poolingmatchObjects[4].gameObject.SetActive(true);
+                            break;
+                        case 1005:
+                            poolingmatchObjects[5].gameObject.SetActive(true);
+                            break;
+                        case 1006:
+                            poolingmatchObjects[6].gameObject.SetActive(true);
+                            break;
+                    }
+
+                    gCell.DestroyObjects();
+                }
+
+            }
+
+            //new_GrabDynamicObject(mObject);
+
+            //GameObject mObject = null;
+            //GridCell gCell = null;
+
+            //if (spawner)
+            //{
+            //    GridObject mo = spawner.new_get();
+            //    mObject = (mo) ? mo.gameObject : null;
+            //}
+            //else
+            //{
+            //    gCell = (fillPathToSpawner != null && fillPathToSpawner.Count > 0) ? fillPathToSpawner[0] : GravityMather;
+            //    mObject = gCell.DynamicObject;
+            //}
+            ////if (mObject && gCell && (gCell.PhysStep)) return;
+
+            //new_GrabDynamicObject(mObject);
         }
 
         internal void fillGrab1(Action completeCallBack)
@@ -1111,11 +1419,27 @@ namespace Mkey
             foreach (var item in gridObjects)
             {
 
-                //Resources.UnloadAsset(item.gameObject);
-
+                //item.gameObject.SetActive(false);
                 DestroyImmediate(item.gameObject);
             }
         }
+
+
+        GridObject[] gridObjects;
+
+        internal void DestroyObjects()
+        {
+            gridObjects = null;
+
+            gridObjects = GetComponentsInChildren<GridObject>();
+            foreach (var item in gridObjects)
+            {
+
+                item.gameObject.SetActive(false);
+                //DestroyImmediate(item.gameObject);
+            }
+        }
+
 
         public BombObject GetBomb()
         {

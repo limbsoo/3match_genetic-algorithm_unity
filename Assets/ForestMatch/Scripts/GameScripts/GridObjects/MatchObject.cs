@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Dynamic;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -438,10 +439,58 @@ namespace Mkey
 
         /// ////////////////////////////////////////////////////////////////////////////////////////
 
+        Queue<GridObject> poolingObjectQueue;
+
+
+        public override void returnObject(GridObject go)
+        {
+            go.gameObject.SetActive(false);
+            go.transform.SetParent(this.transform);
+            this.poolingObjectQueue.Enqueue(go);
+        }
+
+
+
+        public override void initailze(GridObject go)
+        {
+            poolingObjectQueue = new Queue<GridObject>();
+
+
+            for (int i = 0; i < 100; i++)
+            {
+                poolingObjectQueue.Enqueue(CreateNewObject(go));
+            }
+
+
+            //if (!parent) return null;
+            //parent.DestroyGridObjects(); // new
+
+
+            //BlockedObject gridObject = Instantiate(this, parent.transform);
+
+
+            //if (!gridObject) return null;
+            //gridObject.transform.localScale = Vector3.one;
+            //gridObject.transform.localPosition = Vector3.zero;
+            //gridObject.name = "blocked " + parent.ToString();
+
+            //return gridObject;
+        }
+
+        private GridObject CreateNewObject(GridObject go)
+        {
+            var newObj = Instantiate(go).GetComponent<GridObject>();
+            newObj.gameObject.SetActive(false);
+            //newObj.transform.SetParent(transform);
+            return newObj;
+        }
+
+
+
         public override GridObject new_create(GridCell parent)
         {
             if (!parent) return null;
-            if (parent.IsDisabled || parent.Blocked) { return null; }
+            //if (parent.IsDisabled || parent.Blocked) { return null; }
             if (parent.DynamicObject)
             {
                 GameObject old = parent.DynamicObject;
@@ -450,14 +499,29 @@ namespace Mkey
 
             MatchObject gridObject = Instantiate(this, parent.transform);
             if (!gridObject) return null;
+            gridObject.transform.localScale = Vector3.one;
+            gridObject.transform.localPosition = Vector3.zero;
+            gridObject.SRenderer = gridObject.GetComponent<SpriteRenderer>();
+#if UNITY_EDITOR
+            gridObject.name = "match id: " + gridObject.ID + "(" + gridObject.SRenderer.sprite + ")";
+#endif
+            gridObject.TargetCollectEvent = TargetCollectEvent;
+            gridObject.ScoreCollectEvent = MBoard.MatchScoreCollectHandler;
+            gridObject.SetToFront(false);
+
+
+            gridObject.gameObject.SetActive(false);
+
 
             return gridObject;
+
+
         }
 
         public override GridObject Create1(GridCell parent, Action<int> TargetCollectEvent)
         {
-            if (!parent) return null;
-            if (parent.IsDisabled || parent.Blocked) { return null; }
+            //if (!parent) return null;
+            //if (parent.IsDisabled || parent.Blocked) { return null; }
             if (parent.DynamicObject)
             {
                 GameObject old = parent.DynamicObject;
