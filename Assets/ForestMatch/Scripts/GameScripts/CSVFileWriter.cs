@@ -257,13 +257,13 @@ public class CSVFileWriter : MonoBehaviour
         }
         gaDatas[csvIdx] = s111; csvIdx++;
 
-        string s1112222 = "'";
-        gaDatas[csvIdx] = "objectProtection"; csvIdx++;
-        for (int i = 0; i < ga.population[0].objectProtection.Count; i++)
-        {
-            s1112222 += ga.population[0].objectProtection[i].ToString();
-        }
-        gaDatas[csvIdx] = s1112222; csvIdx++;
+        //string s1112222 = "'";
+        //gaDatas[csvIdx] = "objectProtection"; csvIdx++;
+        //for (int i = 0; i < ga.population[0].objectProtection.Count; i++)
+        //{
+        //    s1112222 += ga.population[0].objectProtection[i].ToString();
+        //}
+        //gaDatas[csvIdx] = s1112222; csvIdx++;
 
 
 
@@ -408,14 +408,16 @@ public class CSVFileWriter : MonoBehaviour
                 tempData[8] = 0.ToString();
                 tempData[9] = 0.ToString();
 
-                for (int j = 0; j < bestSwapContainer[i].Count; j++)
-                {
-                    tempData[10] += bestSwapContainer[i][j].ToString();
-                    tempData[10] += ",";
-                }
+                //for (int j = 0; j < bestSwapContainer[i].Count; j++)
+                //{
+                //    tempData[10] += bestSwapContainer[i][j].ToString();
+                //    tempData[10] += ",";
+                //}
 
                 for (int j = 0; j < swapContainer[idx].Count; j++)
                 {
+                    tempData[10] += bestSwapContainer[i][j].ToString();
+                    tempData[10] += ",";
                     tempData[11] += swapContainer[idx][j].ToString();
                     tempData[11] += ",";
                     tempData[12] += matchContainer[idx][j].ToString();
@@ -440,10 +442,13 @@ public class CSVFileWriter : MonoBehaviour
 
             for (int j = 0; j < swapContainer[idx].Count; j++)
             {
-                tempData[10 + ga.repeat + 1] += swapContainer[idx][j].ToString();
+                tempData[10 + ga.repeat + 1] += bestSwapContainer[idx][j].ToString();
                 tempData[10 + ga.repeat + 1] += ",";
-                tempData[11 + ga.repeat + 1] += matchContainer[idx][j].ToString();
+
+                tempData[11 + ga.repeat + 1] += swapContainer[idx][j].ToString();
                 tempData[11 + ga.repeat + 1] += ",";
+                tempData[12 + ga.repeat + 1] += matchContainer[idx][j].ToString();
+                tempData[12 + ga.repeat + 1] += ",";
             }
             idx++;
             data.Add(tempData);
@@ -473,8 +478,12 @@ public class CSVFileWriter : MonoBehaviour
 
         for (int index = 0; index < length; index++) sb.AppendLine(string.Join(delimiter, output[index]));
 
+
         string sPath = "/CSV/";
-        sPath += m3h.csvCnt.ToString();
+
+        sPath += m3h.csvFolder.ToString();
+        sPath += '/';
+        sPath += (m3h.csvCnt % 10).ToString();
         sPath += ".csv";
         m3h.csvCnt++;
         String filePath = Application.dataPath + sPath;

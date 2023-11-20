@@ -178,6 +178,21 @@ namespace Mkey
             return gridObjects[4];
         }
 
+
+        public OverlayObject GetSelectOverlayObject(LevelConstructSet lCSet, GameObjectsSet gOSet, int idx)
+        {
+            List<OverlayObject> gridObjects = lCSet.GetOverlayObjects(gOSet);
+            return gridObjects[idx];
+
+        }
+
+        public BlockedObject getSelectedBlockedObject(LevelConstructSet lCSet, GameObjectsSet gOSet, int idx)
+        {
+            List<BlockedObject> gridObjects = lCSet.GetBlockedObjects(gOSet);
+            return gridObjects[idx];
+        }
+
+
         public UnderlayObject GetRandomUnderlayObjectPrefab(LevelConstructSet lCSet, GameObjectsSet gOSet)
         {
             List<UnderlayObject> gridObjects = lCSet.GetUnderlayObjects(gOSet);

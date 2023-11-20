@@ -540,25 +540,54 @@ namespace Mkey
 
         public List<GridObject> poolingmatchObjects;
 
-        public List<GridObject> setObjectPool(Match3Helper m3h)
+        public void setObjectPool(Match3Helper m3h)
         {
             poolingSpecificObjects = new List<GridObject>();
 
-            GridObject gO = new GridObject();
-            gO = m3h.blocked.new_create(this);
-            poolingSpecificObjects.Add(gO);
+            for (int i = 0; i < 5; i++)
+            {
+                GridObject gO = new GridObject();
+                gO = m3h.blockeds[i].new_create(this);
+                poolingSpecificObjects.Add(gO);
+            }
 
+            for (int i = 0; i < 3; i++)
+            {
+                GridObject gO = new GridObject();
+                gO = m3h.overlays[i].new_create(this);
+                poolingSpecificObjects.Add(gO);
+            }
 
             poolingmatchObjects = new List<GridObject>();
 
-            for (int i =0 ; i< 7;i++)
+            for (int i = 0; i < 7; i++)
             {
-                gO = new GridObject();
+                GridObject gO = new GridObject();
                 gO = m3h.match[i].new_create(this);
                 poolingmatchObjects.Add(gO);
             }
 
-            return poolingSpecificObjects;
+
+
+
+
+            //poolingSpecificObjects = new List<GridObject>();
+
+            //GridObject gO = new GridObject();
+            //gO = m3h.blocked.new_create(this);
+            //poolingSpecificObjects.Add(gO);
+
+
+            //poolingmatchObjects = new List<GridObject>();
+
+            //for (int i =0 ; i< 7;i++)
+            //{
+            //    gO = new GridObject();
+            //    gO = m3h.match[i].new_create(this);
+            //    poolingmatchObjects.Add(gO);
+            //}
+
+            //return poolingSpecificObjects;
 
 
 
@@ -575,8 +604,6 @@ namespace Mkey
             //}
 
             //m3h.poolingObjectQueue.Add(poolingObjectQueue);
-
-
         }
 
 

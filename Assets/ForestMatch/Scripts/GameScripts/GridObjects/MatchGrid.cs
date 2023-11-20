@@ -12,6 +12,7 @@ using Unity.Burst.CompilerServices;
 using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEditor;
+using UnityEditor.Overlays;
 using UnityEditor.VersionControl;
 using UnityEditorInternal.VersionControl;
 using UnityEngine;
@@ -912,6 +913,91 @@ namespace Mkey
 
         }
 
+        public void setGridFromGene(DNA<char> p, SpawnController sC)
+        {
+            for (int i = 0; i < m3h.grid.Cells.Count; i++)
+            {
+                if (p.gridObjects[i] != 0)
+                {
+                    m3h.grid.Cells[i].poolingSpecificObjects[p.gridObjects[i] - 1].gameObject.SetActive(true);
+                }
+
+                else
+                {
+
+                    int[] arr = { 0, 1, 2, 3, 4, 5, 6 };
+                    int n = 7;
+                    while (n > 1)
+                    {
+                        int k = (UnityEngine.Random.Range(0, n) % n);
+                        n--;
+                        int val = arr[k];
+                        arr[k] = arr[n];
+                        arr[n] = val;
+                    }
+
+                    m3h.grid.Cells[i].poolingmatchObjects[arr[0]].gameObject.SetActive(true);
+                }
+            }
+        }
+
+
+
+        public void setCells(DNA<char> p, SpawnController sC)
+        {
+            List<int> kindsOfObstacle = new List<int>();
+
+            if (m3h.spawnObstacleObject) kindsOfObstacle.Add(1);
+
+            if (m3h.spawnBlockedObject)
+            {
+                if (m3h.haveRandomProtection)
+                {
+                    for (int i = 1; i <= m3h.blockProtection; i++)
+                    {
+                        kindsOfObstacle.Add(i + 1);
+                    }
+                }
+
+                else
+                {
+                    kindsOfObstacle.Add(m3h.blockProtection + 1);
+                }
+            }
+
+            if (m3h.spawnOverlayObject)
+            {
+                if (m3h.haveRandomProtection)
+                {
+                    for (int i = 1; i <= m3h.blockProtection; i++)
+                    {
+                        kindsOfObstacle.Add(i + 6);
+                    }
+                }
+
+                else
+                {
+                    kindsOfObstacle.Add(m3h.blockProtection + 6);
+                }
+            }
+
+
+            for (int i = 0; i < m3h.grid.Cells.Count; i++)
+            {
+                if (p.genes[i] == '1')
+                {
+                    int randomIndex = Random.Range(0, kindsOfObstacle.Count);
+                    p.gridObjects.Add(kindsOfObstacle[randomIndex]);
+                }
+
+                else
+                {
+                    p.gridObjects.Add(0);
+                }
+            }
+
+        }
+
         //public void setGrid(DNA<char> p, SpawnController sC)
         //{
         //    BlockedObject obstacle = sC.GetObstacleObjectPrefab(LcSet, goSet);
@@ -1009,15 +1095,85 @@ namespace Mkey
 
             for (int i = m3h.grid.Columns.Count(); i < m3h.grid.Cells.Count; i++)
             {
-                if (m3h.grid.Cells[i].Blocked == null && m3h.grid.Cells[i].fillPathToSpawner == null /*&& m3h.grid.Cells[i].Overlay == null*/)
-                {
 
-                    if (m3h.grid.Cells[i].Neighbors.Top.Blocked != null /*|| m3h.grid.Cells[i].Neighbors.Top.Overlay != null*/)
+                bool isCan = false;
+
+                if(m3h.grid.Cells[i].fillPathToSpawner == null)
+                {
+                    if(m3h.grid.Cells[i].Blocked == null)
                     {
-                        p.infeasibleCellCnt++;
+                        isCan = false;
                     }
-                    
+
+                    else
+                    {
+
+                        //if (m3h.grid.Cells[i].Neighbors.Top == null) continue;
+
+                        //else
+                        if (m3h.grid.Cells[i].Neighbors.Top != null)
+                        {
+                            if (m3h.grid.Cells[i].Neighbors.Top.fillPathToSpawner != null || m3h.grid.Cells[i].Neighbors.Top.spawner && m3h.grid.Cells[i].Neighbors.Top.Blocked == null)
+                            {
+                                continue;
+                            }
+                        }
+
+
+                        //if (m3h.grid.Cells[i].Neighbors.Left == null) continue;
+
+                        //else
+
+                        if (m3h.grid.Cells[i].Neighbors.Left != null)
+                        {
+                            if (m3h.grid.Cells[i].Neighbors.Left.fillPathToSpawner != null || m3h.grid.Cells[i].Neighbors.Left.spawner && m3h.grid.Cells[i].Neighbors.Left.Blocked == null)
+                            {
+                                continue;
+                            }
+                        }
+
+
+                        //if (m3h.grid.Cells[i].Neighbors.Right == null) continue;
+
+                        //else
+                        if (m3h.grid.Cells[i].Neighbors.Right != null)
+                        {
+                            if (m3h.grid.Cells[i].Neighbors.Right.fillPathToSpawner != null || m3h.grid.Cells[i].Neighbors.Right.spawner && m3h.grid.Cells[i].Neighbors.Right.Blocked == null)
+                            {
+                                continue;
+                            }
+                        }
+                    }
+
+                    if (!isCan) p.infeasibleCellCnt++;
+
                 }
+
+                //else
+                //{
+                //    if (m3h.grid.Cells[i].Blocked == null && m3h.grid.Cells[i].fillPathToSpawner == null)
+                //    {
+                //        isCan = true;
+                //    }
+                //}
+
+                //if(!isCan) p.infeasibleCellCnt++;
+
+
+
+
+
+                //if (m3h.grid.Cells[i].Blocked == null && m3h.grid.Cells[i].fillPathToSpawner == null /*&& m3h.grid.Cells[i].Overlay == null*/)
+                //{
+
+                //    p.infeasibleCellCnt++;
+
+                //    //if (m3h.grid.Cells[i].Neighbors.Top.Blocked != null /*|| m3h.grid.Cells[i].Neighbors.Top.Overlay != null*/)
+                //    //{
+                //    //    p.infeasibleCellCnt++;
+                //    //}
+
+                //}
             }
 
             if (p.infeasibleCellCnt == 0) p.isFeasible = true;
@@ -1044,23 +1200,24 @@ namespace Mkey
         }
 
 
-        //List<int> bestSwapCntContainer = new List<int>();
-        //List<int> swapCntContainer = new List<int>();
-        //List<int> matchCntContainer = new List<int>();
 
-        List<int> bestSwapCntContainer;
-         List<int> swapCntContainer;
-         List<int> matchCntContainer;
+
 
         public void calculateFitnessThroughPlay(DNA<char> p, SpawnController sC, Transform trans, bool isObstacleTarget, CSVFileWriter cs)
         {
 
-            //bestSwapCntContainer = null;
-            bestSwapCntContainer = new List<int>();
-            //swapCntContainer = null;
-            swapCntContainer = new List<int>();
-            //matchCntContainer = null;
-            matchCntContainer = new List<int>();
+
+            List<int> bestSwapCntContainer = new List<int>();
+            List<int> swapCntContainer = new List<int>();
+            List<int> matchCntContainer = new List<int>();
+
+
+            ////bestSwapCntContainer = null;
+            //bestSwapCntContainer = new List<int>();
+            ////swapCntContainer = null;
+            //swapCntContainer = new List<int>();
+            ////matchCntContainer = null;
+            //matchCntContainer = new List<int>();
 
 
             //List<int> bestSwapCntContainer = new List<int>(21);
@@ -1079,7 +1236,8 @@ namespace Mkey
             for (int repeatIdx = 0; repeatIdx < m3h.limits.repeat; repeatIdx++)
             {
                 destoryAllCellInGrid();
-                setGridRepeat(p, sC);
+                setGridFromGene(p, sC);
+                //setGridRepeat(p, sC);
 
                 foreach (var item in m3h.curTargets) item.Value.InitCurCount();
                 
@@ -1090,7 +1248,7 @@ namespace Mkey
 
                 p.swapCnt = 0;
                 p.matchCnt = 0;
-                p.finalPottential = 0;
+                
 
                 m3h.plays = new PlayHelper();
 
@@ -1266,11 +1424,6 @@ namespace Mkey
             bool isObstacleTarget = false;
             Debug.Log("beforefitness");
 
-            if(m3h.csvCnt == 10 || m3h.csvCnt == 20)
-            {
-                m3h.wantDifficulty = m3h.originPoten;
-            }
-
             for (int i = 0; i < m3h.limits.geneticGeneration; i++)
             {
                 for (int j = 0; j < ga.population.Count; j++)
@@ -1278,12 +1431,15 @@ namespace Mkey
                     if (ga.population[j].fitness == 0)
                     {
                         destoryAllCellInGrid();
-                        setGrid(ga.population[j], sC);
-                        setGridRepeat(ga.population[j], sC);
+                        //setGrid(ga.population[j], sC);
+                        //setGridRepeat(ga.population[j], sC);
+
+                        setCells(ga.population[j], sC);
+                        setGridFromGene(ga.population[j], sC);
 
                         estimateIsFeasible(ga.population[j]);
 
-                        if (ga.population[j].isFeasible)
+                        //if (ga.population[j].isFeasible)
                         {
                             //setGridRepeat(ga.population[j], sC);
                             m3h.cntPerPottentials(ga.population[j]);
@@ -1324,15 +1480,15 @@ namespace Mkey
                 else ga.newGeneration();
             }
 
-            for(int i =0;i< Cells.Count;i++)
-            {
-                if(Cells[i].fillPathToSpawner == null) m3h.spawnRootSize.Add(0);
+            //for(int i =0;i< Cells.Count;i++)
+            //{
+            //    if(Cells[i].fillPathToSpawner == null) m3h.spawnRootSize.Add(0);
 
-                else m3h.spawnRootSize.Add(Cells[i].fillPathToSpawner.Count);
+            //    else m3h.spawnRootSize.Add(Cells[i].fillPathToSpawner.Count);
 
-            }
+            //}
 
-            m3h.knwoSpawnRootSize = true;
+            //m3h.knwoSpawnRootSize = true;
 
             if (ga.bestFitness >= ga.targetFitness)
             {
@@ -1349,7 +1505,8 @@ namespace Mkey
             if (m3h.csvCnt == m3h.limits.csvCnt)
             {
                 destoryAllCellInGrid();
-                setGridRepeat(ga.population[0], sC);
+                setGridFromGene(ga.population[0], sC);
+                //setGridRepeat(ga.population[0], sC);
             }
 
             if (ga.population[0].isFeasible)
@@ -1408,7 +1565,23 @@ namespace Mkey
                 getMatch3Level(trans, sC);
                 m3h.match3Cycle += 1;
 
-                if (m3h.csvCnt > m3h.limits.csvCnt) break;
+                if (m3h.csvCnt % 10 == 0)
+                {
+                    m3h.wantDifficulty = m3h.originPoten;
+                    m3h.csvFolder++;
+
+                    if(m3h.csvFolder == 3 || m3h.csvFolder == 6 || m3h.csvFolder == 9)
+                    {
+                        m3h.blockProtection += 1;
+                    }
+                    
+                    
+                }
+
+
+                if (m3h.csvFolder > 8) break;
+
+                //if (m3h.csvCnt > m3h.limits.csvCnt) break;
             }
 
         }
@@ -1428,33 +1601,48 @@ namespace Mkey
             Debug.Log("fill grid, remove matches: " + noMatches);
             //sC.numOfMatchBlock = 7;
 
-            BlockedObject b = sC.GetObstacleObjectPrefab(LcSet, goSet);
-            BlockedObject b0 = sC.GetSelectBreakableBlockedObjectPrefab(LcSet, goSet);
-            OverlayObject o = sC.GetSelectOverlayObjectPrefab(LcSet, goSet);
+            List<BlockedObject> blockeds = new List<BlockedObject>();
 
-            //b0.hitCnt = 1;
-            //o.hitCnt = 1;
+            for (int i = 0; i < 5; i++)
+            {
+                BlockedObject blocked = sC.getSelectedBlockedObject(LcSet, goSet, i);
+                blockeds.Add(blocked);
+            }
+
+            List<OverlayObject> overlays = new List<OverlayObject>();
+
+            for (int i = 0; i < 3; i++)
+            {
+                OverlayObject overlay = sC.GetSelectOverlayObject(LcSet, goSet, i);
+                overlays.Add(overlay);
+            }
+
+            List<MatchObject> match = new List<MatchObject>();
+
+            for (int i = 0; i < 7; i++)
+            {
+                MatchObject m = sC.GetPickMatchObject(LcSet, goSet, i);
+                match.Add(m);
+            }
+
+
+            string map = "0202220002000220000000022000200000220220222022022020002200220022000000020000022002002200020020020202";
+
 
 
             for (int i = 0; i < Cells.Count; i++)
             {
-                int randNum = Random.Range(0, 6);
+                //int randNum = Random.Range(0, 2);
 
-                if (randNum == 2)
-                {
-                    Cells[i].SetObject1(b0);
-                }
-
-
-
-                //if (i == 5 || i == 10 || i == 15 || i == 20 || i == 25 || i == 30)
+                //if (randNum == 1)
                 //{
-                //    Cells[i].SetObject1(b0);
+                //    Cells[i].SetObject1(blockeds[3]);
                 //}
 
-
-
-
+                if (map[i] != '0')
+                {
+                    Cells[i].SetObject1(blockeds[1]);
+                }
 
                 else
                 {
@@ -1467,6 +1655,48 @@ namespace Mkey
 
 
             if (noMatches) RemoveMatches();
+
+
+
+            //BlockedObject b = sC.GetObstacleObjectPrefab(LcSet, goSet);
+            //BlockedObject b0 = sC.GetSelectBreakableBlockedObjectPrefab(LcSet, goSet);
+            //OverlayObject o = sC.GetSelectOverlayObjectPrefab(LcSet, goSet);
+
+            ////b0.hitCnt = 1;
+            ////o.hitCnt = 1;
+
+
+            //for (int i = 0; i < Cells.Count; i++)
+            //{
+            //    int randNum = Random.Range(0, 6);
+
+            //    if (randNum == 2)
+            //    {
+            //        Cells[i].SetObject1(b0);
+            //    }
+
+
+
+            //    //if (i == 5 || i == 10 || i == 15 || i == 20 || i == 25 || i == 30)
+            //    //{
+            //    //    Cells[i].SetObject1(b0);
+            //    //}
+
+
+
+
+
+            //    else
+            //    {
+            //        MatchObject m = sC.GetMainRandomObjectPrefab(LcSet, goSet);
+            //        Cells[i].SetObject(m);
+            //    }
+
+
+            //}
+
+
+            //if (noMatches) RemoveMatches();
 
 
 

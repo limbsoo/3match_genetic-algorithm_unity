@@ -177,10 +177,10 @@ namespace Mkey
 
                     else
                     {
-                        if (c.setProtection == 1) blocked1++;
-                        else if (c.setProtection == 2) blocked2++;
-                        else if (c.setProtection == 3) blocked3++;
-                        else if (c.setProtection == 4) blocked4++;
+                        if (c.Blocked.Protection == 1) blocked1++;
+                        else if (c.Blocked.Protection == 2) blocked2++;
+                        else if (c.Blocked.Protection == 3) blocked3++;
+                        else if (c.Blocked.Protection == 4) blocked4++;
                         else somethingWrong++;
                     }
                 }
@@ -196,10 +196,10 @@ namespace Mkey
 
                     else
                     {
-                        if (c.setProtection == 1) blocked1++;
-                        else if (c.setProtection == 2) blocked2++;
-                        else if (c.setProtection == 3) blocked3++;
-                        else if (c.setProtection == 4) blocked4++;
+                        if (c.Blocked.Protection == 1) blocked1++;
+                        else if (c.Blocked.Protection == 2) blocked2++;
+                        else if (c.Blocked.Protection == 3) blocked3++;
+                        else if (c.Blocked.Protection == 4) blocked4++;
                         else somethingWrong++;
                     }
 
@@ -207,10 +207,10 @@ namespace Mkey
 
                 else if (c.Overlay != null)
                 {
-                    if (c.setProtection == 1) overlay1++;
-                    else if (c.setProtection == 2) overlay2++;
-                    else if (c.setProtection == 3) overlay3++;
-                    else if (c.setProtection == 4) overlay4++;
+                    if (c.Overlay.Protection == 1) overlay1++;
+                    else if (c.Overlay.Protection == 2) overlay2++;
+                    else if (c.Overlay.Protection == 3) overlay3++;
+                    else if (c.Overlay.Protection == 4) overlay4++;
                     else somethingWrong++;
                 }
 
@@ -651,6 +651,7 @@ namespace Mkey
                     /////////////////////////////////////////////////////////////////////////
 
                     isGenetic = true;
+
 
                     if (isGenetic)
                     {
@@ -2581,7 +2582,10 @@ namespace Mkey
 
         public void SwapEstimate()
         {
-            mgList[0].SwapEstimate();
+            int randNum = Random.Range(0, mgList.Count);
+            mgList[randNum].SwapEstimate();
+
+            //mgList[0].SwapEstimate();
         }
 
         public void FOA_TargetSwap(List<List<int>> targetsInCell)

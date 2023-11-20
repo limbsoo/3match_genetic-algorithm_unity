@@ -386,140 +386,350 @@ namespace Mkey
             }
         }
 
-        public void CreatePathes(Map WorkMap, PFCell A, PFCell B, int length)
+
+        public void finding(Map WorkMap, PFCell A, PFCell current, Stack<GridCell> currentPath)
         {
-            //spawn cell과 같은 경우를 찾기 위해
-            //랭스가 이미찾은거보다 크면 리턴
-            if(length > fullPath.Count) return;
-
-            //
-
-
-
-
-
-            if(A.Neighbors.Top != null)
+            if (current.mather == null)
             {
-                if (!A.Neighbors.Top.Blocked && !A.Neighbors.Top.IsDisabled && !A.Neighbors.Top.MovementBlocked)
+                current.mather = current;
+
+                if (!current.gCell.Blocked && !current.gCell.IsDisabled && !current.gCell.MovementBlocked)
                 {
-                    if(A.mather == null)
+                    if (current.gCell.spawner)
                     {
-                        if (A.Neighbors.Top.spawner)
+                        if (A.gCell.fillPathToSpawner != null)
                         {
-                            A.mather = A.Neighbors.Top.pfCell;
-                            fullPath.Add(A.Neighbors.Top.pfCell);
-                            return;
-                        }
+                            if (current.gCell.fillPathToSpawner == null)
+                            {
+                                A.gCell.fillPathToSpawner = new List<GridCell>();
+                                currentPath.Push(current.gCell);
 
-                        else if (A.Neighbors.Top.fillPathToSpawner[A.Neighbors.Top.fillPathToSpawner.Count - 1] == B.gCell)
-                        {
-                            A.mather = A.Neighbors.Top.pfCell;
-                            fullPath.Add(A.Neighbors.Top.pfCell);
+                                foreach (var c in currentPath)
+                                {
+                                    c.pfCell.mather = c.pfCell;
+                                    A.gCell.fillPathToSpawner.Add(c);
+                                }
+                                currentPath.Pop();
 
-                            foreach(var c in A.Neighbors.Top.fillPathToSpawner) fullPath.Add(c.pfCell);
-                            return;
+                                //if (currentPath.Count < A.gCell.fillPathToSpawner.Count)
+                                //{
+                                //    A.gCell.fillPathToSpawner = new List<GridCell>();
+                                //    currentPath.Push(current.gCell);
+                                //    foreach (var c in currentPath)
+                                //    {
+                                //        c.pfCell.mather = c.pfCell;
+                                //        A.gCell.fillPathToSpawner.Add(c);
+                                //    }
+                                //    currentPath.Pop();
+                                //}
+                            }
+
+                            else
+                            {
+                                if (currentPath.Count + current.gCell.fillPathToSpawner.Count < A.gCell.fillPathToSpawner.Count)
+                                {
+                                    A.gCell.fillPathToSpawner = new List<GridCell>();
+                                    currentPath.Push(current.gCell);
+                                    foreach (var c in currentPath)
+                                    {
+                                        c.pfCell.mather = c.pfCell;
+                                        A.gCell.fillPathToSpawner.Add(c);
+                                    }
+                                    currentPath.Pop();
+                                }
+                            }
+
+
                         }
 
                         else
                         {
-                            CreatePathes(WorkMap, A.Neighbors.Top.pfCell, B, length + 1);
+                            A.gCell.fillPathToSpawner = new List<GridCell>();
+                            currentPath.Push(current.gCell);
+                            foreach (var c in currentPath)
+                            {
+                                c.pfCell.mather = c.pfCell;
+                                A.gCell.fillPathToSpawner.Add(c);
+                            }
+
+                            currentPath.Pop();
                         }
+
+
                     }
 
                     else
                     {
-                        if (A.Neighbors.Top.spawner)
+                        if (current.gCell.fillPathToSpawner != null)
                         {
-                            if(length < A.Neighbors.Top.fillPathToSpawner.Count)
+                            if (current.gCell.fillPathToSpawner[current.gCell.fillPathToSpawner.Count - 1].spawner)
                             {
-                                A.mather = A.Neighbors.Top.pfCell;
-                                fullPath.Add(A.Neighbors.Top.pfCell);
-                            }
-                        }
+                                if (A.gCell.fillPathToSpawner != null)
+                                {
+                                    if (currentPath.Count + current.gCell.fillPathToSpawner.Count + 1 < A.gCell.fillPathToSpawner.Count)
+                                    {
+                                        A.gCell.fillPathToSpawner = new List<GridCell>();
+                                        currentPath.Push(current.gCell);
 
-                        else if (A.Neighbors.Top.fillPathToSpawner[A.Neighbors.Top.fillPathToSpawner.Count - 1] == B.gCell)
-                        {
+                                        foreach (var c in currentPath)
+                                        {
+                                            c.pfCell.mather = c.pfCell;
+                                            A.gCell.fillPathToSpawner.Add(c);
+                                        }
 
-                            if (length < A.Neighbors.Top.fillPathToSpawner.Count)
-                            {
-                                A.mather = A.Neighbors.Top.pfCell;
-                                fullPath.Add(A.Neighbors.Top.pfCell);
+                                        foreach (var c in current.gCell.fillPathToSpawner)
+                                        {
+                                            c.pfCell.mather = c.pfCell;
+                                            A.gCell.fillPathToSpawner.Add(c);
+                                        }
+                                        currentPath.Pop();
+                                    }
+                                }
 
-                                foreach (var c in A.Neighbors.Top.fillPathToSpawner) fullPath.Add(c.pfCell);
+                                else
+                                {
+
+                                    A.gCell.fillPathToSpawner = new List<GridCell>();
+                                    currentPath.Push(current.gCell);
+
+                                    foreach (var c in currentPath)
+                                    {
+                                        c.pfCell.mather = c.pfCell;
+                                        A.gCell.fillPathToSpawner.Add(c);
+                                    }
+
+                                    foreach (var c in current.gCell.fillPathToSpawner)
+                                    {
+                                        c.pfCell.mather = c.pfCell;
+                                        A.gCell.fillPathToSpawner.Add(c);
+                                    }
+
+                                    currentPath.Pop();
+                                }
                             }
                         }
 
                         else
                         {
-                            CreatePathes(WorkMap, A.Neighbors.Top.pfCell, B, length + 1);
+                            //currentPath.Push(current.gCell);
+                            current.mather = null;
+                            CreatePathes(WorkMap, A, current, currentPath);
+
+                            //currentPath.Pop();
+
+                            //if (current.gCell.fillPathToSpawner != null)
+                            //{
+                            //    foreach (var c in currentPath)
+                            //    {
+                            //        current.gCell.fillPathToSpawner.Add(c);
+                            //    }
+                            //}
+
+                            //currentPath.Pop();
                         }
+
                     }
                 }
+            }
+        }
 
 
+        public void CreatePathes(Map WorkMap, PFCell A, PFCell current, Stack<GridCell> currentPath)
+        {
+            if (current.mather == null)
+            {
+                current.mather = current;
 
+                if (current.Neighbors.Top != null)
+                {
+                    //currentPath.Push(current.Neighbors.Top);
+                    finding(WorkMap, A, current.Neighbors.Top.pfCell, currentPath);
+                    //currentPath.Pop();
+                }
 
+                if (current.Neighbors.Left != null)
+                {
+                    //currentPath.Push(current.Neighbors.Left);
+                    finding(WorkMap, A, current.Neighbors.Left.pfCell, currentPath);
+                    //currentPath.Pop();
+                }
+
+                if (current.Neighbors.Right != null)
+                {
+                    //currentPath.Push(current.Neighbors.Right);
+                    finding(WorkMap, A, current.Neighbors.Right.pfCell, currentPath);
+                    //currentPath.Pop();
+                }
+
+                //if (current.Neighbors.Bottom != null)
+                //{
+                //    //currentPath.Push(current.Neighbors.Bottom);
+                //    finding(WorkMap, A, current.Neighbors.Bottom.pfCell, currentPath);
+                //    //currentPath.Pop();
+                //}
 
             }
 
-            //if (A.Neighbors.Left != null)
+        }
+
+
+        public void CreatePathes(Map WorkMap, PFCell A, PFCell B, int length)
+        {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            ////spawn cell과 같은 경우를 찾기 위해
+            ////랭스가 이미찾은거보다 크면 리턴
+            //if(length > fullPath.Count) return;
+
+            ////
+
+
+
+
+
+            //if(A.Neighbors.Top != null)
             //{
-            //    if (A.Neighbors.Left.fillPathToSpawner[A.Neighbors.Left.fillPathToSpawner.Count - 1] == B.gCell)
+            //    if (!A.Neighbors.Top.Blocked && !A.Neighbors.Top.IsDisabled && !A.Neighbors.Top.MovementBlocked)
             //    {
-            //        fullPath.Add(A.Neighbors.Left.pfCell);
-            //        return;
-            //    }
-
-            //    else CreatePathes(WorkMap, A.Neighbors.Left.pfCell, B);
-            //}
-
-            //if (A.Neighbors.Right != null)
-            //{
-            //    if (A.Neighbors.Right.fillPathToSpawner[A.Neighbors.Right.fillPathToSpawner.Count - 1] == B.gCell)
-            //    {
-            //        fullPath.Add(A.Neighbors.Right.pfCell);
-            //        return;
-            //    }
-
-            //    else CreatePathes(WorkMap, A.Neighbors.Right.pfCell, B);
-            //}
-
-            //if (A.Neighbors.Bottom != null)
-            //{
-            //    if (A.Neighbors.Bottom.fillPathToSpawner[A.Neighbors.Bottom.fillPathToSpawner.Count - 1] == B.gCell)
-            //    {
-            //        fullPath.Add(A.Neighbors.Bottom.pfCell);
-            //        return;
-            //    }
-
-            //    else CreatePathes(WorkMap, A.Neighbors.Bottom.pfCell, B);
-            //}
-
-
-
-
-            //fullPath = null;
-            //if (WorkMap == null || A == null || B == null || !A.available || !B.available) return;
-
-
-            ////if (!IsWayCreated(A, B))
-            //if (!IsWayCreated(A, B))
-            //{
-            //    CreateGlobWayMa11111p(WorkMap, A, B);
-            //    if (IsWayExistTo(B))
-            //    {
-            //        fullPath = new List<PFCell>();
-            //        fullPath.Add(B);
-            //        PFCell mather = B.mather;
-            //        while (mather != A.mather)
+            //        if(A.mather == null)
             //        {
-            //            fullPath.Add(mather);
-            //            mather = mather.mather;
+            //            if (A.Neighbors.Top.spawner)
+            //            {
+            //                A.mather = A.Neighbors.Top.pfCell;
+            //                fullPath.Add(A.Neighbors.Top.pfCell);
+            //                return;
+            //            }
+
+            //            else if (A.Neighbors.Top.fillPathToSpawner[A.Neighbors.Top.fillPathToSpawner.Count - 1] == B.gCell)
+            //            {
+            //                A.mather = A.Neighbors.Top.pfCell;
+            //                fullPath.Add(A.Neighbors.Top.pfCell);
+
+            //                foreach(var c in A.Neighbors.Top.fillPathToSpawner) fullPath.Add(c.pfCell);
+            //                return;
+            //            }
+
+            //            else
+            //            {
+            //                CreatePathes(WorkMap, A.Neighbors.Top.pfCell, B, length + 1);
+            //            }
             //        }
-            //        fullPath.Reverse();
+
+            //        else
+            //        {
+            //            if (A.Neighbors.Top.spawner)
+            //            {
+            //                if(length < A.Neighbors.Top.fillPathToSpawner.Count)
+            //                {
+            //                    A.mather = A.Neighbors.Top.pfCell;
+            //                    fullPath.Add(A.Neighbors.Top.pfCell);
+            //                }
+            //            }
+
+            //            else if (A.Neighbors.Top.fillPathToSpawner[A.Neighbors.Top.fillPathToSpawner.Count - 1] == B.gCell)
+            //            {
+
+            //                if (length < A.Neighbors.Top.fillPathToSpawner.Count)
+            //                {
+            //                    A.mather = A.Neighbors.Top.pfCell;
+            //                    fullPath.Add(A.Neighbors.Top.pfCell);
+
+            //                    foreach (var c in A.Neighbors.Top.fillPathToSpawner) fullPath.Add(c.pfCell);
+            //                }
+            //            }
+
+            //            else
+            //            {
+            //                CreatePathes(WorkMap, A.Neighbors.Top.pfCell, B, length + 1);
+            //            }
+            //        }
             //    }
 
+
+
+
+
             //}
+
+            ////if (A.Neighbors.Left != null)
+            ////{
+            ////    if (A.Neighbors.Left.fillPathToSpawner[A.Neighbors.Left.fillPathToSpawner.Count - 1] == B.gCell)
+            ////    {
+            ////        fullPath.Add(A.Neighbors.Left.pfCell);
+            ////        return;
+            ////    }
+
+            ////    else CreatePathes(WorkMap, A.Neighbors.Left.pfCell, B);
+            ////}
+
+            ////if (A.Neighbors.Right != null)
+            ////{
+            ////    if (A.Neighbors.Right.fillPathToSpawner[A.Neighbors.Right.fillPathToSpawner.Count - 1] == B.gCell)
+            ////    {
+            ////        fullPath.Add(A.Neighbors.Right.pfCell);
+            ////        return;
+            ////    }
+
+            ////    else CreatePathes(WorkMap, A.Neighbors.Right.pfCell, B);
+            ////}
+
+            ////if (A.Neighbors.Bottom != null)
+            ////{
+            ////    if (A.Neighbors.Bottom.fillPathToSpawner[A.Neighbors.Bottom.fillPathToSpawner.Count - 1] == B.gCell)
+            ////    {
+            ////        fullPath.Add(A.Neighbors.Bottom.pfCell);
+            ////        return;
+            ////    }
+
+            ////    else CreatePathes(WorkMap, A.Neighbors.Bottom.pfCell, B);
+            ////}
+
+
+
+
+            ////fullPath = null;
+            ////if (WorkMap == null || A == null || B == null || !A.available || !B.available) return;
+
+
+            //////if (!IsWayCreated(A, B))
+            ////if (!IsWayCreated(A, B))
+            ////{
+            ////    CreateGlobWayMa11111p(WorkMap, A, B);
+            ////    if (IsWayExistTo(B))
+            ////    {
+            ////        fullPath = new List<PFCell>();
+            ////        fullPath.Add(B);
+            ////        PFCell mather = B.mather;
+            ////        while (mather != A.mather)
+            ////        {
+            ////            fullPath.Add(mather);
+            ////            mather = mather.mather;
+            ////        }
+            ////        fullPath.Reverse();
+            ////    }
+
+            ////}
 
         }
 

@@ -29,7 +29,10 @@ MonoBehaviour:
     type: 3}
   blockedObjects:
   - {fileID: 4302452134904552185, guid: b2b7d2ddf34952245a4ccb1b9bc4efc0, type: 3}
+  - {fileID: 4302452134904552185, guid: 43743df96f2a6604eaed4ec3a8ed25a8, type: 3}
+  - {fileID: 4302452134904552185, guid: 177ebc1905151a4479bfdc36cb06d935, type: 3}
   - {fileID: 4302452134904552185, guid: f1d1b74dc8052c44799fca8d91ad2856, type: 3}
+  - {fileID: 4302452134904552185, guid: 1df4fff4e6b82e34e9c8716781224477, type: 3}
   matchObjects:
   - {fileID: 1189668015041816824, guid: f6d14d3cdf90c494596e8b9bbf2fa0c2, type: 3}
   - {fileID: 1189668015041816824, guid: 999d4083fa50546448d284f7684d332c, type: 3}
@@ -39,11 +42,13 @@ MonoBehaviour:
   - {fileID: 1189668015041816824, guid: 4dc527365c3b0474798786d76e6d724f, type: 3}
   - {fileID: 1189668015041816824, guid: d8ca68da4d40b224fb870ade2dc2f1bc, type: 3}
   overlayObjects:
+  - {fileID: 5623435986698399764, guid: cc4c78fd34b71594784b248b6564c4ee, type: 3}
+  - {fileID: 5623435986698399764, guid: 0d40543d8571d3246a9389f678cff2fe, type: 3}
+  - {fileID: 5623435986698399764, guid: 51695f251638da540a5b2e8582824b00, type: 3}
   - {fileID: 5623435986698399764, guid: 23fdcfc407bef8f4ca5876b7a31fc3c4, type: 3}
   - {fileID: 5623435986698399764, guid: 70ddf8f3bcc44de46a0656386752d0f8, type: 3}
   - {fileID: 5623435986698399764, guid: 0ad88476ee0a74d468633e0504272136, type: 3}
   - {fileID: 5623435986698399764, guid: 0eb5e15b806e8ca4f8092f40a0e96d4c, type: 3}
-  - {fileID: 5623435986698399764, guid: 0d40543d8571d3246a9389f678cff2fe, type: 3}
   - {fileID: 5623435986698399764, guid: 78027d4b8ffb8814da16d82221abe6f6, type: 3}
   underlayObjects:
   - {fileID: 4801992064559212486, guid: 9a13a837742bb5a4d828a7a6744cfca8, type: 3}

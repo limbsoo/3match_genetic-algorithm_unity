@@ -255,7 +255,7 @@ public class DNA<T>
     //public int mapOverlay3;
     //public int mapSomethingWrong;
 
-
+    public double potttnennsss;
 
 
 
@@ -333,7 +333,7 @@ public class DNA<T>
         }
 
         finalPottential = 0;
-
+        potttnennsss = 0;
 
         //obstacle = 0;
         //blocked1 = 0;
@@ -370,6 +370,8 @@ public class DNA<T>
 
     public void calculateFeasibleFitness(int wantDifficulty, int difficultyTolerance)
     {
+        //fitness = Math.Abs(potttnennsss - (double)wantDifficulty);
+
         fitness = Math.Abs(allPottential.map - (double)wantDifficulty);
         //fitness = Math.Abs(swapablePottential.map - wantDifficulty);
 
@@ -380,6 +382,15 @@ public class DNA<T>
     public void calculateInfeasibleFitness()
     {
         fitness = 1.0 / (1.0 + Math.Abs(infeasibleCellCnt));
+
+        //fitness = (1.0 / (1.0 + Math.Abs(infeasibleCellCnt)) * 0.5 + 1.0) / (1.0 + Math.Abs(Math.Abs(allPottential.map - (double)1110)) * 0.5);
+
+
+
+
+
+
+
     }
     public DNA<T> Crossover(DNA<T> otherParent)
 	{
