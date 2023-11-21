@@ -536,26 +536,30 @@ namespace Mkey
         //    Blocked = null;
         //}
 
-        public List<GridObject> poolingSpecificObjects;
+        public List<GridObject> poolingBlockeds;
+
+        public List<GridObject> poolingOverlays;
 
         public List<GridObject> poolingmatchObjects;
 
         public void setObjectPool(Match3Helper m3h)
         {
-            poolingSpecificObjects = new List<GridObject>();
+            poolingBlockeds = new List<GridObject>();
 
             for (int i = 0; i < 5; i++)
             {
                 GridObject gO = new GridObject();
                 gO = m3h.blockeds[i].new_create(this);
-                poolingSpecificObjects.Add(gO);
+                poolingBlockeds.Add(gO);
             }
+
+            poolingOverlays = new List<GridObject>();
 
             for (int i = 0; i < 3; i++)
             {
                 GridObject gO = new GridObject();
                 gO = m3h.overlays[i].new_create(this);
-                poolingSpecificObjects.Add(gO);
+                poolingOverlays.Add(gO);
             }
 
             poolingmatchObjects = new List<GridObject>();

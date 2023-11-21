@@ -793,7 +793,7 @@ namespace Mkey
                     //m3h.grid.Cells[i] = m3h.tmpCells[1];
 
 
-                    m3h.grid.Cells[i].poolingSpecificObjects[0].gameObject.SetActive(true);
+                    //m3h.grid.Cells[i].poolingSpecificObjects[0].gameObject.SetActive(true);
 
 
                     //BlockedObject b = (BlockedObject)m3h.poolingObjectQueue[0].Dequeue();
@@ -850,93 +850,94 @@ namespace Mkey
         }
 
 
-        public void setGrid(DNA<char> p, SpawnController sC)
-        {
-            List<int> kindsOfObstacle = new List<int>();
+        //public void setGrid(DNA<char> p, SpawnController sC)
+        //{
+        //    List<int> kindsOfObstacle = new List<int>();
 
-            if (m3h.spawnObstacleObject) kindsOfObstacle.Add(0);
+        //    if (m3h.spawnObstacleObject) kindsOfObstacle.Add(0);
 
-            if (m3h.spawnBlockedObject)
-            {
-                if (m3h.haveRandomProtection)
-                {
-                    for (int i = 1; i <= m3h.blockProtection; i++) kindsOfObstacle.Add(i);
-                }
+        //    if (m3h.spawnBlockedObject)
+        //    {
+        //        if (m3h.haveRandomProtection)
+        //        {
+        //            for (int i = 1; i <= m3h.blockProtection; i++) kindsOfObstacle.Add(i);
+        //        }
 
-                else kindsOfObstacle.Add(m3h.blockProtection);
-            }
+        //        else kindsOfObstacle.Add(m3h.blockProtection);
+        //    }
 
-            if (m3h.spawnOverlayObject)
-            {
-                if (m3h.haveRandomProtection)
-                {
-                    for (int i = 5; i <= m3h.blockProtection + 4; i++) kindsOfObstacle.Add(i);
-                }
+        //    if (m3h.spawnOverlayObject)
+        //    {
+        //        if (m3h.haveRandomProtection)
+        //        {
+        //            for (int i = 5; i <= m3h.blockProtection + 4; i++) kindsOfObstacle.Add(i);
+        //        }
 
-                else kindsOfObstacle.Add(m3h.blockProtection + 4);
-            }
+        //        else kindsOfObstacle.Add(m3h.blockProtection + 4);
+        //    }
 
-            for (int i = 0; i < m3h.grid.Cells.Count; i++)
-            {
-                if (p.genes[i] == '1')
-                {
-                    int randomIndex = Random.Range(0, kindsOfObstacle.Count);
+        //    for (int i = 0; i < m3h.grid.Cells.Count; i++)
+        //    {
+        //        if (p.genes[i] == '1')
+        //        {
+        //            int randomIndex = Random.Range(0, kindsOfObstacle.Count);
 
-                    if (kindsOfObstacle[randomIndex] == 0)
-                    {
-                        p.gridObjects.Add(0);
-                        p.objectProtection.Add(0);
-                    }
+        //            if (kindsOfObstacle[randomIndex] == 0)
+        //            {
+        //                p.gridObjects.Add(0);
+        //                p.objectProtection.Add(0);
+        //            }
 
-                    else if (kindsOfObstacle[randomIndex] == 1 ||
-                             kindsOfObstacle[randomIndex] == 2 ||
-                             kindsOfObstacle[randomIndex] == 3 ||
-                             kindsOfObstacle[randomIndex] == 4)
-                    {
-                        p.gridObjects.Add(1);
-                        p.objectProtection.Add(kindsOfObstacle[randomIndex]);
-                    }
+        //            else if (kindsOfObstacle[randomIndex] == 1 ||
+        //                     kindsOfObstacle[randomIndex] == 2 ||
+        //                     kindsOfObstacle[randomIndex] == 3 ||
+        //                     kindsOfObstacle[randomIndex] == 4)
+        //            {
+        //                p.gridObjects.Add(1);
+        //                p.objectProtection.Add(kindsOfObstacle[randomIndex]);
+        //            }
 
-                    else
-                    {
-                        p.gridObjects.Add(2);
-                        p.objectProtection.Add(kindsOfObstacle[randomIndex] - 4);
-                    }
-                }
+        //            else
+        //            {
+        //                p.gridObjects.Add(2);
+        //                p.objectProtection.Add(kindsOfObstacle[randomIndex] - 4);
+        //            }
+        //        }
 
-                else
-                {
-                    p.gridObjects.Add(3);
-                    p.objectProtection.Add(0);
-                }
-            }
+        //        else
+        //        {
+        //            p.gridObjects.Add(3);
+        //            p.objectProtection.Add(0);
+        //        }
+        //    }
 
-        }
+        //}
 
         public void setGridFromGene(DNA<char> p, SpawnController sC)
         {
             for (int i = 0; i < m3h.grid.Cells.Count; i++)
             {
-                if (p.gridObjects[i] != 0)
+                if (p.gridObjects[i] >= 10 && p.gridObjects[i] < 20)
                 {
-                    m3h.grid.Cells[i].poolingSpecificObjects[p.gridObjects[i] - 1].gameObject.SetActive(true);
+                    m3h.grid.Cells[i].poolingBlockeds[p.gridObjects[i] % 10].gameObject.SetActive(true);
+                }
 
-                    if(m3h.grid.Cells[i].Overlay != null)
+                else if (p.gridObjects[i] > 20 && p.gridObjects[i] < 30)
+                {
+                    m3h.grid.Cells[i].poolingOverlays[p.gridObjects[i] % 20 - 1].gameObject.SetActive(true);
+
+                    int[] arr = { 0, 1, 2, 3, 4, 5, 6 };
+                    int n = 7;
+                    while (n > 1)
                     {
-                        int[] arr = { 0, 1, 2, 3, 4, 5, 6 };
-                        int n = 7;
-                        while (n > 1)
-                        {
-                            int k = (UnityEngine.Random.Range(0, n) % n);
-                            n--;
-                            int val = arr[k];
-                            arr[k] = arr[n];
-                            arr[n] = val;
-                        }
-
-                        m3h.grid.Cells[i].poolingmatchObjects[arr[0]].gameObject.SetActive(true);
+                        int k = (UnityEngine.Random.Range(0, n) % n);
+                        n--;
+                        int val = arr[k];
+                        arr[k] = arr[n];
+                        arr[n] = val;
                     }
 
+                    m3h.grid.Cells[i].poolingmatchObjects[arr[0]].gameObject.SetActive(true);
                 }
 
                 else
@@ -964,7 +965,7 @@ namespace Mkey
         {
             List<int> kindsOfObstacle = new List<int>();
 
-            if (m3h.spawnObstacleObject) kindsOfObstacle.Add(1);
+            if (m3h.spawnObstacleObject) kindsOfObstacle.Add(10);
 
             if (m3h.spawnBlockedObject)
             {
@@ -972,13 +973,13 @@ namespace Mkey
                 {
                     for (int i = 1; i <= m3h.blockProtection; i++)
                     {
-                        kindsOfObstacle.Add(i + 1);
+                        kindsOfObstacle.Add(10 + i);
                     }
                 }
 
                 else
                 {
-                    kindsOfObstacle.Add(m3h.blockProtection + 1);
+                    kindsOfObstacle.Add(10 + m3h.blockProtection);
                 }
             }
 
@@ -988,13 +989,13 @@ namespace Mkey
                 {
                     for (int i = 1; i <= m3h.blockProtection; i++)
                     {
-                        kindsOfObstacle.Add(i + 5);
+                        kindsOfObstacle.Add(20 + i);
                     }
                 }
 
                 else
                 {
-                    kindsOfObstacle.Add(m3h.blockProtection + 5);
+                    kindsOfObstacle.Add(20 + m3h.blockProtection);
                 }
             }
 
@@ -1456,7 +1457,7 @@ namespace Mkey
 
                         estimateIsFeasible(ga.population[j]);
 
-                        //if (ga.population[j].isFeasible)
+                        if (ga.population[j].isFeasible)
                         {
                             //setGridRepeat(ga.population[j], sC);
                             m3h.cntPerPottentials(ga.population[j]);

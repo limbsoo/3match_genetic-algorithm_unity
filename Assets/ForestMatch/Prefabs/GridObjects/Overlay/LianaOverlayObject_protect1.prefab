@@ -104,4 +104,4 @@ MonoBehaviour:
   protectionStateImages: []
   hitAnimPrefab: {fileID: 1012492644563994, guid: be25ad3237ed71c46b04d528ddf0a6ab,
     type: 3}
-  hitCnt: 1
+  hitCnt: 0

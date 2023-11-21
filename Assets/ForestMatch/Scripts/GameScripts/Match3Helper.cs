@@ -193,10 +193,9 @@ namespace Mkey
                 //limits.csvCnt = 200;
 
 
-                limits.match3Cycle = 50;
+                limits.match3Cycle = 29;
                 limits.generation = 100;
                 limits.csvCnt = 29;
-                //limits.csvCnt = 9;
             }
 
 
@@ -207,13 +206,13 @@ namespace Mkey
             limits.mix = 200;
 
 
-            spawnObstacleObject = false;
+            spawnObstacleObject = true;
             spawnBlockedObject = true;
             spawnOverlayObject = false;
 
 
-            haveRandomProtection = true;
-            blockProtection = 3;
+            haveRandomProtection = false;
+            blockProtection = 1;
 
             ////size 99
             //wantDifficulty = 888;
@@ -542,25 +541,36 @@ namespace Mkey
             int result = 0;
             for (int i = 0; i < mg.Cells.Count; i++)
             {
-                if (mg.Cells[i].Neighbors.Top != null)
+                if (spawnBlockedObject)
                 {
-                    if (estimateNeighborObstacle(mg.Cells[i].Neighbors.Top)) result++;
+                    if (mg.Cells[i].Neighbors.Top != null)
+                    {
+                        if (estimateNeighborObstacle(mg.Cells[i].Neighbors.Top)) result++;
+                    }
+
+                    if (mg.Cells[i].Neighbors.Left != null)
+                    {
+                        if (estimateNeighborObstacle(mg.Cells[i].Neighbors.Left)) result++;
+                    }
+
+                    if (mg.Cells[i].Neighbors.Right != null)
+                    {
+                        if (estimateNeighborObstacle(mg.Cells[i].Neighbors.Right)) result++;
+                    }
+
+                    if (mg.Cells[i].Neighbors.Bottom != null)
+                    {
+                        if (estimateNeighborObstacle(mg.Cells[i].Neighbors.Bottom)) result++;
+                    }
+
                 }
 
-                if (mg.Cells[i].Neighbors.Left != null)
+                if (spawnOverlayObject)
                 {
-                    if (estimateNeighborObstacle(mg.Cells[i].Neighbors.Left)) result++;
+
+                    if (mg.Cells[i].Overlay != null) result++;
                 }
 
-                if (mg.Cells[i].Neighbors.Right != null)
-                {
-                    if (estimateNeighborObstacle(mg.Cells[i].Neighbors.Right)) result++;
-                }
-
-                if (mg.Cells[i].Neighbors.Bottom != null)
-                {
-                    if (estimateNeighborObstacle(mg.Cells[i].Neighbors.Bottom)) result++;
-                }
             }
             return result;
         }
