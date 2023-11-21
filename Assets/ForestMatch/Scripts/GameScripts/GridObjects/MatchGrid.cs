@@ -920,6 +920,23 @@ namespace Mkey
                 if (p.gridObjects[i] != 0)
                 {
                     m3h.grid.Cells[i].poolingSpecificObjects[p.gridObjects[i] - 1].gameObject.SetActive(true);
+
+                    if(m3h.grid.Cells[i].Overlay != null)
+                    {
+                        int[] arr = { 0, 1, 2, 3, 4, 5, 6 };
+                        int n = 7;
+                        while (n > 1)
+                        {
+                            int k = (UnityEngine.Random.Range(0, n) % n);
+                            n--;
+                            int val = arr[k];
+                            arr[k] = arr[n];
+                            arr[n] = val;
+                        }
+
+                        m3h.grid.Cells[i].poolingmatchObjects[arr[0]].gameObject.SetActive(true);
+                    }
+
                 }
 
                 else
@@ -971,13 +988,13 @@ namespace Mkey
                 {
                     for (int i = 1; i <= m3h.blockProtection; i++)
                     {
-                        kindsOfObstacle.Add(i + 6);
+                        kindsOfObstacle.Add(i + 5);
                     }
                 }
 
                 else
                 {
-                    kindsOfObstacle.Add(m3h.blockProtection + 6);
+                    kindsOfObstacle.Add(m3h.blockProtection + 5);
                 }
             }
 
@@ -1570,18 +1587,29 @@ namespace Mkey
                     m3h.wantDifficulty = m3h.originPoten;
                     m3h.csvFolder++;
 
-                    if(m3h.csvFolder == 3 || m3h.csvFolder == 6 || m3h.csvFolder == 9)
+                    //if (m3h.csvFolder == 1 || m3h.csvFolder == 2 || m3h.csvFolder == 9)
+                    if(m3h.csvFolder == 3 || m3h.csvFolder == 6 || m3h.csvFolder == 12 || m3h.csvFolder == 15)
                     {
                         m3h.blockProtection += 1;
                     }
-                    
-                    
+
+                    if (m3h.csvFolder == 9)
+                    {
+                        m3h.blockProtection = 1;
+
+                        m3h.spawnObstacleObject = true;
+                        m3h.spawnBlockedObject = true;
+                        m3h.spawnOverlayObject = false;
+                        m3h.haveRandomProtection = false;
+                    }
+
+
+
                 }
 
+                //if (m3h.csvFolder > 8) break;
 
-                if (m3h.csvFolder > 8) break;
-
-                //if (m3h.csvCnt > m3h.limits.csvCnt) break;
+                if (m3h.csvCnt > m3h.limits.csvCnt) break;
             }
 
         }

@@ -153,7 +153,7 @@ namespace Mkey
             board = new GameBoard();
             limits = new Limit();
 
-            csvCnt = 5;
+            csvCnt = 0;
             match3Cycle = 0;
 
             csvFolder = 0;
@@ -183,16 +183,20 @@ namespace Mkey
                 //limits.generation = 1;
                 //limits.csvCnt = 0;
 
-
-                limits.match3Cycle = 121;
-                limits.generation = 100;
-                limits.csvCnt = 121;
-
-
-                //limits.match3Cycle = 50;
+                //limits.match3Cycle = 1;
                 //limits.generation = 100;
-                //limits.csvCnt = 29;
-                ////limits.csvCnt = 9;
+                //limits.csvCnt = 0;
+
+
+                //limits.match3Cycle = 200;
+                //limits.generation = 100;
+                //limits.csvCnt = 200;
+
+
+                limits.match3Cycle = 50;
+                limits.generation = 100;
+                limits.csvCnt = 29;
+                //limits.csvCnt = 9;
             }
 
 
@@ -208,8 +212,8 @@ namespace Mkey
             spawnOverlayObject = false;
 
 
-            haveRandomProtection = false;
-            blockProtection = 1;
+            haveRandomProtection = true;
+            blockProtection = 3;
 
             ////size 99
             //wantDifficulty = 888;
@@ -220,7 +224,7 @@ namespace Mkey
 
             //size 1010
 
-            wantDifficulty = 594;
+            wantDifficulty = 1144;
             //wantDifficulty = 110;
             difficultyTolerance = 55;
             minusRange = 110;
@@ -1031,26 +1035,26 @@ namespace Mkey
 
             //p.potttnennsss = 0;
 
-            //p.potttnennsss += p.allPottential.obstacle;
-            //p.potttnennsss += p.allPottential.blocked1;
-            //p.potttnennsss += p.allPottential.blocked2;
-            //p.potttnennsss += p.allPottential.blocked3;
-            //p.potttnennsss += p.allPottential.blocked4;
-            //p.potttnennsss += p.allPottential.overlay1;
-            //p.potttnennsss += p.allPottential.overlay2;
-            //p.potttnennsss += p.allPottential.overlay3;
-            //p.potttnennsss += p.allPottential.overlay4;
+            p.finalPottential += obstacle;
+            p.finalPottential += blocked1;
+            p.finalPottential += blocked2;
+            p.finalPottential += blocked3;
+            p.finalPottential += blocked4;
+            p.finalPottential += overlay1;
+            p.finalPottential += overlay2;
+            p.finalPottential += overlay3;
+            p.finalPottential += overlay4;
 
 
             //p.finalPottential = p.potttnennsss;
 
-            if (csvFolder <= 2) p.finalPottential = blocked1;
+            //if (csvFolder <= 2) p.finalPottential = blocked1;
 
-            else if (csvFolder <= 5) p.finalPottential = blocked2;
+            //else if (csvFolder <= 5) p.finalPottential = blocked2;
 
-            else if (csvFolder <= 8) p.finalPottential = blocked3;
+            //else if (csvFolder <= 8) p.finalPottential = blocked3;
 
-            else p.finalPottential = blocked4;
+            //else p.finalPottential = blocked4;
         }
 
 
@@ -1895,11 +1899,11 @@ namespace Mkey
             {
                 int random = UnityEngine.Random.Range(0, cellList2.Count);
 
-                List<int> id = cellList[i].GetGridObjectsIDs();
-                List<int> id2 = cellList2[random].GetGridObjectsIDs();
+                List<int> id = cellList[i].GetMixGridObjectsIDs();
+                List<int> id2 = cellList2[random].GetMixGridObjectsIDs();
 
-                cellList[i].DestroyObjects();
-                cellList2[random].DestroyObjects();
+                cellList[i].DestroyMixGridObjects();
+                cellList2[random].DestroyMixGridObjects();
 
                 switch (id2[0])
                 {

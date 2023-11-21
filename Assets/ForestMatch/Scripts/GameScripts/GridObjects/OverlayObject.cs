@@ -106,6 +106,50 @@ namespace Mkey
             return "Overlay: " + ID;
         }
 
+
+        public override GridObject new_create(GridCell parent)
+        {
+            if (!parent) return null;
+
+            //GameObject old = parent.Overlay.gameObject;
+
+            //parent.DestroyGridObjects(); // new
+
+            //if (parent.IsDisabled || parent.Blocked) return null;
+            //if (parent.Overlay)
+            //{
+            //    //GameObject old = parent.Overlay.gameObject;
+            //    //Destroy(old);
+
+            //    parent.DestroyGridObjects(); // new
+
+            //}
+            //if (Hits > protectionStateImages.Length) return null;
+
+            OverlayObject gridObject = Instantiate(this, parent.transform);
+
+
+
+            if (!gridObject) return null;
+            gridObject.transform.localScale = Vector3.one;
+            gridObject.transform.localPosition = Vector3.zero;
+            gridObject.SRenderer = gridObject.GetComponent<SpriteRenderer>();
+#if UNITY_EDITOR
+            gridObject.name = "overlay " + parent.ToString();
+#endif
+            gridObject.TargetCollectEvent = TargetCollectEvent;
+            gridObject.SetToFront(false);
+
+            gridObject.Hits = Mathf.Clamp(Hits, 0, protectionStateImages.Length);
+            if (protectionStateImages.Length > 0 && gridObject.Hits > 0)
+            {
+                int i = Mathf.Min(gridObject.Hits - 1, protectionStateImages.Length - 1);
+                gridObject.SRenderer.sprite = protectionStateImages[i];
+            }
+
+            return gridObject;
+        }
+
         public override GridObject Create(GridCell parent, Action<int> TargetCollectEvent)
         {
             if (!parent) return null;

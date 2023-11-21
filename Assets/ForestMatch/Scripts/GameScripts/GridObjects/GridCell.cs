@@ -1007,6 +1007,22 @@ namespace Mkey
             return res;
         }
 
+        public List<int> GetMixGridObjectsIDs()
+        {
+            List<int> res = new List<int>();
+            foreach (var item in GetGridObjects())
+            {
+   
+                if (item.ID <= 1006 && item.ID >= 1000) res.Add(item.ID);
+
+
+
+                
+            }
+            return res;
+        }
+
+
         public List<int> GetGridObjectsIDs()
         {
             List<int> res = new List<int>();
@@ -1443,16 +1459,41 @@ namespace Mkey
         internal void DestroyGridObjects()
         {
             GridObject[] gridObjects = GetComponentsInChildren<GridObject>();
+
+
+
+
             foreach (var item in gridObjects)
             {
 
                 //item.gameObject.SetActive(false);
+
+
+
                 DestroyImmediate(item.gameObject);
             }
         }
 
 
         GridObject[] gridObjects;
+
+
+        internal void DestroyMixGridObjects()
+        {
+            gridObjects = null;
+
+            gridObjects = GetComponentsInChildren<GridObject>();
+
+
+            foreach (var item in gridObjects)
+            {
+                if(item.ID <= 1006 && item.ID >= 1000) item.gameObject.SetActive(false);
+
+            }
+
+        }
+
+
 
         internal void DestroyObjects()
         {
