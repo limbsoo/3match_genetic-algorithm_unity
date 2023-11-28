@@ -135,7 +135,12 @@ namespace Mkey
         public int dCnt;
 
 
+        public int[] inputProtection;
+
+
         public Queue<PathFinder> pFs;
+
+        public int startLimit;
 
 
         public List<BlockedObject> blockeds;
@@ -179,23 +184,27 @@ namespace Mkey
 
             else
             {
+                //limits.match3Cycle = 90;
+                //limits.generation = 100;
+                //limits.csvCnt = 89;
+
                 //limits.match3Cycle = 1;
                 //limits.generation = 1;
                 //limits.csvCnt = 0;
 
-                //limits.match3Cycle = 1;
+
+                //limits.match3Cycle = 30;
                 //limits.generation = 100;
-                //limits.csvCnt = 0;
+                //limits.csvCnt = 29;
 
 
-                //limits.match3Cycle = 200;
+                //limits.match3Cycle = 10;
                 //limits.generation = 100;
-                //limits.csvCnt = 200;
+                //limits.csvCnt = 9;
 
-
-                limits.match3Cycle = 29;
+                limits.match3Cycle = 120;
                 limits.generation = 100;
-                limits.csvCnt = 29;
+                limits.csvCnt = 119;
             }
 
 
@@ -206,25 +215,37 @@ namespace Mkey
             limits.mix = 200;
 
 
-            spawnObstacleObject = true;
+            spawnObstacleObject = false;
             spawnBlockedObject = true;
             spawnOverlayObject = false;
 
 
-            haveRandomProtection = false;
-            blockProtection = 1;
+            haveRandomProtection = true;
+
+            startLimit = 3;
+            blockProtection = 4;
+
+            inputProtection = new int[2];
+            inputProtection[0] = 1;
+            inputProtection[1] = 3;
+           
 
             ////size 99
             //wantDifficulty = 888;
-            //difficultyTolerance = 30;
+            //difficultyTolerance = 40;
             //minusRange = 80;
             //originPoten = 888;
 
 
-            //size 1010
 
+            //wantDifficulty = 852;
+            //difficultyTolerance = 5;
+            //minusRange = 110;
+            //originPoten = 1144;
+
+            //size 1010
             wantDifficulty = 1144;
-            //wantDifficulty = 110;
+            //wantDifficulty = 1144;
             difficultyTolerance = 55;
             minusRange = 110;
             originPoten = 1144;

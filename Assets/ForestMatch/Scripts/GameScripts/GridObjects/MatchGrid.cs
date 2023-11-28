@@ -920,12 +920,13 @@ namespace Mkey
                 if (p.gridObjects[i] >= 10 && p.gridObjects[i] < 20)
                 {
                     m3h.grid.Cells[i].poolingBlockeds[p.gridObjects[i] % 10].gameObject.SetActive(true);
+                    m3h.grid.Cells[i].Blocked.hitCnt = 0;
                 }
 
                 else if (p.gridObjects[i] > 20 && p.gridObjects[i] < 30)
                 {
                     m3h.grid.Cells[i].poolingOverlays[p.gridObjects[i] % 20 - 1].gameObject.SetActive(true);
-
+                    m3h.grid.Cells[i].Overlay.hitCnt = 0;
                     int[] arr = { 0, 1, 2, 3, 4, 5, 6 };
                     int n = 7;
                     while (n > 1)
@@ -971,10 +972,19 @@ namespace Mkey
             {
                 if (m3h.haveRandomProtection)
                 {
-                    for (int i = 1; i <= m3h.blockProtection; i++)
+                    for(int i =0;i<m3h.inputProtection.Count();i++)
                     {
-                        kindsOfObstacle.Add(10 + i);
+                        kindsOfObstacle.Add(10 + m3h.inputProtection[i]);
                     }
+
+
+
+
+
+                    //for (int i = m3h.startLimit; i <= m3h.blockProtection; i++)
+                    //{
+                    //    kindsOfObstacle.Add(10 + i);
+                    //}
                 }
 
                 else
@@ -987,10 +997,15 @@ namespace Mkey
             {
                 if (m3h.haveRandomProtection)
                 {
-                    for (int i = 1; i <= m3h.blockProtection; i++)
+                    for (int i = 0; i < m3h.inputProtection.Count(); i++)
                     {
-                        kindsOfObstacle.Add(20 + i);
+                        kindsOfObstacle.Add(20 + m3h.inputProtection[i]);
                     }
+
+                    //for (int i = m3h.startLimit; i <= m3h.blockProtection; i++)
+                    //{
+                    //    kindsOfObstacle.Add(20 + i);
+                    //}
                 }
 
                 else
@@ -1588,21 +1603,63 @@ namespace Mkey
                     m3h.wantDifficulty = m3h.originPoten;
                     m3h.csvFolder++;
 
-                    //if (m3h.csvFolder == 1 || m3h.csvFolder == 2 || m3h.csvFolder == 9)
-                    if(m3h.csvFolder == 3 || m3h.csvFolder == 6 || m3h.csvFolder == 12 || m3h.csvFolder == 15)
+                    if (m3h.csvFolder == 3)
                     {
-                        m3h.blockProtection += 1;
+                        m3h.inputProtection[0] = 2;
+                        m3h.inputProtection[1] = 4;
+                    }
+
+
+                    if (m3h.csvFolder == 6)
+                    {
+                        m3h.inputProtection[0] = 1;
+                        m3h.inputProtection[1] = 4;
                     }
 
                     if (m3h.csvFolder == 9)
                     {
-                        m3h.blockProtection = 1;
+                        m3h.inputProtection = new int[3];
 
-                        m3h.spawnObstacleObject = true;
-                        m3h.spawnBlockedObject = true;
-                        m3h.spawnOverlayObject = false;
-                        m3h.haveRandomProtection = false;
+                        m3h.inputProtection[0] = 1;
+                        m3h.inputProtection[1] = 3;
+                        m3h.inputProtection[2] = 4;
                     }
+
+
+
+                    //if (m3h.csvFolder == 3)
+                    //{
+                    //    m3h.spawnObstacleObject = true;
+                    //    m3h.spawnBlockedObject = true;
+                    //    m3h.haveRandomProtection = true;
+                    //    m3h.blockProtection = 3;
+                    //}
+
+
+
+                    //m3h.blockProtection += 1;
+
+                    //if (m3h.blockProtection == 4)
+                    //{
+                    //    m3h.blockProtection = 1;
+                    //}
+
+                    ////if (m3h.csvFolder == 1 || m3h.csvFolder == 2 || m3h.csvFolder == 9)
+                    //if (m3h.csvFolder == 2 || m3h.csvFolder == 4 || m3h.csvFolder == 6)
+                    ////if(m3h.csvFolder == 3 || m3h.csvFolder == 6 || m3h.csvFolder == 12 || m3h.csvFolder == 15)
+                    //{
+                    //    m3h.blockProtection += 1;
+                    //}
+
+                    //if (m3h.csvFolder == 9)
+                    //{
+                    //    m3h.blockProtection = 1;
+
+                    //    m3h.spawnObstacleObject = true;
+                    //    m3h.spawnBlockedObject = true;
+                    //    m3h.spawnOverlayObject = false;
+                    //    m3h.haveRandomProtection = false;
+                    //}
 
 
 
@@ -1655,11 +1712,13 @@ namespace Mkey
             }
 
 
-            string map = "0202220002000220000000022000200000220220222022022020002200220022000000020000022002002200020020020202";
+            string map = "0000140014000001400014001400140141400014000001401401401400000001400140014141401400014001414014000014014001401414014000014000014014014";
 
 
+            int cnt = 0;
 
-            for (int i = 0; i < Cells.Count; i++)
+
+            for (int i = 0; i < map.Length; i++)
             {
                 //int randNum = Random.Range(0, 2);
 
@@ -1668,18 +1727,33 @@ namespace Mkey
                 //    Cells[i].SetObject1(blockeds[3]);
                 //}
 
-                if (map[i] != '0')
+
+                if (map[i] == '1')
                 {
-                    Cells[i].SetObject1(blockeds[1]);
+                    Cells[cnt].SetObject1(blockeds[3]);
+                    i++;
+
+                    ////if(map[i + 1] == '4')
+                    //{
+                    //    Cells[i].SetObject1(blockeds[1]);
+                    //    i++;
+                    //}
                 }
+
+
+                //if (map[i] != '0')
+                //{
+                //    Cells[i].SetObject1(blockeds[1]);
+                //}
 
                 else
                 {
                     MatchObject m = sC.GetMainRandomObjectPrefab(LcSet, goSet);
-                    Cells[i].SetObject(m);
+                    Cells[cnt].SetObject(m);
                 }
 
 
+                cnt++;
             }
 
 

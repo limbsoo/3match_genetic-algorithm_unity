@@ -373,7 +373,11 @@ public class DNA<T>
         //fitness = Math.Abs(potttnennsss - (double)wantDifficulty);
 
         fitness = Math.Abs(allPottential.map - (double)wantDifficulty);
-        //fitness = Math.Abs(swapablePottential.map - wantDifficulty);
+
+        //fitness = Math.Abs(allPottential.blocked2 - (double)wantDifficulty);
+
+        //fitness = Math.Abs(allPottential.map - (double)wantDifficulty) * 0.5 + Math.Abs(allPottential.blocked2 - (double)292);
+
 
         if (fitness > difficultyTolerance) fitness = 1.0 / (1.0 + Math.Abs(fitness));
         else fitness = 1;
